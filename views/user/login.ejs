@@ -1,0 +1,71 @@
+
+
+
+<%- include('./header.ejs') %>
+
+<div class="oxf-main-container">
+    <div class="oxf-login-container">
+        <div class="oxf-left-section">
+            <h2>New to our Shop?</h2>
+            <p>Unleash your style with our exclusive collection of bags, Join us and discover the perfect accessory for every occasion</p>
+            <button class="oxf-btn-secondary"><a href="/register" style="color: rgb(71, 38, 88); text-decoration: none;">Create an Account</a></button>
+        </div>
+        <div class="oxf-right-section" >
+            <h2>Welcome Back!</h2>
+            <p>Please Login now</p>
+       <div style="height: 20px;">
+            <% if (typeof message !== 'undefined') { %>
+                <h6 class="text-center text-danger mb-4"  id="message" ><%= message %></h6>
+            <% } %> 
+        </div>
+            <form class="oxf-login-form" action="/login" method="POST">
+                <div class="oxf-form-group">
+                    <label for="oxf-email">Email</label>
+                    <input type="email" id="oxf-email" name="email" value="<%= data.email || '' %>" required>
+                </div>
+                <div class="oxf-form-group">
+                    <label for="oxf-password">Password</label>
+                    <input type="password" id="oxf-password" name="password" value="<%= data.password || '' %>" required>
+                </div>
+                <div class="oxf-form-group oxf-remember-group">
+                    <input type="checkbox" id="oxf-remember-me" onclick="togglePassword()">
+                    <label for="oxf-remember-me" style="font-size: small;">Show password</label>
+                </div>
+                <div class="oxf-btn-group">
+                    <button type="submit" class="oxf-btn-primary">Log In</button>
+                </div>
+                <!-- <div class="oxf-forgot-password">
+                    <a href="#">Forgot Password?</a>
+                </div> -->
+                <div class="oxf-or">OR</div>
+                <a href="/auth/google" class="oxf-btn-google" style="text-decoration: none;">
+                    <img src="/static/images/google.logo.png" > Continue with Google
+                </a>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    setTimeout(() => {
+       const message = document.getElementById('message');
+       if (message) {
+           message.remove();
+       }
+    }, 3000);
+
+    function togglePassword() {
+        const passwordField = document.getElementById('oxf-password');
+        const showPasswordCheckbox = document.getElementById('oxf-remember-me');
+        if (showPasswordCheckbox.checked) {
+            passwordField.type = 'text';
+        } else {
+            passwordField.type = 'password';
+        }
+    }
+
+
+</script>
+
+
+<%- include('./footer.ejs') %>

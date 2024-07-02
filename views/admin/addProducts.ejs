@@ -1,0 +1,64 @@
+<%- include('./adminHeader.ejs') %>
+
+
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Basic form elements</h4>
+        <p class="card-description"> Basic form elements </p>
+        <form class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
+          <div class="form-group">
+            <label for="exampleInputName1">Name</label>
+            <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleSelectCategory">Category</label>
+            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" required>
+              <option>default</option>
+              <% for(let i=0;i<categories.length;i++){ %>
+              <option><%= categories[i].name %></option>
+              <% } %>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Brand</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="brand" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Models</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="model" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Material</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="material" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Price</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="price" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Color</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="color" required>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Discription</label>
+            <textarea class="form-control" id="exampleInputPassword4" name="description" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" required></textarea>
+            <!-- <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" name="discription" required> -->
+          </div>
+  
+          <div style="height: 100px; width: 30%;">
+            <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+            <input type="file" id="ocs-productImage" name="image"  class="form-control" multiple>
+          </div>
+
+          <button type="submit" class="btn btn-primary me-2">Submit</button>
+          <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+
+<%- include('./adminFooter.ejs') %>
+

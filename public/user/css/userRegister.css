@@ -1,0 +1,106 @@
+.ocs-registration-container {
+    margin: 20px auto; /* Center align and add spacing */
+    padding: 20px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 80%; /* Adjust width as needed */
+    max-width: 600px; /* Set a maximum width */
+    box-sizing: border-box;
+    text-align: center; /* Center align contents */
+}
+
+.ocs-registration-title {
+    color: #6a1b9a;
+    margin-bottom: 20px;
+}
+
+.ocs-registration-form {
+    display: flex;
+    flex-direction: column;
+}
+
+.ocs-registration-label {
+    margin-bottom: 5px;
+    color: #333333;
+    text-align: left; /* Align labels to the left */
+}
+
+.ocs-registration-input {
+    margin-bottom: 15px;
+    padding: 10px;
+    border: 1px solid #cccccc;
+    border-radius: 4px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.ocs-otp-button {
+    background-color: #696d71;
+    color: #ffffff;
+    padding: 8px; /* Reduced padding */
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin: 10px auto; /* Center align the button */
+    width: 50%; /* Reduced width */
+    max-width: 200px; /* Limit max width of the button */
+    box-sizing: border-box;
+    transition: background-color 0.3s ease;
+}
+
+.ocs-otp-button:hover {
+    background-color: #000000;
+}
+
+.ocs-google-login-button {
+    background-color: #ffffff;
+    color: #696d71;
+    padding: 8px;
+    border: 1px solid #696d71;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+    width: 100%;
+    max-width: 300px; /* Limit max width of the button */
+    box-sizing: border-box;
+}
+
+.ocs-google-login-button img {
+    width: 20px;
+    height: 20px;
+    margin-right: 10px;
+}
+
+.ocs-login-text {
+    margin-bottom: 20px;
+}
+
+.ocs-login-link {
+    color: #000000;
+    text-decoration: none;
+}
+
+.ocs-login-link:hover {
+    text-decoration: none;
+}
+
+.ocs-google-login-container {
+    text-align: center;
+}
+.ipo-otp-inputs {
+    display: flex;
+    justify-content: space-between;
+}
+
+.ipo-otp-input {
+    width: 30px;
+    height: 30px;
+    text-align: center;
+    font-size: 18px;
+}
+
+.ipo-error {
+    color: red;
+    font-weight: bold;
+}

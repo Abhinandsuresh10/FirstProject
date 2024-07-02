@@ -1,0 +1,165 @@
+
+
+
+<%- include('./adminHeader.ejs') %>
+
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Striped Table</h4>
+        <p class="card-description"> Add class <code>.table-striped</code>
+        </p>
+        <div class="table-responsive">
+          <table class="table table-striped" >
+            <thead>
+              <tr>
+                <th>No</th>
+                <th> User image</th>
+                <th> Name </th>
+                <th> Status </th>
+              </tr>
+            </thead>
+
+            <tbody>
+   
+                <% for(let i=0;i<users.length;i++){%>
+
+              <tr>
+                <td style="color: aliceblue;"> <%= i+1%></td>
+                <td class="py-1">
+                  <img src="/static/userImages/<%= users[i].image %>" alt="image" style="color: aliceblue; width: 50px; height: 50px; border-radius: 50%;">
+                </td>
+                <td style="color: aliceblue;"> <%=users[i].name%> </td>
+                <td style="color: aliceblue;"> 
+                  <% if (users[i].is_blocked) { %> 
+                    <button onclick="confirmUnblock('<%= users[i]._id %>')" class="btn btn-danger">Unblock</button>
+                  <% } else { %>
+                    <button onclick="confirmBlock('<%= users[i]._id %>')" class="btn btn-primary" style="width: 82px;">Block</button>
+                  <% } %>
+                </td>
+                
+              </tr>
+            <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
+  function confirmBlock(userId) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to block this user.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, block!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Perform AJAX request to block user
+        fetch('/admin/block', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          // Handle success response
+          Swal.fire({
+            title: "Blocked!",
+            text: "User has been blocked.",
+            icon: "success"
+          }).then(() => {
+            location.reload(); // Reload page or update UI as needed
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          swalWithBootstrapButtons.fire({
+            title: "Error",
+            text: "Failed to block user.",
+            icon: "error"
+          });
+        });
+      } else if (
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire({
+          title: "Cancelled",
+          text: "User was not blocked.",
+          icon: "error"
+        });
+      }
+    });
+  }
+
+  function confirmUnblock(userId) {
+    Swal.fire({
+      title: "Are you sure?",
+      text: "You are about to unblock this user.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Yes, unblock!",
+      cancelButtonText: "Cancel",
+      reverseButtons: true
+    }).then((result) => {
+      if (result.isConfirmed) {
+        // Perform AJAX request to unblock user
+        fetch('/admin/unblock', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ user_id: userId })
+        })
+        .then(response => {
+          if (response.ok) {
+            return response.json();
+          }
+          throw new Error('Network response was not ok.');
+        })
+        .then(data => {
+          // Handle success response
+          Swal.fire({
+            title: "Unblocked!",
+            text: "User has been unblocked.",
+            icon: "success"
+          }).then(() => {
+            location.reload(); // Reload page or update UI as needed
+          });
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          swalWithBootstrapButtons.fire({
+            title: "Error",
+            text: "Failed to unblock user.",
+            icon: "error"
+          });
+        });
+      } else if (
+        result.dismiss === Swal.DismissReason.cancel
+      ) {
+        swalWithBootstrapButtons.fire({
+          title: "Cancelled",
+          text: "User was not unblocked.",
+          icon: "error"
+        });
+      }
+    });
+  }
+</script>
+
+
+<%- include('./adminFooter.ejs') %>
+

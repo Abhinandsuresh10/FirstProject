@@ -1,0 +1,142 @@
+<!-- <%- include('./header.ejs') %>
+
+<div class="ipo-wrapper">
+    <div class="ipo-container">
+        <p class="ipo-instruction">please enter the OTP sent to user@gmail.com</p>
+        <% if (typeof message !== 'undefined') { %>
+            <p class="ipo-error"><%= message %></p>
+        <% } %>
+        <form action="/verify-otp" method="POST" class="ipo-form">
+            <div class="ipo-otp-inputs">
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+            </div>
+            <button type="submit" class="ipo-button">VERIFY OTP</button>
+        </form>
+        <p class="ipo-resend-text">
+            if not Received code? <a href="#" class="ipo-resend-link">Resend code</a> after 30 seconds
+        </p>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.ipo-otp-input').forEach((input, index, inputs) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && index > 0 && input.value.length === 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+</script>
+<%- include('./footer.ejs') %> -->
+
+
+<%- include('./header.ejs') %>
+
+<div class="ipo-wrapper">
+    <div class="ipo-container">
+        <p class="ipo-instruction">Please enter the OTP sent to user@gmail.com</p>
+        <% if (typeof message !== 'undefined') { %>
+            <p class="ipo-error"><%= message %></p>
+        <% } %>
+        <form action="/verify-otp" method="POST" class="ipo-form">
+            <div class="ipo-otp-inputs">
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+                <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
+            </div>
+            <button type="submit" class="ipo-button">VERIFY OTP</button>
+        </form>
+        <p class="ipo-resend-text">
+            If not received code? <span id="resend-timer">30</span>
+            <a href="#" id="resend-link" class="ipo-resend-link disabled" style="display:none;">Resend OTP</a>
+        </p>
+    </div>
+</div>
+
+<script>
+    document.querySelectorAll('.ipo-otp-input').forEach((input, index, inputs) => {
+        input.addEventListener('input', () => {
+            if (input.value.length === 1 && index < inputs.length - 1) {
+                inputs[index + 1].focus();
+            }
+        });
+
+        input.addEventListener('keydown', (e) => {
+            if (e.key === 'Backspace' && index > 0 && input.value.length === 0) {
+                inputs[index - 1].focus();
+            }
+        });
+    });
+
+    // Countdown timer for resend OTP link
+    let countdown = 30;
+    const timerElement = document.getElementById('resend-timer');
+    const resendLink = document.getElementById('resend-link');
+
+    const interval = setInterval(() => {
+        countdown--;
+        timerElement.textContent = countdown;
+
+        if (countdown <= 0) {
+            clearInterval(interval);
+            timerElement.style.display = 'none';
+            resendLink.style.display = 'inline';
+            resendLink.classList.remove('disabled');
+            resendLink.addEventListener('click', resendOtp);
+        }
+    }, 1000);
+
+    function resendOtp(event) {
+        event.preventDefault();
+
+        fetch('/resend-otp', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.message) {
+                alert(data.message);
+                // Reset the timer and disable the link again
+                countdown = 30;
+                timerElement.textContent = countdown;
+                timerElement.style.display = 'inline';
+                resendLink.style.display = 'none';
+                resendLink.classList.add('disabled');
+                resendLink.removeEventListener('click', resendOtp);
+                const newInterval = setInterval(() => {
+                    countdown--;
+                    timerElement.textContent = countdown;
+
+                    if (countdown <= 0) {
+                        clearInterval(newInterval);
+                        timerElement.style.display = 'none';
+                        resendLink.style.display = 'inline';
+                        resendLink.classList.remove('disabled');
+                        resendLink.addEventListener('click', resendOtp);
+                    }
+                }, 1000);
+            }
+        })
+        .catch((error) => {
+            console.error('Error:', error);
+        });
+    }
+</script>
+<%- include('./footer.ejs') %>

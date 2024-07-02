@@ -1,0 +1,93 @@
+
+<%- include('./adminHeader.ejs') %>
+
+<div class="col-lg-12 grid-margin stretch-card">
+  
+  
+    <div class="card">
+
+      <div class="card-body">
+        
+        <h4 class="card-title">Striped Table</h4>
+        <p class="card-description"> Add class <code>.table-striped</code>
+          
+
+        </p>
+        <div class="table-responsive">
+          
+          <table class="table table-striped" >
+            
+            <thead>
+              <tr>
+                <th>No</th>
+                <th> deletedCategories</th>
+                <th> Status </th>
+              </tr>
+            </thead>
+
+            <tbody>
+
+                <% for(let i=0;i<categories.length;i++){%>             
+              <tr>
+                <td style="color: aliceblue;"> <%= i+1%></td>
+                <td style="color: aliceblue;"> <%=categories[i].name%> </td>
+                <td style="color: aliceblue;"> 
+                  <button class="btn btn-success delete-btnC" style="background-color: green;" data-id="<%= categories[i]._id %>">Restore</button>
+                </td>
+              </tr>
+            <% } %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      
+    </div>
+    
+  </div>
+  <div style="margin-left: 75%;margin-top: 2%;">
+    
+    <button type="button" class="btn " style=" background-color: rgb(15, 150, 188);"> <a href="/admin/category" style="text-decoration: none;color: rgb(0, 0, 0);">Back</a></button>
+
+  </div>
+
+  <script>
+    document.querySelectorAll('.delete-btnC').forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id');
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Doy really want recover this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, Recover it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                  fetch(`/admin/recover?id=${categoryId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        // Handle successful recovery, e.g., refresh the page
+                        Swal.fire(
+                            'Recovered!',
+                            'The product has been recovered.',
+                            'success'
+                        ).then(() => {
+                            window.location.reload();
+                        });
+                    } else {
+                        console.error('Error:', response.statusText);
+                    }
+                }).catch(error => console.error('Error:', error));
+            }
+        });
+    });
+});
+</script>
+
+
+<%- include('./adminFooter.ejs') %>

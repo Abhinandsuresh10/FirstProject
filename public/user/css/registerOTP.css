@@ -1,0 +1,77 @@
+/* External CSS file - styles.css */
+
+.ipo-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+}
+
+.ipo-container {
+    max-width: 500px; /* Increased the max-width */
+    width: 100%;
+    padding: 30px; /* Increased padding */
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.ipo-instruction {
+    margin-bottom: 20px;
+    font-size: 18px; /* Increased font size */
+    color: #333;
+}
+
+.ipo-form {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.ipo-otp-inputs {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.ipo-otp-input {
+    width: 50px; /* Increased width */
+    height: 50px; /* Increased height */
+    text-align: center;
+    font-size: 24px; /* Increased font size */
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.ipo-button {
+    padding: 15px 30px; /* Increased padding */
+    font-size: 18px; /* Increased font size */
+    background-color: #434345;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.ipo-button:hover{
+    background-color: #222121;
+}
+
+.ipo-resend-text {
+    margin-top: 20px;
+    font-size: 16px; /* Increased font size */
+    color: #000000;
+}
+
+.ipo-resend-link {
+    color: #6200ea;
+    text-decoration: none;
+}
+
+.ipo-resend-link:hover {
+    text-decoration: none;
+}

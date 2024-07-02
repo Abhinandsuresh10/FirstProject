@@ -1,0 +1,194 @@
+/* styles.css */
+
+#oxf-password {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+    margin: 5px 0 20px 0;
+    box-sizing: border-box;
+}
+
+/* Main container with border */
+.oxf-main-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+/* Container for the login and register sections */
+.oxf-login-container {
+    display: flex;
+    border: 2px solid #ccc;
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    max-width: 900px;
+    width: 100%;
+    background-color: #fff;
+}
+
+/* Left section for new users */
+.oxf-left-section {
+    background-color: #b8cadb;
+    padding: 50px;
+    max-width: 400px;
+    width: 100%;
+    text-align: center;
+}
+
+.oxf-left-section h2 {
+    color: #5a3b85;
+    margin-bottom: 20px;
+}
+
+.oxf-left-section p {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+.oxf-btn-secondary {
+    padding: 10px;
+    color: #5a3b85;
+    text-decoration: none;
+    border: 1px solid #5a3b85;
+    border-radius: 4px;
+    font-size: 16px;
+    background-color: transparent;
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.oxf-btn-secondary:hover {
+    background-color: #5a3b85;
+    color: #fff;
+}
+
+/* Right section for existing users */
+.oxf-right-section {
+    padding: 50px;
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+}
+
+.oxf-right-section h2 {
+    color: #5a3b85;
+    margin-bottom: 10px;
+}
+
+.oxf-right-section p {
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Login form */
+.oxf-login-form .oxf-form-group {
+    margin-bottom: 20px;
+    text-align: left;
+}
+
+.oxf-login-form label {
+    display: block;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.oxf-login-form input[type="email"],
+.oxf-login-form input[type="password"] {
+    width: 100%; /* Ensure both fields take full width */
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+/* Remember me checkbox and label in one line */
+.oxf-remember-group {
+    display: flex;
+    align-items: center;
+}
+
+.oxf-remember-group input[type="checkbox"] {
+    margin-right: 10px;
+}
+
+.oxf-btn-primary {
+    width: 100%;
+    padding: 10px;
+    background-color: #696d71;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.oxf-btn-primary:hover {
+    background-color: #000000;
+}
+
+/* Google login button */
+.oxf-btn-google {
+    width: 100%;
+    padding: 10px;
+    background-color: #fff;
+    color: #333;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.oxf-btn-google img {
+    height: 20px;
+    margin-right: 10px;
+}
+
+.oxf-btn-google:hover {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+}
+
+/* Forgot password link */
+.oxf-forgot-password {
+    text-align: right;
+    margin-top: 10px;
+}
+
+.oxf-forgot-password a {
+    color: #000000;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.oxf-forgot-password a:hover {
+    text-decoration: underline;
+}
+
+/* OR separator */
+.oxf-or {
+    text-align: center;
+    margin: 20px 0;
+    font-weight: bold;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .oxf-login-container {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .oxf-left-section, .oxf-right-section {
+        max-width: 100%;
+        margin: 10px 0;
+    }
+}
