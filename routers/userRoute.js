@@ -3,6 +3,7 @@ const userRoute = express();
 const session = require('express-session');
 const config = require('../config/config');
 const userAuth = require('../middilewares/userAuth');
+
 require('dotenv').config();
 
 
@@ -41,6 +42,8 @@ const upload = multer({ storage: storage });
 //-------------------
 
 const userController = require('../controllers/userControllers.js');
+
+const userShopControllers = require('../controllers/userShopController.js')
 const passport = require('../config/googleAuth');
 
 userRoute.get('/auth/google',
@@ -63,8 +66,12 @@ userRoute.post('/resend-otp', userController.resendOtp);
 userRoute.post('/login',userController.verifyLogin);
 userRoute.get('/home',userController.loginHome);
 userRoute.get('/registerOTP', userController.otpLoad);
-userRoute.get('/productShop',userController.shopLoad);
+
 userRoute.get('/logout',userController.userLogout);
+
+//shop controls
+
+userRoute.get('/productShop',userShopControllers.shopLoad);
 
 
 

@@ -1,6 +1,7 @@
 const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
+const prducts = require('../models/produntsModel');
 require('dotenv').config();
 
 
@@ -219,15 +220,7 @@ const googleLoginCallback = async(req, res) => {
     }
 };
 
-//shop load...
 
-const shopLoad = async(req,res)=>{
-    try {
-        res.render('productShop')
-    } catch (error) {
-        console.log(error.message);
-    }
-}
 
 //userLogout...
 
@@ -255,7 +248,6 @@ module.exports = {
     loginHome,
     otpLoad,
     googleLoginCallback,
-    shopLoad,
     userLogout,
    
 };

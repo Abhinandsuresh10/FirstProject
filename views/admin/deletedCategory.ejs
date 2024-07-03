@@ -27,7 +27,7 @@
 
             <tbody>
 
-                <% for(let i=0;i<categories.length;i++){%>             
+                <% for(let i=0; i < categories.length;i++){%>           
               <tr>
                 <td style="color: aliceblue;"> <%= i+1%></td>
                 <td style="color: aliceblue;"> <%=categories[i].name%> </td>
@@ -71,7 +71,6 @@
                     }
                 }).then(response => {
                     if (response.ok) {
-                        // Handle successful recovery, e.g., refresh the page
                         Swal.fire(
                             'Recovered!',
                             'The product has been recovered.',

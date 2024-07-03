@@ -1,6 +1,7 @@
 
 const User = require('../models/userModel');
 const Category = require('../models/category');
+const Brands = require('../models/brandsModel');
 
 
 
@@ -56,7 +57,6 @@ const editCategory = async (req, res) => {
 const deleteCategory = async(req,res)=>{
     try {
         const id = req.query.id;
-      
         await Category.findByIdAndUpdate({_id:id},{$set:{is_delete:true}});
         res.redirect('/admin/category');
     } catch (error) {
@@ -84,11 +84,99 @@ const recoverCategory = async(req,res)=>{
     }
 }
 
+//brands area
+
+const brandsLoad = async(req,res)=>{
+    try {
+        
+        const userList = await Brands.find({is_delete:false});
+        res.render('brands',{brands:userList});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const addBrand = async(req,res)=>{
+    const {name} = req.body;
+    try {
+  
+        const newBrands = new Brands({
+            name:name,
+            is_delete:false
+        });
+       
+        await newBrands.save();
+     
+        res.redirect('/admin/brands');
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const editBrand = async (req, res) => {
+    try {
+        const { brandId, brandName } = req.body;
+      
+        const updatedCategory = await Brands.findByIdAndUpdate(
+            brandId,
+            { $set: { name: brandName } },
+            { new: true }
+        );
+       
+        res.redirect('/admin/brands')
+      
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: 'Failed to update category.' });
+    }
+};
+
+//delete brands..
+
+const deleteBrand = async(req,res)=>{
+    try {
+        const id = req.query.id;
+        await Brands.findByIdAndUpdate({_id:id},{$set:{is_delete:true}});
+        res.redirect('/admin/brands');
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const deletedBrand = async(req,res)=>{
+    try {
+        const BrandList = await Brands.find({is_delete:true});
+        res.render('deletedBrands',{brands:BrandList});
+    } catch (error) {
+        console.log(error.message);
+    }
+}
+
+const recoverBrands = async(req,res)=>{
+    try {
+        const id = req.query.id;
+        await Brands.findByIdAndUpdate({_id:id},{$set:{is_delete:false}});
+        const BrandList = await Brands.find({is_delete:true});
+        res.render('deletedBrands',{brands:BrandList});
+    } catch (error) {
+       console.log(error.message); 
+    }
+}
+
+
+
 module.exports = {
     categoryLoad,
     addCategory,
     editCategory,
     deleteCategory,
     isdeletedCategory,
-    recoverCategory
+    recoverCategory,
+    brandsLoad,
+    addBrand,
+    editBrand,
+    deleteBrand,
+    deletedBrand,
+    recoverBrands
 }

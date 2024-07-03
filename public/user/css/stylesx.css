@@ -21,6 +21,7 @@
 
 /* Container for the login and register sections */
 .oxf-login-container {
+    background-image: url('/static/user/images/BAG-10.png');
     display: flex;
     border: 2px solid #ccc;
     border-radius: 10px;
@@ -30,6 +31,7 @@
     width: 100%;
     background-color: #fff;
 }
+
 
 /* Left section for new users */
 .oxf-left-section {

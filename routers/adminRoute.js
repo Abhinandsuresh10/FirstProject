@@ -47,7 +47,7 @@ adminRoute.get('/category',adminCategoryController.categoryLoad);
 
 adminRoute.post('/category',adminCategoryController.addCategory);
 adminRoute.post('/editCategory',adminCategoryController.editCategory);
-adminRoute.get('/delete-category',adminCategoryController.deleteCategory);
+adminRoute.post('/delete-category',adminCategoryController.deleteCategory);
 adminRoute.get('/deletedcategory',adminCategoryController.isdeletedCategory);
 adminRoute.get('/recover',adminCategoryController.recoverCategory)
 
@@ -72,6 +72,20 @@ adminRoute.get('/recoverProducts',adminProductsController.recoverProduct);
 //edit Product
 
 adminRoute.get('/editProducts',adminProductsController.editProductLoad);
-adminRoute.post('/insertEditProducts',upload.array('image',3),adminProductsController.editProduct)
+adminRoute.post('/insertEditProducts',upload.array('image',3),adminProductsController.editProduct);
+
+
+
+//brands routes into categories
+
+adminRoute.get('/brands',adminCategoryController.brandsLoad);
+adminRoute.post('/brands',adminCategoryController.addBrand);
+adminRoute.post('/editBrand',adminCategoryController.editBrand);
+adminRoute.post('/delete-brand',adminCategoryController.deleteBrand);
+adminRoute.get('/deletedBrand',adminCategoryController.deletedBrand);
+adminRoute.get('/brandrecover',adminCategoryController.recoverBrands)
+
+
+
 
 module.exports = adminRoute;

@@ -9,7 +9,6 @@
                 <div style="margin-left: 60%;">
 
                     <button type="button" class="btn btn-dark " style="background-color:crimson ;"> <a href="/admin/addProducts" style="text-decoration: none;color: rgb(255, 255, 255);">Add products</a></button>
-                    <button type="button" class="btn btn-dark " style="background-color:rgb(18, 12, 13) ;"> <a href="/admin/deletedProducts" style="text-decoration: none;color: rgb(255, 255, 255);">Deleted products</a></button>
 
                 </div>
         </p>
@@ -37,7 +36,7 @@
                 <td style="color: aliceblue;"> <%= product[i].category %> </td>
                 <td style="color: aliceblue;"><button type="button" class="btn  " style="background-color:green;"><a href="/admin/deletedCategory" style="text-decoration: none;color: rgb(255, 255, 255);">Details</a></button>
                  <a href="/admin/editProducts?id=<%= product[i]._id %>"><button class="btn edit-btn" style="background-color:blue;" >Edit</button></a>
-                    <button class="btn delete-btn" style="background-color:red;" data-id="<%= product[i]._id %>">Delete</button>
+                    <button class="btn delete-btn" style="background-color:red;" data-id="<%= product[i]._id %>">Unlist</button>
                     </td>
               </tr>
          <% } %>
@@ -55,12 +54,12 @@
             const productId = this.getAttribute('data-id');
             Swal.fire({
                 title: 'Are you sure?',
-                text: "Are you sure you want to delete this!",
+                text: "Are you sure you want to Unlist this!",
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonColor: '#3085d6',
                 cancelButtonColor: '#d33',
-                confirmButtonText: 'Yes, delete it!'
+                confirmButtonText: 'Yes, unlist it!'
             }).then((result) => {
               if (result.isConfirmed) {
                 fetch(`/admin/deleteProducts?id=${productId}`, {
