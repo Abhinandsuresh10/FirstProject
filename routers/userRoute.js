@@ -58,20 +58,21 @@ userRoute.get(process.env.CALLBACKURL,
 
 
 userRoute.get('/', userController.loginHome);
-userRoute.get('/login',userController.loginLoad);
-userRoute.get('/register',userController.registerLoad);
+userRoute.get('/login',userAuth.isLogout,userController.loginLoad);
+userRoute.get('/register',userAuth.isLogout,userController.registerLoad);
 userRoute.post('/register', upload.single('image'), userController.insertUser);
 userRoute.post('/verify-otp', userController.verifyOtp);
 userRoute.post('/resend-otp', userController.resendOtp);
 userRoute.post('/login',userController.verifyLogin);
-userRoute.get('/home',userController.loginHome);
+userRoute.get('/home',userAuth.isLogout,userController.loginHome);
 userRoute.get('/registerOTP', userController.otpLoad);
 
 userRoute.get('/logout',userController.userLogout);
 
 //shop controls
 
-userRoute.get('/productShop',userShopControllers.shopLoad);
+userRoute.get('/productShop',userAuth.isLogin,userShopControllers.shopLoad);
+userRoute.get('/productDetails',userAuth.isLogin,userShopControllers.loadProductDetails);
 
 
 

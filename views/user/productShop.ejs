@@ -1,67 +1,26 @@
 <%- include('./header.ejs') %>
 
 
-<div class="py-1 bg-black">
-    <div class="container">
-        <div class="row no-gutters d-flex align-items-start align-items-center px-md-0">
-            <div class="col-lg-12 d-block">
-                <div class="row d-flex">
-                    <div class="col-md pr-4 d-flex topper align-items-center">
-                        <div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="icon-phone2"></span></div>
-                        <span class="text">+ 1235 2355 98</span>
-                    </div>
-                    <div class="col-md pr-4 d-flex topper align-items-center">
-                        <div class="icon mr-2 d-flex justify-content-center align-items-center"><span class="icon-paper-plane"></span></div>
-                        <span class="text">youremail@email.com</span>
-                    </div>
-                    <div class="col-md-5 pr-4 d-flex topper align-items-center text-lg-right">
-                        <span class="text">3-5 Business days delivery &amp; Free Returns</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-      </div>
-</div>
-<nav class="navbar navbar-expand-lg navbar-dark ftco_navbar ftco-navbar-light" id="ftco-navbar">
-    <div class="container">
-      <a class="navbar-brand" href="index.html">G BAGS</a>
-      <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#ftco-nav" aria-controls="ftco-nav" aria-expanded="false" aria-label="Toggle navigation">
-        <span class="oi oi-menu"></span> Menu
-      </button>
-
-      <div class="collapse navbar-collapse" id="ftco-nav">
-        <ul class="navbar-nav ml-auto">
-          <li class="nav-item"><a href="/" class="nav-link">Home</a></li>
-          <li class="nav-item"><a href="about.html" class="nav-link">About</a></li>
-          <li class="nav-item dropdown active">
-          <a class="nav-link dropdown-toggle" href="#" id="dropdown04" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Accounts</a>
-          <div class="dropdown-menu" aria-labelledby="dropdown04">
-            <a class="dropdown-item" href="product-single.html">Profile</a>
-            <a class="dropdown-item" href="cart.html">Cart</a>
-            <a class="dropdown-item" href="checkout.html">Checkout</a>
-            <a class="dropdown-item" href="/login">Login</a>
-          </div>
-        </li>
-        <li class="nav-item"><a href="about.html" class="nav-link">Shop</a></li>
-          <li class="nav-item"><a href="blog.html" class="nav-link">Blog</a></li>
-          <li class="nav-item"><a href="contact.html" class="nav-link">Contact</a></li>
-          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="icon-shopping_cart"></span></a></li>
-          <li class="nav-item cta cta-colored"><a href="cart.html" class="nav-link"><span class="ion-ios-heart"></span></a></li>
-        </ul>
-      </div>
-    </div>
-  </nav>
-<!-- END nav -->
-
-<div class="hero-wrap hero-bread" style="background-image: url('images/bg_6.jpg');">
+<div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
   <div class="container">
     <div class="row no-gutters slider-text align-items-center justify-content-center">
       <div class="col-md-9 ftco-animate text-center">
-          <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Products</span></p>
-        <h1 class="mb-0 bread">Collection Products</h1>
+          <p class="breadcrumbs"><span class="mr-2"><a href="index.html" style="text-decoration: none;" !important>Home</a></span> <span>Products</span></p>
+        <h1 class="mb-0 bread">Product Shop</h1>
       </div>
     </div>
   </div>
+</div>
+
+
+<div class="breadcrumbs" >
+  <div class="container">
+      <div class="row">
+          <div class="col">
+              <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span style="color: rgb(142, 142, 142);">Product Shop</span></p>
+          </div>
+      </div>
+   </div>
 </div>
 
 <section class="ftco-section bg-light">
@@ -75,7 +34,7 @@
                     <div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
                        
                         <div class="product">
-                            <a href="#" class="img-prod"><img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
+                            <a href="/productDetails?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
                                 <!-- <span class="status">30%</span> -->
                                 <div class="overlay"></div>
                             </a>
@@ -85,16 +44,6 @@
                                     <div class="pricing">
                                         <p class="price"><span class="price-sale">₹<%= product[i].price%></span></p>
                                     </div>
-                                  
-                                    <!-- <div class="rating">
-                                        <p class="text-right">
-                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                            <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                        </p>
-                                    </div> -->
                                   
                                 </div>
                                 
@@ -133,49 +82,44 @@
 
             <div class="col-md-4 col-lg-2 sidebar">
                 <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Clothing</a></h2>
+                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Category</a></h2>
                     <ul>
-                        <li><a href="#" style="text-decoration: none !important;">Shirts &amp; Tops</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Dresses</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Shorts &amp; Skirts</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jackets</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Coats</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Sleeveless</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Trousers</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Winter Coats</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jumpsuits</a></li>
+                        <li><a href="#" style="text-decoration: none !important;">Leather &amp; cotton</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Full black bags</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Sling bags &amp; purse</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Tote bags</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Clutch purse</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Shoulder bags</a></li>
                     </ul>
                 </div>
                 <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Jeans</a></h2>
+                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Brands</a></h2>
                     <ul>
-                        <li><a href="#" style="text-decoration: none !important;">Shirts &amp; Tops</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Dresses</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Shorts &amp; Skirts</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jackets</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Coats</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jeans</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Sleeveless</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Trousers</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Winter Coats</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jumpsuits</a></li>
+                        <li><a href="#" style="text-decoration: none !important;">Lavie</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Baggit</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Gucci</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Fendi</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Louis Vuitton</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Chanel</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Prada</a></li>
                     </ul>
                 </div>
                 <div class="sidebar-box-2">
                     <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Bags</a></h2>
                     <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Accessories</a></h2>
                 </div>
-                    <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Shoes</a></h2>
-                    <ul>
-                        <li><a href="#" style="text-decoration: none !important;">Nike</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Addidas</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Skechers</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jackets</a></li>
-                            <li><a href="#"style="text-decoration: none !important;">Coats</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Jeans</a></li>
-                    </ul>
-                </div>
+                <div class="sidebar-box-2">
+                  <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Price Filter</a></h2>
+                  <ul>
+                      <li><a href="#" style="text-decoration: none !important;">Under ₹800</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹800 - ₹1200</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹1200 - ₹1800</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹1800 - ₹2500</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹2500 - ₹3000</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">Above ₹3000</a></li>
+                  </ul>
+              </div>
+              
             </div>
         </div>
     </div>

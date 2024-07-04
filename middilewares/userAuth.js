@@ -1,19 +1,19 @@
-const User = require('../models/userModel');
-
 
 const isLogin = async (req,res,next)=>{
-    if(req.session.user){
-        res.redirect('/login');
-    }else{
+    if(req.session.user || req.session.userData){
         next();
+    }else{
+        res.redirect('/login');
+       
     }
 }
 
 const isLogout = (req,res,next) =>{
     if(!req.session.user){
-        res.redirect('/');
-    }else{
         next();
+    }else{
+        res.redirect('/');
+     
     }
 }
 

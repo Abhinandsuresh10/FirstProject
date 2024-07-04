@@ -166,6 +166,7 @@ const recoverBrands = async(req,res)=>{
 
 
 
+
 module.exports = {
     categoryLoad,
     addCategory,
@@ -178,5 +179,6 @@ module.exports = {
     editBrand,
     deleteBrand,
     deletedBrand,
-    recoverBrands
+    recoverBrands,
+    
 }

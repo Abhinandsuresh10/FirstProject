@@ -1,5 +1,6 @@
 const Category = require('../models/category');
 const prducts = require('../models/produntsModel');
+const brand = require('../models/brandsModel');
 
 const productsLoad = async(req,res)=>{
     try {
@@ -14,14 +15,15 @@ const productsLoad = async(req,res)=>{
 const addProductsLoad = async(req,res)=>{
     try {
         const categories = await Category.find({is_delete:false});
-        res.render('addProducts',{categories:categories});
+        const brands = await brand.find({is_delete:false});
+        res.render('addProducts',{categories:categories,brand:brands});
     } catch (error) {
         console.log(error.message);
     }
 }
 
 const insertProducts = async(req,res)=>{
-    const {name,category,brand,model,material,price,color,discription} = req.body;
+    const {name,category,brand,model,material,price,stock,discription} = req.body;
     try {
      
         const imagePaths = req.files.map(file => file.filename);
@@ -32,7 +34,7 @@ const insertProducts = async(req,res)=>{
             model:model,
             material:material,
             price:price,
-            color:color,
+            stock:stock,
             discription:discription,
             image: imagePaths,
             is_delete:false
@@ -83,7 +85,8 @@ const editProductLoad  = async(req,res)=>{
         const id = req.query.id;
         const product = await prducts.findOne({_id:id})
         const categories = await Category.find({is_delete:false});
-        res.render('editProducts',{product,categories});
+        const brands = await brand.find({is_delete:false})
+        res.render('editProducts',{product,categories,brands});
     } catch (error) {
         console.log(error.message);
     }
@@ -93,7 +96,7 @@ const editProduct = async(req,res)=>{
     try {
         const imagePaths = req.files.map(file => file.filename);
       
-        const {name,category,brand,model,material,price,color,discription} = req.body;
+        const {name,category,brand,model,material,price,stock,discription} = req.body;
         const id = req.query.pid;
         await prducts.updateOne({_id:id},{$set:{
             name:name,
@@ -102,7 +105,7 @@ const editProduct = async(req,res)=>{
             model:model,
             material:material,
             price:price,
-            color:color,
+            stock:stock,
             discription:discription,
             image:imagePaths
         }});
@@ -114,6 +117,7 @@ const editProduct = async(req,res)=>{
         console.log(error.message)
     }
 }
+
 
 
 module.exports = {

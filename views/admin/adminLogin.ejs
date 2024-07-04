@@ -40,14 +40,14 @@
                   </div>
                   <div class="form-group">
                     <label>Password </label>
-                    <input type="password" class="form-control p_input" name="password" style="color: aliceblue;" value="<%= data ? data.password : '' %>" required>
+                    <input type="password" id="passwordInput" class="form-control p_input" name="password" style="color: aliceblue;" value="<%= data ? data.password : '' %>" required>
                   </div>
                   <div class="form-group d-flex align-items-center justify-content-between">
                     <div class="form-check">
                       <label class="form-check-label">
-                        <input type="checkbox" class="form-check-input"> Show password </label>
+                        <input type="checkbox" class="form-check-input" id="showpasswordid" onclick="togglePassword()"> Show password </label>
                     </div>
-                    <a href="#" class="forgot-pass">Forgot password</a>
+                    <!-- <a href="#" class="forgot-pass">Forgot password</a> -->
                   </div>
                   <div class="text-center">
                     <button type="submit" class="btn btn-primary btn-block enter-btn">Login</button>
@@ -70,7 +70,17 @@
             if(message){
                 message.remove();
             }
-        },3000)
+        },3000);
+
+        function togglePassword() {
+        const passwordField = document.getElementById('passwordInput');
+        const showPasswordCheckbox = document.getElementById('showpasswordid');
+        if (showPasswordCheckbox.checked) {
+            passwordField.type = 'text';
+        } else {
+            passwordField.type = 'password';
+        }
+    }
     </script>
     <!-- container-scroller -->
     <!-- plugins:js -->

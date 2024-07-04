@@ -15,15 +15,20 @@
           <div class="form-group">
             <label for="exampleSelectCategory">Category</label>
             <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" required>
-              <option>default</option>
+              <option></option>
               <% for(let i=0;i<categories.length;i++){ %>
               <option><%= categories[i].name %></option>
               <% } %>
             </select>
           </div>
           <div class="form-group">
-            <label for="exampleInputPassword4">Brand</label>
-            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="brand" required>
+            <label for="exampleSelectCategory">Brand</label>
+            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="brand" required>
+              <option></option>
+              <% for(let i=0;i<brand.length;i++){ %>
+              <option><%= brand[i].name %></option>
+              <% } %>
+            </select>
           </div>
           <div class="form-group">
             <label for="exampleInputPassword4">Models</label>
@@ -38,12 +43,12 @@
             <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="price" required>
           </div>
           <div class="form-group">
-            <label for="exampleInputPassword4">Color</label>
-            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="color" required>
+            <label for="exampleInputPassword4">Stock</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 15%;" name="stock" required>
           </div>
           <div class="form-group">
             <label for="exampleInputPassword4">Discription</label>
-            <textarea class="form-control" id="exampleInputPassword4" name="description" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" required></textarea>
+            <textarea class="form-control" id="exampleInputPassword4" name="discription" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" required></textarea>
             <!-- <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" name="discription" required> -->
           </div>
   

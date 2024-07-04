@@ -48,10 +48,21 @@ const dashboardLoad = async (req, res) => {
     }
 };
 
+//logout
+
+const adminLogout = async(req,res)=>{
+    try {
+      req.session.destroy();
+      res.redirect('/admin')  
+
+    } catch (error) {
+     console.log(error.message);
+    }
+}
 
 module.exports = {
     adminLogin,
     adminVerifyLogin,
     dashboardLoad,
-
+    adminLogout
 };

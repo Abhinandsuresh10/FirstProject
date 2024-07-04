@@ -136,3 +136,183 @@
 </script>
 
 <%- include('./adminFooter.ejs') %>
+
+
+old admin router 
+
+// const express = require('express');
+// const adminController = require('../controllers/adminControllers');
+// const adminUserController = require('../controllers/adminUserController');
+// const adminCategoryController = require('../controllers/adminCategoryController');
+// const adminProductsController = require('../controllers/adminProductsController');
+// const adminAuth = require('../middilewares/adminAuth')
+// const session = require('express-session');
+// const config = require('../config/config');
+
+// const adminRoute = express();
+
+// adminRoute.use(session({
+//     secret: config.sessionSecret,
+//     saveUninitialized: false,
+//     resave: false,
+//     cookie: { secure: false }
+// }));
+
+// const multer = require('multer');
+// const path = require('path');
+
+// adminRoute.use(express.static('public'));
+
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, path.join(__dirname, '../public/productImages'));
+//     },
+//     filename: (req, file, cb) => {
+//         const name = Date.now() + '-' + file.originalname;
+//         cb(null, name);
+//     }
+// });
+
+// const upload = multer({ storage: storage });
+
+// const bodyParser = require('body-parser');
+// adminRoute.use(bodyParser.json());
+// adminRoute.use(bodyParser.urlencoded({ extended: true }));
+
+// adminRoute.set('view engine', 'ejs');
+// adminRoute.set('views', './views/admin');
+
+// adminRoute.get('/', adminController.adminLogin);
+// adminRoute.post('/login', adminController.adminVerifyLogin);
+// adminRoute.get('/dashboard',adminAuth.isLogin, adminController.dashboardLoad);
+// adminRoute.get('/users',adminUserController.userLoad);
+// adminRoute.get('/category',adminCategoryController.categoryLoad);
+
+// adminRoute.post('/category',adminCategoryController.addCategory);
+// adminRoute.post('/editCategory',adminCategoryController.editCategory);
+// adminRoute.post('/delete-category',adminCategoryController.deleteCategory);
+// adminRoute.get('/deletedcategory',adminCategoryController.isdeletedCategory);
+// adminRoute.get('/recover',adminCategoryController.recoverCategory)
+
+// //user block unblock..
+// adminRoute.post('/block',adminUserController.blockUser);
+// adminRoute.post('/unblock',adminUserController.unblockUser);
+
+// //products...
+
+// adminRoute.get('/products',adminProductsController.productsLoad);
+// adminRoute.get('/addProducts',adminProductsController.addProductsLoad);
+// adminRoute.post('/insertProducts',upload.array('image',3),adminProductsController.insertProducts);
+
+
+// //delete product
+
+
+// adminRoute.get('/deleteProducts',adminProductsController.deleteProduct);
+// adminRoute.get('/deletedProducts',adminProductsController.deletedProductspage);
+// adminRoute.get('/recoverProducts',adminProductsController.recoverProduct);
+
+
+// //edit Product
+
+// adminRoute.get('/editProducts',adminProductsController.editProductLoad);
+// adminRoute.post('/insertEditProducts',upload.array('image',3),adminProductsController.editProduct);
+
+
+
+// //brands routes into categories
+
+// adminRoute.get('/brands',adminCategoryController.brandsLoad);
+// adminRoute.post('/brands',adminCategoryController.addBrand);
+// adminRoute.post('/editBrand',adminCategoryController.editBrand);
+// adminRoute.post('/delete-brand',adminCategoryController.deleteBrand);
+// adminRoute.get('/deletedBrand',adminCategoryController.deletedBrand);
+// adminRoute.get('/brandrecover',adminCategoryController.recoverBrands)
+
+
+
+
+// module.exports = adminRoute;
+
+
+
+
+//real code in the product details 
+
+
+
+ <section class="ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-6 mb-5 ftco-animate">
+                <div class="zoom-container" >
+                    <img src="/static/productImages/<%= product.image[0] %>" class="img-fluid" alt="Product Image" style="height: 700px;width: 800px;">
+                    <div class="zoomed-image" ></div>
+                </div>
+            </div>
+            <div class="col-lg-6 product-details pl-md-5 ftco-animate" style="padding-top: 10%;">
+                <h3><%=product.name%></h3>
+                    <!-- <div class="rating d-flex">
+                            <p class="text-left mr-4">
+                                <a href="#" class="mr-2">5.0</a>
+                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                                <a href="#"><span class="ion-ios-star-outline"></span></a>
+                            </p>
+                            <p class="text-left mr-4">
+                                <a href="#" class="mr-2" style="color: #000;">100 <span style="color: #bbb;">Rating</span></a>
+                            </p>
+                            <p class="text-left">
+                                <a href="#" class="mr-2" style="color: #000;">500 <span style="color: #bbb;">Sold</span></a>
+                            </p>
+                        </div> -->
+                <p class="price"><span>₹<%=product.price%></span></p>
+                <h5><u>Brand</u></h5>
+                <p><%=product.brand%></p>
+                <h5><u>Details</u></h5>
+                <p> <%=product.discription%></p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="form-group d-flex">
+                  <!-- <div class="select-wrap">
+                  <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                  <select name="" id="" class="form-control">
+                      <option value="" style="background-color: blue;">Blue</option>
+                    <option value="" style="background-color: red;">Red</option>
+                    <option value="" style="background-color: #000;">Black</option>
+                   
+                  </select>
+                </div> -->
+                <div style="height: 50px;"></div>
+                </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="input-group col-md-6 d-flex mb-3" style="width: 35%;">
+                 <span class="input-group-btn mr-2">
+                    <button type="button" class="quantity-left-minus btn"  data-type="minus" data-field="">
+                   <i class="ion-ios-remove"></i>
+                    </button>
+                    </span>
+                 <input type="text" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
+                 <span class="input-group-btn ml-2">
+                    <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+                     <i class="ion-ios-add"></i>
+                 </button>
+                 </span>
+              </div>
+              <div class="w-100"></div>
+              <div class="col-md-12">
+                  <% if (product.stock > 0) { %>
+                      <p style="color: green;"><span style="color: rgb(0, 0, 0);"><%= product.stock %></span> In stock</p>
+                  <% } else { %>
+                      <p style="color: red;">Out of stock</p>
+                  <% } %>
+              </div>
+          </div>
+          <p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
+            </div>
+        </div>
+    </div>
+</section>

@@ -17,7 +17,7 @@ const transporter = nodemailer.createTransport({
 // register load
 const registerLoad = async (req, res) => {
     try {
-        res.render('register', { data: {} });
+        res.render('register', { data: {} ,isLoggedIn : req.session.userData});
     } catch (error) {
         res.send(error.message);
     }
@@ -96,7 +96,7 @@ const insertUser = async (req, res) => {
 
 const otpLoad =async(req,res)=>{
     try {
-        res.render('registerOTP')
+        res.render('registerOTP',{isLoggedIn : req.session.userData})
     } catch (error) {
         console.log(error.message)
     }
@@ -121,10 +121,10 @@ const verifyOtp = async (req, res) => {
                 delete req.session.userData;
                 return res.redirect('/login');
             } else {
-                res.render('register', { message: 'Failed to register user' });
+                res.render('register', { message: 'Failed to register user' ,isLoggedIn : req.session.userData});
             }
         } else {
-            res.render('registerOTP', { message: 'Invalid OTP. Please try again.' });
+            res.render('registerOTP', { message: 'Invalid OTP. Please try again.' ,isLoggedIn : req.session.userData});
         }
     } catch (error) {
         console.log(error.message);
@@ -136,7 +136,7 @@ const verifyOtp = async (req, res) => {
 const loginLoad = async (req, res) => {
     try {
 
-        res.render('login', { data: {}, message: '' });
+        res.render('login', { data: {}, message: '',isLoggedIn : req.session.userData });
 
     } catch (error) {
         console.log(error.message);
@@ -153,7 +153,7 @@ const verifyLogin = async(req,res)=>{
          const userData = await User.findOne({email:email});
 
         if(userData.is_blocked){
-          return  res.render('login',{message:'user is blocked',data: {email,password}})
+          return  res.render('login',{message:'user is blocked',data: {email,password},isLoggedIn : req.session.userData })
              }
         if(userData){
 
@@ -162,10 +162,10 @@ const verifyLogin = async(req,res)=>{
         req.session.userData = userData;
         res.redirect('/home');
     }else{
-        res.render('login',{message:'password incorrect', data: {email,password}})
+        res.render('login',{message:'password incorrect', data: {email,password},isLoggedIn : req.session.userData })
     }
    }else{
-    res.render('login', {message: 'email is not valid', data: {email,password }})
+    res.render('login', {message: 'email is not valid', data: {email,password },isLoggedIn : req.session.userData })
    }
 
     } catch (error) {
@@ -211,7 +211,7 @@ const googleLoginCallback = async(req, res) => {
         if(req.user.is_blocked){
             const email = req.body.email;
             const password = req.body.password;
-         return  res.render('login',{message:'user is blocked',data: {email,password}})
+         return  res.render('login',{message:'user is blocked',data: {email,password},isLoggedIn : req.session.userData})
         }
         req.session.userData = req.user;
           return res.redirect('/home');

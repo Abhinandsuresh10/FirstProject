@@ -1,8 +1,10 @@
+
 const express = require('express');
 const adminController = require('../controllers/adminControllers');
 const adminUserController = require('../controllers/adminUserController');
 const adminCategoryController = require('../controllers/adminCategoryController');
 const adminProductsController = require('../controllers/adminProductsController');
+const adminAuth = require('../middilewares/adminAuth') 
 const session = require('express-session');
 const config = require('../config/config');
 
@@ -39,53 +41,49 @@ adminRoute.use(bodyParser.urlencoded({ extended: true }));
 adminRoute.set('view engine', 'ejs');
 adminRoute.set('views', './views/admin');
 
-adminRoute.get('/', adminController.adminLogin);
-adminRoute.post('/login', adminController.adminVerifyLogin);
-adminRoute.get('/dashboard', adminController.dashboardLoad);
-adminRoute.get('/users',adminUserController.userLoad);
-adminRoute.get('/category',adminCategoryController.categoryLoad);
+// Public routes
+adminRoute.get('/', adminAuth.isAdminLogout, adminController.adminLogin);
+adminRoute.post('/login', adminAuth.isAdminLogout, adminController.adminVerifyLogin);
 
-adminRoute.post('/category',adminCategoryController.addCategory);
-adminRoute.post('/editCategory',adminCategoryController.editCategory);
-adminRoute.post('/delete-category',adminCategoryController.deleteCategory);
-adminRoute.get('/deletedcategory',adminCategoryController.isdeletedCategory);
-adminRoute.get('/recover',adminCategoryController.recoverCategory)
+// Protected routes
+adminRoute.get('/dashboard', adminAuth.isAdminLogin, adminController.dashboardLoad);
+adminRoute.get('/users', adminAuth.isAdminLogin, adminUserController.userLoad);
+adminRoute.get('/category', adminAuth.isAdminLogin, adminCategoryController.categoryLoad);
 
-//user block unblock..
-adminRoute.post('/block',adminUserController.blockUser);
-adminRoute.post('/unblock',adminUserController.unblockUser);
+adminRoute.post('/category', adminAuth.isAdminLogin, adminCategoryController.addCategory);
+adminRoute.post('/editCategory', adminAuth.isAdminLogin, adminCategoryController.editCategory);
+adminRoute.post('/delete-category', adminAuth.isAdminLogin, adminCategoryController.deleteCategory);
+adminRoute.get('/deletedcategory', adminAuth.isAdminLogin, adminCategoryController.isdeletedCategory);
+adminRoute.get('/recover', adminAuth.isAdminLogin, adminCategoryController.recoverCategory);
 
-//products...
+// User block/unblock
+adminRoute.post('/block', adminAuth.isAdminLogin, adminUserController.blockUser);
+adminRoute.post('/unblock', adminAuth.isAdminLogin, adminUserController.unblockUser);
 
-adminRoute.get('/products',adminProductsController.productsLoad);
-adminRoute.get('/addProducts',adminProductsController.addProductsLoad);
-adminRoute.post('/insertProducts',upload.array('image',3),adminProductsController.insertProducts);
+// Products
+adminRoute.get('/products', adminAuth.isAdminLogin, adminProductsController.productsLoad);
+adminRoute.get('/addProducts', adminAuth.isAdminLogin, adminProductsController.addProductsLoad);
+adminRoute.post('/insertProducts', adminAuth.isAdminLogin, upload.array('image', 3), adminProductsController.insertProducts);
 
-//delete product
+// Delete product
+adminRoute.get('/deleteProducts', adminAuth.isAdminLogin, adminProductsController.deleteProduct);
+adminRoute.get('/deletedProducts', adminAuth.isAdminLogin, adminProductsController.deletedProductspage);
+adminRoute.get('/recoverProducts', adminAuth.isAdminLogin, adminProductsController.recoverProduct);
 
+// Edit product
+adminRoute.get('/editProducts', adminAuth.isAdminLogin, adminProductsController.editProductLoad);
+adminRoute.post('/insertEditProducts', adminAuth.isAdminLogin, upload.array('image', 3), adminProductsController.editProduct);
 
-adminRoute.get('/deleteProducts',adminProductsController.deleteProduct);
-adminRoute.get('/deletedProducts',adminProductsController.deletedProductspage);
-adminRoute.get('/recoverProducts',adminProductsController.recoverProduct);
+// Brands
+adminRoute.get('/brands', adminAuth.isAdminLogin, adminCategoryController.brandsLoad);
+adminRoute.post('/brands', adminAuth.isAdminLogin, adminCategoryController.addBrand);
+adminRoute.post('/editBrand', adminAuth.isAdminLogin, adminCategoryController.editBrand);
+adminRoute.post('/delete-brand', adminAuth.isAdminLogin, adminCategoryController.deleteBrand);
+adminRoute.get('/deletedBrand', adminAuth.isAdminLogin, adminCategoryController.deletedBrand);
+adminRoute.get('/brandrecover', adminAuth.isAdminLogin, adminCategoryController.recoverBrands);
 
+//logout
 
-//edit Product
-
-adminRoute.get('/editProducts',adminProductsController.editProductLoad);
-adminRoute.post('/insertEditProducts',upload.array('image',3),adminProductsController.editProduct);
-
-
-
-//brands routes into categories
-
-adminRoute.get('/brands',adminCategoryController.brandsLoad);
-adminRoute.post('/brands',adminCategoryController.addBrand);
-adminRoute.post('/editBrand',adminCategoryController.editBrand);
-adminRoute.post('/delete-brand',adminCategoryController.deleteBrand);
-adminRoute.get('/deletedBrand',adminCategoryController.deletedBrand);
-adminRoute.get('/brandrecover',adminCategoryController.recoverBrands)
-
-
-
+adminRoute.get('/logout',adminController.adminLogout);
 
 module.exports = adminRoute;

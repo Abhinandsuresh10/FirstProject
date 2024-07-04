@@ -25,8 +25,8 @@ const prductSchema = new mongoose.Schema({
         type: Number,
         required: false
     },
-    color: {
-        type: String,
+    stock: {
+        type: Number,
         required: false
     },
     discription: {
