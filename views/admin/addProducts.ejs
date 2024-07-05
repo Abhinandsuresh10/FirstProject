@@ -1,13 +1,13 @@
 <%- include('./adminHeader.ejs') %>
 
 
-
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Basic form elements</h4>
         <p class="card-description"> Basic form elements </p>
         <form class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
+        
           <div class="form-group">
             <label for="exampleInputName1">Name</label>
             <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" required>
@@ -49,13 +49,15 @@
           <div class="form-group">
             <label for="exampleInputPassword4">Discription</label>
             <textarea class="form-control" id="exampleInputPassword4" name="discription" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" required></textarea>
-            <!-- <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" name="discription" required> -->
           </div>
-  
+
           <div style="height: 100px; width: 30%;">
             <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
-            <input type="file" id="ocs-productImage" name="image"  class="form-control" multiple>
+            <input type="file" id="ocs-productImage" name="image"  class="form-control" multiple onchange="previewImages()">
           </div>
+
+          <h4>Added images</h4>
+          <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
 
           <button type="submit" class="btn btn-primary me-2">Submit</button>
           <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
@@ -65,5 +67,33 @@
   </div>
 
 
+
+  <script>
+    function previewImages() {
+        const preview = document.getElementById('imagePreview');
+        preview.innerHTML = '';
+        const files = document.getElementById('ocs-productImage').files;
+  
+        if (files) {
+            Array.from(files).forEach(file => {
+                const reader = new FileReader();
+  
+                reader.onload = (e) => {
+                    const img = document.createElement('img');
+                    img.src = e.target.result;
+                    img.style.maxWidth = '100px'; 
+                    img.style.margin = '10px'; 
+                    preview.appendChild(img);
+                };
+  
+                reader.readAsDataURL(file);
+            });
+        }
+    }
+  </script>
+  
+
 <%- include('./adminFooter.ejs') %>
+
+
 

@@ -12,8 +12,8 @@
     top: 0;
     left: 0;
     display: none;
-    width: 200%; /* Adjust as needed for zoom level */
-    height: 200%; /* Adjust as needed for zoom level */
+    width: 200%; 
+    height: 200%; 
     background-repeat: no-repeat;
     background-size: 100% 100%;
     z-index: 999;
@@ -21,6 +21,28 @@
 
 .zoom-container:hover .zoomed-image {
     display: block;
+}
+
+.image-thumbs {
+    display: flex;
+    justify-content: flex-start; 
+    gap: 10px; 
+}
+
+.thumb {
+    flex: 0 0 auto; 
+    cursor: pointer;
+}
+
+.thumb img {
+    max-width: 60px;
+    height: auto;
+    border: 1px solid #ccc; 
+}
+
+.main-image {
+    max-width: 100%; 
+    height: auto;
 }
 </style>
 
@@ -36,44 +58,89 @@
 
 
 <!-- testsection -->
+
 <section class="ftco-section">
     <div class="container">
-        <div class="row">
-            <div class="col-lg-6 mb-5 ftco-animate">
-                <div class="zoom-container">
-                    <img src="/static/productImages/<%= product.image[0] %>" class="img-fluid" alt="Product Image" style="height: 700px;width: 800px;">
-                    <div class="zoomed-image"></div>
+        <div class="row" >
+
+
+            <div class="col-lg-6 mb-5 ftco-animate" >
+                <div class="zoom-container">                
+                    <img src="/static/productImages/<%= product.image[0] %>" class="img-fluid main-image" alt="Product Image" id="zoom-change"> 
+                    <div class="zoomed-image"></div>                 
                 </div>
-                <!-- Navigation Dots -->
-                <div class="image-navigation mt-3">
-                    <% product.image.forEach(function(image, index) { %>
-                        <span class="dot" data-image-index="<%= index %>"></span>
-                    <% }); %>
+              
+            
+                <div class="image-thumbs mt-3 d-flex" style="margin-left:25% ;" >
+                    <% for (let i = 0; i < product.image.length; i++) { %>
+                        <div class="thumb" onclick="changeMainImage('/static/productImages/<%= product.image[i] %>')" >
+                            <img src="/static/productImages/<%= product.image[i] %>" class="img-fluid" alt="Thumbnail <%= i + 1 %>" >
+                        </div>
+                    <% } %>
                 </div>
             </div>
+           
             <div class="col-lg-6 product-details pl-md-5 ftco-animate" style="padding-top: 10%;">
-                <h3><%= product.name %></h3>
-                <p class="price"><span>₹<%= product.price %></span></p>
-                <h5><u>Brand</u></h5>
-                <p><%= product.brand %></p>
-                <h5><u>Details</u></h5>
-                <p><%= product.description %></p>
-                <div class="row mt-4">
-                    <div class="col-md-6">
-                        <!-- Your form group or other details -->
-                    </div>
-                    <div class="input-group col-md-6 d-flex mb-3" style="width: 35%;">
-                        <!-- Your input group for quantity -->
-                    </div>
-                    <div class="col-md-12">
-                        <% if (product.stock > 0) { %>
-                            <p style="color: green;"><%= product.stock %> In stock</p>
-                        <% } else { %>
-                            <p style="color: red;">Out of stock</p>
-                        <% } %>
-                    </div>
+                <h3><%=product.name%></h3>
+               
+                <p class="price"><span style="color: rgb(98, 97, 97);font-size: 20px;"><strike>₹<%=product.price %></strike></span>&nbsp;&nbsp;<span>₹<%=product.price - 150%></span></p>
+
+                <div class="rating">
+                   
+                    <p class="text-left">
+                        <span>5.0</span>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                        <a href="#"><span class="ion-ios-star-outline"></span></a>
+                    </p>
                 </div>
-                <p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
+
+               <h5><u>Brand</u></h5>
+                <p><%=product.brand%></p>
+                <h5><u>Details</u></h5>
+                <p> <%=product.discription%></p>
+                    <div class="row mt-4">
+                        <div class="col-md-6">
+                            <div class="form-group d-flex">
+                  <!-- <div class="select-wrap">
+                  <div class="icon"><span class="ion-ios-arrow-down"></span></div>
+                  <select name="" id="" class="form-control">
+                      <option value="" style="background-color: blue;">Blue</option>
+                    <option value="" style="background-color: red;">Red</option>
+                    <option value="" style="background-color: #000;">Black</option>
+                   
+                  </select>
+                </div> -->
+                <div style="height: 50px;"></div>
+                </div>
+                        </div>
+                        <div class="w-100"></div>
+                        <div class="input-group col-md-6 d-flex mb-3" style="width: 35%;">
+                 <span class="input-group-btn mr-2">
+                    <button type="button" class="quantity-left-minus btn"  data-type="minus" data-field="">
+                   <i class="ion-ios-remove"></i>
+                    </button>
+                    </span>
+                 <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
+                 <span class="input-group-btn ml-2">
+                    <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
+                     <i class="ion-ios-add"></i>
+                 </button>
+                 </span>
+              </div>
+         
+              <div class="w-100"></div>
+              <div class="col-md-12">
+                  <% if (product.stock > 0) { %>
+                      <p style="color: green;"><span style="color: rgb(0, 0, 0);"><%= product.stock %></span> In stock</p>
+                  <% } else { %>
+                      <p style="color: red;">Out of stock</p>
+                  <% } %>
+              </div>
+          </div>
+          <p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
             </div>
         </div>
     </div>
@@ -189,6 +256,7 @@
                             <div class="pricing">
                                 <p class="price"><span>$120.00</span></p>
                             </div>
+                            
                             <div class="rating">
                                 <p class="text-right">
                                     <a href="#"><span class="ion-ios-star-outline"></span></a>
@@ -198,6 +266,7 @@
                                     <a href="#"><span class="ion-ios-star-outline"></span></a>
                                 </p>
                             </div>
+  
                         </div>
                         <p class="bottom-area d-flex px-3">
                             <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
@@ -291,35 +360,30 @@
 
 
 <script>
+   
     document.querySelector('.zoom-container').addEventListener('mousemove', function(e) {
     const { left, top, width, height } = e.target.getBoundingClientRect();
     const mouseX = e.pageX - left;
     const mouseY = e.pageY - top;
     
     const zoomedImage = this.querySelector('.zoomed-image');
-    const bgPosX = -1 * mouseX * 1.5; // Adjust zoom level as needed
-    const bgPosY = -1 * mouseY * 1.5; // Adjust zoom level as needed
-    
-    zoomedImage.style.backgroundImage = `url('/static/productImages/<%= product.image[0] %>')`;
+    const bgPosX = -1 * mouseX * 1.5; 
+    const bgPosY = -1 * mouseY * 1.5; 
+    const zoomed = document.getElementById('zoom-change').getAttribute('src')
+    zoomedImage.style.backgroundImage = `url('${zoomed}')`;
     zoomedImage.style.backgroundPosition = `${bgPosX}px ${bgPosY}px`;
 });
 </script>
 
+
+
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const dots = document.querySelectorAll('.dot');
-        const mainImage = document.querySelector('.zoom-container img');
-
-        dots.forEach(dot => {
-            dot.addEventListener('click', function() {
-                const imageIndex = this.getAttribute('data-image-index');
-                mainImage.src = `/static/productImages/<%= product.image %>`;
-                // Optionally, update other details based on the selected image
-            });
-        });
-    });
+    function changeMainImage(imageUrl) {
+        const mainImage = document.querySelector('.main-image');
+        mainImage.src = imageUrl;
+        mainImage.alt = 'Product Image';
+    }
 </script>
-
 
 
 

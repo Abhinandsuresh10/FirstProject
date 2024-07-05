@@ -119,7 +119,7 @@ const verifyOtp = async (req, res) => {
             if (savedUser) {
                 delete req.session.otp;
                 delete req.session.userData;
-                return res.redirect('/login');
+                return res.redirect('/home');
             } else {
                 res.render('register', { message: 'Failed to register user' ,isLoggedIn : req.session.userData});
             }
@@ -227,7 +227,7 @@ const googleLoginCallback = async(req, res) => {
 const userLogout = async(req,res)=>{
 try {
      
-    req.session.destroy();
+    delete req.session.userData;
     res.redirect('/home');
 } catch (error) {
     console.log(error.message);

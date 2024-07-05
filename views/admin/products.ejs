@@ -85,24 +85,6 @@
     });
 });
 
-// document.querySelectorAll('.edit-btn').forEach(button => {
-//     button.addEventListener('click', function() {
-//         const productId = this.getAttribute('data-id');
-//         fetch(`/admin/editProducts?id=${productId}`, {
-//             method: 'GET',
-//             headers: {
-//                 'Content-Type': 'application/json'
-//             }
-//         }).then(response => {
-//             if (response.ok) {
-//                 // Handle response if needed
-//                 console.log('Edit request successful');
-//             } else {
-//                 throw new Error('Network response was not ok');
-//             }
-//         }).catch(error => console.error('Error:', error));
-//     });
-// });
   </script>
 
 <%- include('./adminFooter.ejs') %>

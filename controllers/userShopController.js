@@ -1,6 +1,7 @@
 const prducts = require('../models/produntsModel');
 
 
+
 //shop load...
 
 const shopLoad = async(req,res)=>{
@@ -24,6 +25,8 @@ const loadProductDetails = async(req,res)=>{
         console.log(error.message);
     }
 }
+
+
 
 module.exports = {
     shopLoad,

@@ -58,7 +58,7 @@
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Perform AJAX request to block user
+        
         fetch('/admin/block', {
           method: 'POST',
           headers: {
@@ -73,13 +73,13 @@
           throw new Error('Network response was not ok.');
         })
         .then(data => {
-          // Handle success response
+       
           Swal.fire({
             title: "Blocked!",
             text: "User has been blocked.",
             icon: "success"
           }).then(() => {
-            location.reload(); // Reload page or update UI as needed
+            location.reload(); 
           });
         })
         .catch(error => {
@@ -113,7 +113,7 @@
       reverseButtons: true
     }).then((result) => {
       if (result.isConfirmed) {
-        // Perform AJAX request to unblock user
+      
         fetch('/admin/unblock', {
           method: 'POST',
           headers: {
@@ -128,13 +128,13 @@
           throw new Error('Network response was not ok.');
         })
         .then(data => {
-          // Handle success response
+        
           Swal.fire({
             title: "Unblocked!",
             text: "User has been unblocked.",
             icon: "success"
           }).then(() => {
-            location.reload(); // Reload page or update UI as needed
+            location.reload(); 
           });
         })
         .catch(error => {

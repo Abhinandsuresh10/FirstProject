@@ -86,4 +86,6 @@ adminRoute.get('/brandrecover', adminAuth.isAdminLogin, adminCategoryController.
 
 adminRoute.get('/logout',adminController.adminLogout);
 
+
+
 module.exports = adminRoute;

@@ -22,50 +22,43 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% for(let i=0;i<categories.length;i++){ %>
-                        <tr>
-                            <td style="color: aliceblue;"><%= i+1 %></td>
-                            <td style="color: aliceblue;"><%= categories[i].name %></td>
-                            <td>
-                                <button type="button" class="btn " data-bs-toggle="modal" data-bs-target="#editCategoryModal" style="width: 80px;background-color: rgb(13, 73, 152);">EDIT</button><br><br>
-  
-  
-  
-  
-    <!-- Edit Category Modal -->
-
-    <div class="modal fade" id="editCategoryModal" tabindex="-1" aria-labelledby="editCategoryModalLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="editCategoryModalLabel">Edit Category</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form method="post" action="/admin/editCategory ">
-                        <div class="mb-3">
-                            <label for="categoryName" class="form-label">Category Name</label>
-                            <input type="text" class="form-control" style="color: aliceblue;" id="categoryName" name="categoryName" placeholder="Enter category name" value="<%= categories[i].name %>">
-                            <input type="hidden" name="categoryId" value="<%= categories[i]._id %>">
-                        </div>
-                  
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Save changes</button>
-                </div>
-            </form>
-            </div>
-        </div>
-    </div>
-
-  <!-- Edit Category Modal ends -->
-
-                                <button type="button" class="btn btn-danger delete-btn"  data-id="<%= categories[i]._id %>">DELETE</button>
-                            </td>
-                            <td></td>
-                        </tr>
-                        <% } %>
+                        <% categories.forEach((category, i) => { %>
+                            <tr>
+                                <td style="color: aliceblue;"><%= i + 1 %></td>
+                                <td style="color: aliceblue;"><%= category.name %></td>
+                                <td>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal<%= i %>" style="width: 80px; background-color: rgb(13, 73, 152);">EDIT</button><br><br>
+                                    <button type="button" class="btn btn-danger delete-btn" data-id="<%= category._id %>">DELETE</button>
+                                </td>
+                            </tr>
+                            
+                            <!-- Edit Category Modal -->
+                            <div class="modal fade" id="editCategoryModal<%= i %>" tabindex="-1" aria-labelledby="editCategoryModalLabel<%= i %>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editCategoryModalLabel<%= i %>">Edit Category</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" action="/admin/editCategory">
+                                                <div class="mb-3">
+                                                    <label for="categoryName<%= i %>" class="form-label">Category Name</label>
+                                                    <input type="text" class="form-control" style="color: aliceblue;" id="categoryName<%= i %>" name="categoryName" placeholder="Enter category name" value="<%= category.name %>">
+                                                    <input type="hidden" name="categoryId" value="<%= category._id %>">
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Edit Category Modal ends -->
+                            
+                            <% }); %>
                     </tbody>
                 </table>
             </div>
