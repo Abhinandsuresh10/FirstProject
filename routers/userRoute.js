@@ -43,7 +43,8 @@ const upload = multer({ storage: storage });
 
 const userController = require('../controllers/userControllers.js');
 
-const userShopControllers = require('../controllers/userShopController.js')
+const userShopControllers = require('../controllers/userShopController.js');
+const userProfileController = require('../controllers/userProfileController.js');
 const passport = require('../config/googleAuth');
 
 userRoute.get('/auth/google',
@@ -74,6 +75,16 @@ userRoute.get('/logout',userController.userLogout);
 userRoute.get('/productShop',userAuth.isLogin,userShopControllers.shopLoad);
 userRoute.get('/productDetails',userAuth.isLogin,userShopControllers.loadProductDetails);
 
+//profile..
 
+userRoute.get('/userProfile',userProfileController.loadProfile);
+userRoute.get('/address',userProfileController.loadAddress);
+
+
+//address..
+
+userRoute.post('/addAddress',userProfileController.insertAddress);
+userRoute.get('/deleteAddress',userProfileController.deleteAddress);
+userRoute.post('/editAddress',userProfileController.editAddress)
 
 module.exports = userRoute;

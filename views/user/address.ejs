@@ -1,0 +1,372 @@
+<%- include('./header.ejs') %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Include Toastify CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
+<style>
+    .kpl-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+        padding: 7%;
+    }
+    .kpl-content {
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .kpl-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .kpl-title {
+        font-size: 24px;
+        color: #333;
+    }
+    .kpl-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .kpl-button-add {
+        background-color: #000000;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+    .kpl-address-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .kpl-address-item {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .kpl-address-details {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #555;
+    }
+    .kpl-button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .kpl-button-edit {
+        background-color: #1ba482;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+    .kpl-button-delete {
+        background-color: #f44336;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+</style>
+
+
+<div class="breadcrumbs" style="background-color: #f9f9f9;">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">home</a></span> / <span><a href="/userProfile" style="color: rgb(142, 142, 142);text-decoration: none;">profile</a></span> / <span style="color: rgb(142, 142, 142);">address</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
+
+<div class="kpl-container">
+    <div class="kpl-content">
+        <div class="kpl-header">
+            <div class="kpl-title" style="position: relative;left: 30%;font-family: Verdana, Geneva, Tahoma, sans-serif;">Manage Addresses</div>
+            <button class="kpl-button kpl-button-add" data-toggle="modal" data-target="#addAddressModal">Add Address</button>
+        </div>
+        <% for (let i = 0; i < address.length; i++) { %>
+            <div class="kpl-address-list">
+                <div class="kpl-address-item">
+                    <div class="kpl-address-details">
+                        <p><strong>Name:</strong> <span style="font-size: 15px;"> <%= address[i].name %></span></p>
+                        <p><strong>Mobile:</strong> <span style="font-size: 15px;"> <%= address[i].mobile%></span></p>
+                        <p><strong>Street:</strong> <span style="font-size: 15px;"> <%= address[i].street %></span></p>
+                        <p><strong>City:</strong> <span style="font-size: 15px;"> <%= address[i].city %></span></p>
+                        <p><strong>State:</strong> <span style="font-size: 15px;"> <%= address[i].state %></span></p>
+                        <p><strong>Zip Code:</strong> <span style="font-size: 15px;"> <%= address[i].zipcode %></span></p>
+                        <p><strong>Country:</strong> <span style="font-size: 15px;"> <%= address[i].country %></span></p>
+                    </div>
+                    <div class="kpl-button-container">
+                        <button class="kpl-button kpl-button-edit" data-toggle="modal" data-target="#editAddressModal">Edit</button>
+                        <button class="kpl-button kpl-button-delete" data-id="<%= address[i]._id %>">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <!-- Edit Address Modal -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAddressForm" action="/editAddress?id=<%=address[i]._id%>" method="POST">
+                  
+                    <div class="form-group">
+                        <label for="editName">Name</label>
+                        <input type="text" class="form-control" id="editName" placeholder="Enter name" value="<%=address[i].name%>" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMobile">Mobile</label>
+                        <input type="text" class="form-control" id="editMobile" placeholder="Enter mobile number" value="<%=address[i].mobile%>" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStreet">Street</label>
+                        <input type="text" class="form-control" id="editStreet" placeholder="Enter street" value="<%=address[i].street%>" name="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCity">City</label>
+                        <input type="text" class="form-control" id="editCity" placeholder="Enter city" value="<%=address[i].city%>" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editState">State</label>
+                        <input type="text" class="form-control" id="editState" placeholder="Enter state" value="<%=address[i].state%>" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editZip">Zip Code</label>
+                        <input type="text" class="form-control" id="editZip" placeholder="Enter zip code" value="<%=address[i].zipcode%>" name="zipcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCountry">Country</label>
+                        <input type="text" class="form-control" id="editCountry" placeholder="Enter country" value="<%=address[i].country%>" name="country" required>
+                    </div>
+                    <!-- Ensure the buttons are inside the form -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm" action="/addAddress" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="text" class="form-control" id="mobile" placeholder="Enter mobile number" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="street">Street</label>
+                        <input type="text" class="form-control" id="street" placeholder="Enter street" name="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" placeholder="Enter city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" class="form-control" id="state" placeholder="Enter state" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">Zip Code</label>
+                        <input type="text" class="form-control" id="zip" placeholder="Enter zip code" name="zipcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" class="form-control" id="country" placeholder="Enter country" name="country" required>
+                    </div>
+                    <!-- Ensure the buttons are inside the form -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+              <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+              </ul>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                <li><a href="#" class="py-2 d-block">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib.com</a>
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  
+<!-- Include SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.kpl-button-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const addressId = this.getAttribute('data-id');
+                    
+                    Swal.fire({
+                        title: 'Are you sure!',
+                        text: 'Are you sure you want to delete this address?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/deleteAddress?id=${addressId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                return response.json(); // Assuming the backend returns JSON
+                            } else {
+                                throw new Error('Failed to delete address');
+                            }
+                        }).then(data => {
+                            // Store success message in localStorage
+                            localStorage.setItem('toastMessage', 'Address deleted successfully');
+
+                            // Reload the page after deletion
+                            window.location.reload();
+                        }).catch(error => {
+                            console.error('Error:', error);
+                            // Store error message in localStorage
+                            localStorage.setItem('toastMessage', 'Failed to delete address');
+
+                            // Reload the page after deletion
+                            window.location.reload();
+                        });
+                    }
+                });
+            });
+        });
+
+        // Check for stored toast message after page reload
+        const toastMessage = localStorage.getItem('toastMessage');
+        if (toastMessage) {
+            Toastify({
+                text: toastMessage,
+                duration: 3000, // Display duration in milliseconds
+                gravity: 'bottom', // Position of the toast message
+                position: 'right', // Position on the screen
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                stopOnFocus: true // Stops the toast from automatically fading out on hover
+            }).showToast();
+            
+            // Clear stored toast message
+            localStorage.removeItem('toastMessage');
+        }
+    });
+</script>
+<%- include('./footer.ejs') %>
