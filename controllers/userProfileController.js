@@ -7,6 +7,7 @@ const loadProfile = async(req,res)=>{
       const id = req.session.userData._id;
       const users = await user.findOne({_id:id});
       
+      
     res.render('userProfile',{isLoggedIn : req.session.userData,users})
     } catch (error) {
         console.log(error.message);

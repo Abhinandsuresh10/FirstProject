@@ -2,11 +2,9 @@
 
 <div class="ipo-wrapper">
     <div class="ipo-container">
-        <p class="ipo-instruction">Please enter the OTP sent to user@gmail.com</p>
-        <% if (typeof message !== 'undefined') { %>
-            <p class="ipo-error"><%= message %></p>
-        <% } %>
-        <form action="/verify-otp" method="POST" class="ipo-form">
+        <p class="ipo-instruction">Please enter the OTP sent to your email</p>
+        <p class="ipo-error" id="error-message" style="display: none;"></p>
+        <form id="otp-form" class="ipo-form">
             <div class="ipo-otp-inputs">
                 <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
                 <input type="text" maxlength="1" class="ipo-otp-input" name="otp[]" required>
@@ -23,6 +21,55 @@
         </p>
     </div>
 </div>
+<script>
+    const form = document.getElementById('otp-form');
+    const errorMessage = document.getElementById('error-message');
+
+    form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+
+        const formData = new FormData(form); // Serialize form data including OTP values
+        const otpDigits = [];
+        
+        // Extract OTP digits from FormData
+        formData.getAll('otp[]').forEach(digit => {
+            otpDigits.push(digit);
+        });
+
+        const otpString = otpDigits.join('');
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json' // Set headers if needed
+            },
+            body: JSON.stringify({ otp: otpString })// Include formData in the request body
+        };
+
+        try {
+            const response = await fetch('/verify-otp', options); // Send POST request to /verify-otp
+            const data = await response.json(); // Parse response JSON
+
+            if (response.ok) {
+                // Handle successful verification (redirect or message)
+                window.location.href = '/home'; // Redirect to home page after successful verification
+            } else {
+                // Display error message
+                errorMessage.textContent = data.message;
+                errorMessage.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Error:', error);
+            errorMessage.textContent = 'Failed to verify OTP. Please try again.';
+            errorMessage.style.display = 'block';
+        } finally {
+            // Reset form inputs
+            form.reset();
+        }
+    });
+
+
+
+</script>
 
 <script>
     document.querySelectorAll('.ipo-otp-input').forEach((input, index, inputs) => {

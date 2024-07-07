@@ -91,7 +91,7 @@ const insertUser = async (req, res) => {
     }
 };
 
-//otpLoad....
+// otpLoad....
 
 
 const otpLoad =async(req,res)=>{
@@ -105,32 +105,34 @@ const otpLoad =async(req,res)=>{
 
 
 // verify OTP
+
 const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
-
-        let otp2 = otp.join('');
-
-       if (otp2 == req.session.otp) {
-        
+        if (otp == req.session.otp) {
+            // Handle successful OTP verification
             const userData = new User(req.session.userData);
-         
             const savedUser = await userData.save();
+
             if (savedUser) {
                 delete req.session.otp;
-                delete req.session.userData;
-                return res.redirect('/home');
+                 req.session.userData = userData;
+                res.status(201).json({ message: 'OTP verification successful' }); // Send success message
             } else {
-                res.render('register', { message: 'Failed to register user' ,isLoggedIn : req.session.userData});
+                res.status(400).json({ message: 'Failed to register user' }); // Send failure message
             }
         } else {
-            res.render('registerOTP', { message: 'Invalid OTP. Please try again.' ,isLoggedIn : req.session.userData});
+            res.status(400).json({ message: 'Invalid OTP. Please try again.' }); // Send OTP error message
         }
     } catch (error) {
-        console.log(error.message);
-        res.status(500).send({ message: 'OTP verification failed' });
+        console.error(error);
+        res.status(500).json({ message: 'OTP verification failed' }); // Handle server error
     }
 };
+
+
+
+
 
 // login page
 const loginLoad = async (req, res) => {
