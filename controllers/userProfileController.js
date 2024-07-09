@@ -1,5 +1,7 @@
 const user = require('../models/userModel');
 const address = require('../models/addressModel');
+const bcrypt = require('bcrypt');
+
 
 
 const loadProfile = async(req,res)=>{
@@ -81,10 +83,73 @@ const editAddress = async(req,res)=>{
 }
 
 
+const userUpdates = async (req, res) => {
+    try {
+        const { name, mobile } = req.body;
+        const image = req.file;
+        const userId = req.session.userData._id;
+        if(image){
+            await user.findByIdAndUpdate(userId, {
+                $set: {
+                    name: name,
+                    mobile: mobile,
+                    image:image.filename
+                }
+            });
+        }else{
+            await user.findByIdAndUpdate(userId, {
+                $set: {
+                    name: name,
+                    mobile: mobile,
+                }
+            });
+        }
+
+        res.json({ message: 'User updated successfully' });
+    } catch (error) {
+        console.error('Error updating user:', error.message);
+        res.status(500).json({ error: 'Failed to update user' });
+    }
+};
+
+const changePassword = async(req,res)=>{
+    const { currentPassword, newPassword } = req.body;
+    const userId = req.session.userData._id; 
+
+    try {
+       
+       
+        const User = await user.findById(userId);
+        
+        if (!User) {
+            return res.status(404).json({ success: false, message: 'User not found' });
+        }
+
+        // Compare current password with the hashed password in the database
+        const isMatch = await bcrypt.compare(currentPassword, User.password);
+        if (!isMatch) {
+            return res.status(400).json({ success: false, message: 'Current password is incorrect' });
+        }
+
+        // Hash the new password and update the user record
+        const salt = await bcrypt.genSalt(10);
+        User.password = await bcrypt.hash(newPassword, salt);
+        await User.save();
+
+        res.status(200).json({ success: true, message: 'Password changed successfully' });
+    } catch (error) {
+        console.error('Error changing password:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
+
 module.exports = {
     loadProfile,
     loadAddress,
     insertAddress,
     deleteAddress,
-    editAddress
+    editAddress,
+    userUpdates,
+    changePassword
+
 }

@@ -1,5 +1,11 @@
 <%- include('./header.ejs') %>
+
+
+<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.css">
+
 <style>
+
+    
 .zoom-container {
     position: relative;
     overflow: hidden;
@@ -44,6 +50,19 @@
     max-width: 100%; 
     height: auto;
 }
+.image-container {
+    width: 100%;
+    height: 300px; /* or any desired height */
+    overflow: hidden;
+    position: relative;
+}
+
+.image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
 </style>
 
 <div class="breadcrumbs" >
@@ -63,10 +82,12 @@
     <div class="container">
         <div class="row" >
 
-
+         
             <div class="col-lg-6 mb-5 ftco-animate" >
-                <div class="zoom-container">                
+                <div class="zoom-container"> 
+                    <div style="height: 620px;" class="image-container">            
                     <img src="/static/productImages/<%= product.image[0] %>" class="img-fluid main-image" alt="Product Image" id="zoom-change"> 
+                </div>   
                     <div class="zoomed-image"></div>                 
                 </div>
               
@@ -116,20 +137,7 @@
                 <div style="height: 50px;"></div>
                 </div>
                         </div>
-                        <div class="w-100"></div>
-                        <div class="input-group col-md-6 d-flex mb-3" style="width: 35%;">
-                 <span class="input-group-btn mr-2">
-                    <button type="button" class="quantity-left-minus btn"  data-type="minus" data-field="">
-                   <i class="ion-ios-remove"></i>
-                    </button>
-                    </span>
-                 <input type="number" id="quantity" name="quantity" class="form-control input-number" value="1" min="1" max="100">
-                 <span class="input-group-btn ml-2">
-                    <button type="button" class="quantity-right-plus btn" data-type="plus" data-field="">
-                     <i class="ion-ios-add"></i>
-                 </button>
-                 </span>
-              </div>
+                      
          
               <div class="w-100"></div>
               <div class="col-md-12">
@@ -140,7 +148,7 @@
                   <% } %>
               </div>
           </div>
-          <p><a href="cart.html" class="btn btn-black py-3 px-5">Add to Cart</a></p>
+          <p><a href="#" class="btn btn-black py-3 px-5 cart-cls" >Add to Cart</a></p>
             </div>
         </div>
     </div>
@@ -358,6 +366,47 @@
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
+<script>
+    document.querySelector('.cart-cls').addEventListener('click', async (event) => {
+        try {
+            const productId = "<%= product._id %>";
+            const response = await fetch('/addTocart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ productId })
+            });
+    
+            if (!response.ok) {
+                throw new Error('Failed to add product to cart');
+            }
+    
+            const data = await response.json();
+    
+            if (data.success === false) {
+                Toastify({
+                    text: 'Product is already in the cart.',
+                    duration: 3000,
+                    gravity: 'bottom', 
+                    position: 'right', 
+                    backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+                }).showToast();
+            } else {
+                Toastify({
+                    text: 'Product successfully added to cart.',
+                    duration: 3000,
+                    gravity: 'bottom',
+                    position: 'right',
+                    backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                }).showToast();
+            }
+        } catch (error) {
+            console.error('Error adding product to cart:', error);
+        }
+    });
+    </script>
+    
 
 <script>
    
@@ -386,6 +435,7 @@
 </script>
 
 
+<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
 
 
 <script src="/static/user/js/jquery.min.js"></script>

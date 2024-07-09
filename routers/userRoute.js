@@ -45,6 +45,7 @@ const userController = require('../controllers/userControllers.js');
 
 const userShopControllers = require('../controllers/userShopController.js');
 const userProfileController = require('../controllers/userProfileController.js');
+const cartController = require('../controllers/addToCartController.js')
 const passport = require('../config/googleAuth');
 
 userRoute.get('/auth/google',
@@ -79,12 +80,20 @@ userRoute.get('/productDetails',userAuth.isLogin,userShopControllers.loadProduct
 
 userRoute.get('/userProfile',userProfileController.loadProfile);
 userRoute.get('/address',userProfileController.loadAddress);
+userRoute.post('/userUpdate', upload.single('image'),userProfileController.userUpdates);
+userRoute.post('/change-password',userProfileController.changePassword)
 
 
 //address..
 
 userRoute.post('/addAddress',userProfileController.insertAddress);
 userRoute.get('/deleteAddress',userProfileController.deleteAddress);
-userRoute.post('/editAddress',userProfileController.editAddress)
+userRoute.post('/editAddress',userProfileController.editAddress);
+
+//cart..
+
+userRoute.get('/cart',cartController.cartLoad);
+userRoute.post('/addToCart',cartController.insertCart);
+userRoute.post('/removeFromCart/:productId',cartController.deleteCart)
 
 module.exports = userRoute;

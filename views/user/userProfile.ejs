@@ -1,6 +1,8 @@
 <%- include('./header.ejs') %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 <style>
+
   .loki-container {
       display: flex;
       justify-content: center;
@@ -118,6 +120,53 @@
           margin-bottom: 10px;
       }
   }
+
+  /* modal area */
+
+  .modal {
+      /* display: none;
+      position: fixed;
+      z-index: 1; */
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+  }
+  .modal-content {
+      background-color: #fefefe;
+      margin: 7% auto;
+      padding: 20px;
+      border: 1px solid #888;
+      width: 80%;
+      max-width: 500px;
+      border-radius: 8px;
+  }
+  .close {
+      color: #aaa;
+      float: right;
+      font-size: 28px;
+      font-weight: bold;
+  }
+  .close:hover,
+  .close:focus {
+      color: black;
+      text-decoration: none;
+      cursor: pointer;
+  }
+  .form-group {
+      margin-bottom: 15px;
+  }
+  .form-group label {
+      display: block;
+      margin-bottom: 5px;
+  }
+  .form-group input {
+      width: 100%;
+      padding: 8px;
+      box-sizing: border-box;
+  }
 </style>
 
 
@@ -135,7 +184,7 @@
                 <li><a href="#"><img src="/static/user/images/realOrderLogo.png" alt="Orders" style="width:20px;"> Orders</a></li>
                 <li><a href="/address"><img src="/static/user/images/addressLogo.png" alt="Address" style="width:20px;"> Address</a></li>
                 <li><a href="#"><img src="/static/user/images/walletLogo.jpg" alt="Wallet" style="width:20px;"> Wallet</a></li>
-                <li><a href="#"><img src="/static/user/images/logoutLogo.jpg" alt="Logout" style="width:20px;"> Logout</a></li>
+                <li><a href="/logout"><img src="/static/user/images/logoutLogo.jpg" alt="Logout" style="width:20px;"> Logout</a></li>
             </ul>
         </div>
         <div class="loki-content">
@@ -153,19 +202,106 @@
              
                 <p>Name: <%= users.name%></p>
                 <p>Email: <%= users.email%></p>
+                <% if(users.mobile){%>
+                <p>Mobile: <%= users.mobile%></p>
+                <%}else{%>
+                <p>Mobile: add number</p>
+                <%}%>
                 <br><br>
             </div>
             <div class="loki-actions">
-                <button onclick="changePassword()">Change password</button>
-                <button onclick="changeEmail()">Change email</button>
-                <button onclick="editUserDetails()">Edit user details</button>
-            </div>
+            <% if(users.password) {%>
+                  <!-- Change Password Modal Button -->
+                  <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">
+                  Change Password
+                  </button>
+                <!-- <button onclick="changePassword()">Change password</button> -->
+                <button onclick="changeEmail()" class="btn btn-primary">Canceled orders</button>
+                <button onclick="editUserDetails()" class="btn btn-primary">Edit user details</button>
+                <%}else{%>
+                     <!-- <button onclick="changePassword()">Change password</button> -->
+                <button onclick="changeEmail()" class="btn btn-primary">Canceled orders</button>
+                <button onclick="editUserDetails()" class="btn btn-primary">Edit user details</button>
+                <%}%>
+              </div>
         </div>
     </div>
 </div>
 
            
   </section> <!-- .section -->
+  
+
+
+
+
+
+<!-- Edit User Details Modal -->
+<div id="editUserModal" class="modal">
+  <div class="modal-content">
+      <span class="close" onclick="closeModal()">&times;</span>
+      <h2>Edit Details</h2>
+      <form id="editUserForm" enctype="multipart/form-data"> 
+          <div class="form-group">
+              <label for="userImage">Profile Image</label>
+              <input type="file" id="userImage" name="image" accept="image/*">
+          </div>
+          <div class="form-group">
+              <label for="userName">Name</label>
+              <input type="text" id="userName" name="name" value="<%= users.name %>">
+          </div>
+          <div class="form-group">
+              <label for="userMobile">Mobile</label>
+              <input type="text" id="userMobile" name="mobile" value="<%= users.mobile %>">
+          </div>
+          <div class="form-group">
+            <input type="submit" value="save changes">
+              <!-- <button type="submit" >Save Changes</button>  -->
+          </div>
+      </form>
+  </div>
+</div>
+
+
+
+
+ <!-- Change Password Modal -->
+ <div class="modal fade" id="changePasswordModal" tabindex="-1" aria-labelledby="changePasswordModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="changePasswordModalLabel">Change Password</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="changePasswordForm">
+                    <div class="form-group">
+                        <label for="currentPassword">Current Password</label>
+                        <input type="password" class="form-control" id="currentPassword" name="currentPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="newPassword">New Password</label>
+                        <input type="password" class="form-control" id="newPassword" name="newPassword" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="confirmPassword">Confirm Password</label>
+                        <input type="password" class="form-control" id="confirmPassword" name="confirmPassword" required>
+                    </div>
+                    <div id="message" class="mt-3"></div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary" form="changePasswordForm">Change Password</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
 
   <footer class="ftco-footer bg-light ftco-section">
     <div class="container">
@@ -241,18 +377,96 @@
     </div>
   </footer>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+
+
   <script>
-      function changePassword() {
-          // Function to handle password change
-      }
+    document.getElementById('editUserForm').addEventListener('submit', (event) => {
+        event.preventDefault();
 
-      function changeEmail() {
-          // Function to handle email change
-      }
+        const name = document.getElementById('userName').value;
+        const mobile = document.getElementById('userMobile').value;
+        const formData = new FormData();
+           formData.append('image', document.getElementById('userImage').files[0]);
+           formData.append('name',name);
+           formData.append('mobile',mobile);
 
-      function editUserDetails() {
-          // Function to handle editing user details
+        fetch('/userUpdate', {
+            method: 'POST',
+            body: formData,
+        })
+        .then(response => response.json())
+        .then(data => {
+            console.log('Success:', data);
+            closeModal();
+            window.location.href = '/userProfile'; 
+        })
+        .catch(error => {
+            console.error('Error:', error);
+        });
+    });
+</script>
+
+<script>
+  function editUserDetails() {
+      document.getElementById('editUserModal').style.display = 'block';
+  }
+
+  function closeModal() {
+      document.getElementById('editUserModal').style.display = 'none';
+  }
+
+  window.onclick = function(event) {
+      if (event.target == document.getElementById('editUserModal')) {
+          closeModal();
       }
-  </script>
+  }
+</script>
+
+<script>
+    document.getElementById('changePasswordForm').addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const currentPassword = document.getElementById('currentPassword').value;
+        const newPassword = document.getElementById('newPassword').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const messageDiv = document.getElementById('message');
+
+        if (newPassword !== confirmPassword) {
+            messageDiv.innerHTML = '<p class="text-danger">New Password and Confirm Password do not match.</p>';
+            return;
+        }
+
+        const data = {
+            currentPassword: currentPassword,
+            newPassword: newPassword
+        };
+
+        fetch('/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => response.json())
+        .then(result => {
+            if (result.success) {
+                messageDiv.innerHTML = '<p class="text-success">Password changed successfully.</p>';
+                setTimeout(() => {
+                    $('#changePasswordModal').modal('hide');
+                    messageDiv.innerHTML = ''; // Clear message
+                }, 2000);
+            } else {
+                messageDiv.innerHTML = `<p class="text-danger">${result.message}</p>`;
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            messageDiv.innerHTML = '<p class="text-danger">An error occurred while changing the password.</p>';
+        });
+    });
+</script>
+
 
 <%- include('./footer.ejs') %>
