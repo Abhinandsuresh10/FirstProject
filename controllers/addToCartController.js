@@ -5,7 +5,7 @@ const cartLoad = async(req,res)=>{
     try {
         const userId = req.session.userData._id;
         const cartData = await cart.findOne({userId:userId}).populate("products.productId");
-        console.log(cartData);
+     
        res.render('addToCart',{isLoggedIn : req.session.userData,cart:cartData}) 
     } catch (error) {
         console.log(error.message);

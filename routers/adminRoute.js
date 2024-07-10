@@ -63,7 +63,7 @@ adminRoute.post('/unblock', adminAuth.isAdminLogin, adminUserController.unblockU
 // Products
 adminRoute.get('/products', adminAuth.isAdminLogin, adminProductsController.productsLoad);
 adminRoute.get('/addProducts', adminAuth.isAdminLogin, adminProductsController.addProductsLoad);
-adminRoute.post('/insertProducts', adminAuth.isAdminLogin, upload.array('image', 3), adminProductsController.insertProducts);
+adminRoute.post('/insertProducts', adminAuth.isAdminLogin, upload.array('image', 10), adminProductsController.insertProducts);
 
 // Delete product
 adminRoute.get('/deleteProducts', adminAuth.isAdminLogin, adminProductsController.deleteProduct);
@@ -72,7 +72,7 @@ adminRoute.get('/recoverProducts', adminAuth.isAdminLogin, adminProductsControll
 
 // Edit product
 adminRoute.get('/editProducts', adminAuth.isAdminLogin, adminProductsController.editProductLoad);
-adminRoute.post('/insertEditProducts', adminAuth.isAdminLogin, upload.array('image', 3), adminProductsController.editProduct);
+adminRoute.post('/insertEditProducts', adminAuth.isAdminLogin, upload.array('image', 10), adminProductsController.editProduct);
 
 // Brands
 adminRoute.get('/brands', adminAuth.isAdminLogin, adminCategoryController.brandsLoad);

@@ -1,12 +1,12 @@
 <%- include('./adminHeader.ejs') %>
-
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
       <div class="card-body">
         <h4 class="card-title">Basic form elements</h4>
         <p class="card-description"> Basic form elements </p>
-        <form class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
+        <form  id="productForm"  class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
         
           <div class="form-group">
             <label for="exampleInputName1">Name</label>
@@ -43,6 +43,10 @@
             <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="price" required>
           </div>
           <div class="form-group">
+            <label for="exampleInputPassword4">discount</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="discount" required>
+          </div>
+          <div class="form-group">
             <label for="exampleInputPassword4">Stock</label>
             <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 15%;" name="stock" required>
           </div>
@@ -59,6 +63,10 @@
           <h4>Added images</h4>
           <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
 
+          <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+
+          <div id="croppedImagesContainer"></div>
+
           <button type="submit" class="btn btn-primary me-2">Submit</button>
           <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
         </form>
@@ -66,34 +74,198 @@
     </div>
   </div>
 
+<!-- Cropping Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 
-  <script>
-    function previewImages() {
-        const preview = document.getElementById('imagePreview');
-        preview.innerHTML = '';
-        const files = document.getElementById('ocs-productImage').files;
-  
-        if (files) {
-            Array.from(files).forEach(file => {
-                const reader = new FileReader();
-  
-                reader.onload = (e) => {
-                    const img = document.createElement('img');
-                    img.src = e.target.result;
-                    img.style.maxWidth = '100px'; 
-                    img.style.margin = '10px'; 
-                    preview.appendChild(img);
-                };
-  
-                reader.readAsDataURL(file);
-            });
-        }
+<!-- Include jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  let croppers = [];
+  let cropperElements = [];
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      cropperElements = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+          });
+
+          croppers.push(cropper);
+          cropperElements.push(img);
+        };
+
+        reader.readAsDataURL(file);
+      }
     }
-  </script>
-  
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('imagePreview');
+    croppedImagesContainer.innerHTML = '';
+
+    croppers.forEach((cropper, index) => {
+      const canvas = cropper.getCroppedCanvas();
+      const src = canvas.toDataURL();
+
+      const imgContainer = document.createElement('div');
+      imgContainer.style.position = 'relative';
+      imgContainer.style.margin = '10px';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.maxWidth = '100px';
+
+      const closeButton = document.createElement('span');
+      closeButton.innerHTML = '&times;';
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '5px';
+      closeButton.style.right = '5px';
+      closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+      closeButton.style.color = 'white';
+      closeButton.style.borderRadius = '50%';
+      closeButton.style.padding = '5px';
+      closeButton.style.cursor = 'pointer';
+      closeButton.addEventListener('click', () => {
+        croppers.splice(index, 1);
+        cropperElements.splice(index, 1);
+        imgContainer.remove();
+      });
+
+      imgContainer.appendChild(img);
+      imgContainer.appendChild(closeButton);
+      croppedImagesContainer.appendChild(imgContainer);
+    });
+
+    $('#cropModal').modal('hide');
+  }
+
+  function previewImages() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.margin = '10px';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+
+          const closeButton = document.createElement('span');
+          closeButton.innerHTML = '&times;';
+          closeButton.style.position = 'absolute';
+          closeButton.style.top = '5px';
+          closeButton.style.right = '5px';
+          closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+          closeButton.style.color = 'white';
+          closeButton.style.borderRadius = '50%';
+          closeButton.style.padding = '5px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.addEventListener('click', () => imgContainer.remove());
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(closeButton);
+          preview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  // Handle form submission
+  document.getElementById('productForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Remove original 'image' field from formData
+    formData.delete('image');
+
+    // Append cropped images as blobs
+    croppers.forEach((cropper, index) => {
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob(blob => {
+        formData.append('image', blob, `croppedImage${index}.png`);
+      });
+    });
+
+    // Wait for all blobs to be added to formData
+    setTimeout(() => {
+      fetch(form.action, {
+          method: form.method,
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/admin/products'; // Redirect on success
+          } else {
+            alert('An error occurred while submitting the form');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          alert('An error occurred while submitting the form');
+        });
+    }, 500); // Delay to ensure blobs are added to formData
+  });
+</script>
+
 
 <%- include('./adminFooter.ejs') %>
+
 
 
 
