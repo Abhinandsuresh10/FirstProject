@@ -104,7 +104,7 @@
             <div class="col-lg-6 product-details pl-md-5 ftco-animate" style="padding-top: 10%;">
                 <h3><%=product.name%></h3>
                
-                <p class="price"><span style="color: rgb(98, 97, 97);font-size: 20px;"><strike>₹<%=product.price %></strike></span>&nbsp;&nbsp;<span>₹<%=product.price - 150%></span></p>
+                <p class="price"><span style="color: rgb(98, 97, 97);font-size: 20px;"><strike>₹<%=product.price %></strike></span>&nbsp;&nbsp;<span>₹<%=product.price - product.discount%></span></p>
 
                 <div class="rating">
                    
@@ -125,15 +125,7 @@
                     <div class="row mt-4">
                         <div class="col-md-6">
                             <div class="form-group d-flex">
-                  <!-- <div class="select-wrap">
-                  <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                  <select name="" id="" class="form-control">
-                      <option value="" style="background-color: blue;">Blue</option>
-                    <option value="" style="background-color: red;">Red</option>
-                    <option value="" style="background-color: #000;">Black</option>
-                   
-                  </select>
-                </div> -->
+               
                 <div style="height: 50px;"></div>
                 </div>
                         </div>

@@ -475,3 +475,742 @@ edit product html
   </script>
 <%- include('./adminFooter.ejs') %>
 
+add to cart ejs
+
+<%-include ('./header.ejs') %>
+<style>
+   .input-group-prepend,
+    .input-group-append {
+        flex: 0 0 auto;
+    }
+
+    .quantity-decrease,
+    .quantity-increase {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .quantity {
+        min-width: 100px; 
+    }
+    .thead-primary th {
+        background-color: black;
+        color: white;
+    }
+
+
+
+    #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background: linear-gradient(to right, #00b09b, #96c93d); 
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+    }
+
+
+#snackbar.show {
+  visibility: visible; 
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
+
+
+<section class="ftco-section ftco-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list" >
+                    <table class="table">
+                        <thead class="thead-primary text-white" style="background-color: black;">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="text-white">Product</th>
+                                <th class="text-white">Price</th>
+                                <th class="text-white">Quantity</th>
+                                <th class="text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody style="border: 1px solid #b1b0b0;">
+                            <% cart.products.forEach(item => { %>
+                                <tr class="text-center">
+                                    <td class="product-remove">
+                                        <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
+                                            <span class="ion-ios-close"></span></a>
+                                    </td>
+                                    <td class="image-prod">
+                                        <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
+
+                                    </td>
+                                    <td class="product-name">
+                                        <h3><%= item.productId.name %></h3>
+                                        <p><%= item.productId.discription %></p>
+                                    </td>
+                                    <td class="price">$<%= item.productId.price %></td>
+                                    <td class="quantity">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
+                                            </div>
+                                            <input type="text" name="quantity" class="quantity form-control input-number text-center" value="<%= item.quantity %>" min="1" max="100">
+                                            <div class="input-group-append">
+                                                <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total">$<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                    <h3>Cart Totals</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span>$20.60</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span>$0.00</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span>$3.00</span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span>$17.60</span>
+                    </p>
+                </div>
+                <p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+
+
+
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+<div id="snackbar"></div>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const quantityInputs = document.querySelectorAll('.quantity');
+        
+        quantityInputs.forEach(function (quantityInput) {
+            const input = quantityInput.querySelector('input');
+            const increaseButton = quantityInput.querySelector('.quantity-increase');
+            const decreaseButton = quantityInput.querySelector('.quantity-decrease');
+
+            increaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(input.value);
+                if (currentValue < parseInt(input.max)) {
+                    input.value = currentValue + 1;
+                }
+            });
+
+            decreaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(input.value);
+                if (currentValue > parseInt(input.min)) {
+                    input.value = currentValue - 1;
+                }
+            });
+        });
+    });
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const removeButtons = document.querySelectorAll('.remove-product');
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', async function (event) {
+            event.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+
+            try {
+                const response = await fetch(`/removeFromCart/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to remove product from cart');
+                }
+
+                const data = await response.json();
+
+                if (data.success === true) {
+                    showsnackbar('product has been removed')
+                        // Optionally handle UI updates (like removing the row from the table)
+                        this.closest('tr').remove();
+                    } else {
+                        throw new Error('Failed to remove product from cart');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from cart:', error);
+                    showsnackbar('error occurd')
+            }
+        });
+    });
+});
+function showsnackbar(text) {
+  // Get the snackbar DIV
+  var x = document.getElementById("snackbar");
+  x.innerHTML = text
+  // Add the "show" class to DIV
+  x.className = "show";
+
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+}
+
+</script>
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+
+<%- include('./footer.ejs') %>
+
+
+
+new changed addtocart ejs with added total 
+
+<%-include ('./header.ejs') %>
+<style>
+   .input-group-prepend,
+    .input-group-append {
+        flex: 0 0 auto;
+    }
+
+    .quantity-decrease,
+    .quantity-increase {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .quantity {
+        min-width: 100px; 
+    }
+    .thead-primary th {
+        background-color: black;
+        color: white;
+    }
+
+
+
+    #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background: linear-gradient(to right, #00b09b, #96c93d); 
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+    }
+
+
+#snackbar.show {
+  visibility: visible; 
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
+
+
+<section class="ftco-section ftco-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list" >
+                    <table class="table">
+                        <thead class="thead-primary text-white" style="background-color: black;">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="text-white">Product</th>
+                                <th class="text-white">Price</th>
+                                <th class="text-white">Quantity</th>
+                                <th class="text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cart.products.forEach(item => { %>
+                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>">
+                                    <td class="product-remove">
+                                        <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
+                                            <span class="ion-ios-close"></span>
+                                        </a>
+                                    </td>
+                                    <td class="image-prod">
+                                        <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
+                                    </td>
+                                    <td class="product-name">
+                                        <h3><%= item.productId.name %></h3>
+                                        <p><%= item.productId.description %></p>
+                                    </td>
+                                    <td class="price">₹<%= item.productId.price.toFixed(2) %></td>
+                                    <td class="quantity">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
+                                            </div>
+                                            <input type="number" name="quantity" class="quantity-input form-control text-center" value="<%= item.quantity %>" min="1" max="100">
+                                            <div class="input-group-append">
+                                                <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                    <h3>Cart Totals</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span>$20.60</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span>$0.00</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span>$3.00</span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span>$17.60</span>
+                    </p>
+                </div>
+                <p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+
+
+
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+<div id="snackbar"></div>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const productRows = document.querySelectorAll('.product-row');
+
+        // Function to update total based on quantity
+        function updateTotal(row) {
+            const quantityInput = row.querySelector('.quantity-input');
+            const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+            const quantity = parseInt(quantityInput.value);
+            const totalCell = row.querySelector('.total');
+            const total = (price * quantity).toFixed(2);
+            if (totalCell) {
+                totalCell.textContent = `₹${total}`;
+            }
+        }
+
+        // Initial total calculation on page load
+        productRows.forEach(function (row) {
+            updateTotal(row);
+        });
+
+        // Event listeners for quantity buttons
+        productRows.forEach(function (row) {
+            const decreaseButton = row.querySelector('.quantity-decrease');
+            const increaseButton = row.querySelector('.quantity-increase');
+            const quantityInput = row.querySelector('.quantity-input');
+
+            decreaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > parseInt(quantityInput.min)) {
+                    quantityInput.value = currentValue - 1;
+                    updateTotal(row);
+                }
+            });
+
+            increaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue < parseInt(quantityInput.max)) {
+                    quantityInput.value = currentValue + 1;
+                    updateTotal(row);
+                }
+            });
+
+            quantityInput.addEventListener('input', function () {
+                updateTotal(row);
+            });
+        });
+
+        // Optional: Remove product functionality
+        const removeButtons = document.querySelectorAll('.remove-product');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to remove product from cart');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success === true) {
+                        showsnackbar('Product has been removed');
+                        // Optionally handle UI updates (like removing the row from the table)
+                        this.closest('tr').remove();
+                    } else {
+                        throw new Error('Failed to remove product from cart');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from cart:', error);
+                    showsnackbar('An error occurred');
+                }
+            });
+        });
+
+        // Function to display snackbar message
+        function showsnackbar(text) {
+            const snackbar = document.getElementById("snackbar");
+            if (snackbar) {
+                snackbar.innerHTML = text;
+                snackbar.classList.add('show');
+                setTimeout(function () {
+                    snackbar.classList.remove('show');
+                }, 3000);
+            }
+        }
+    });
+</script>
+
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const removeButtons = document.querySelectorAll('.remove-product');
+
+    removeButtons.forEach(button => {
+        button.addEventListener('click', async function (event) {
+            event.preventDefault();
+            const productId = this.getAttribute('data-product-id');
+
+            try {
+                const response = await fetch(`/removeFromCart/${productId}`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to remove product from cart');
+                }
+
+                const data = await response.json();
+
+                if (data.success === true) {
+                    showsnackbar('product has been removed')
+                        // Optionally handle UI updates (like removing the row from the table)
+                        this.closest('tr').remove();
+                    } else {
+                        throw new Error('Failed to remove product from cart');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from cart:', error);
+                    showsnackbar('error occurd')
+            }
+        });
+    });
+});
+function showsnackbar(text) {
+  // Get the snackbar DIV
+  var x = document.getElementById("snackbar");
+  x.innerHTML = text
+  // Add the "show" class to DIV
+  x.className = "show";
+
+  // After 3 seconds, remove the show class from DIV
+  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+  
+}
+
+</script>
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+
+<%- include('./footer.ejs') %>

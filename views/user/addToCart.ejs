@@ -77,43 +77,46 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th class="text-white">Product</th>
+                                <th class="text-white">Discount</th>
                                 <th class="text-white">Price</th>
                                 <th class="text-white">Quantity</th>
                                 <th class="text-white">Total</th>
                             </tr>
                         </thead>
-                        <tbody style="border: 1px solid #b1b0b0;">
+                        <tbody>
                             <% cart.products.forEach(item => { %>
-                                <tr class="text-center">
+                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>">
                                     <td class="product-remove">
                                         <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
-                                            <span class="ion-ios-close"></span></a>
+                                            <span class="ion-ios-close"></span>
+                                        </a>
                                     </td>
                                     <td class="image-prod">
                                         <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
-
                                     </td>
                                     <td class="product-name">
                                         <h3><%= item.productId.name %></h3>
-                                        <p><%= item.productId.discription %></p>
+                                        <p><%= item.productId.description %></p>
                                     </td>
-                                    <td class="price">$<%= item.productId.price %></td>
+                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
+                                    <td class="price">₹<%= item.productId.price.toFixed(2) %></td>
                                     <td class="quantity">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
                                                 <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
                                             </div>
-                                            <input type="text" name="quantity" class="quantity form-control input-number text-center" value="<%= item.quantity %>" min="1" max="100">
+                                            <input type="number" name="quantity" class="quantity-input form-control text-center" value="<%= item.quantity %>" min="1" max="100">
                                             <div class="input-group-append">
                                                 <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="total">$<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
                                 </tr>
                             <% }); %>
                         </tbody>
                     </table>
+                    
                 </div>
             </div>
         </div>
@@ -123,20 +126,20 @@
                     <h3>Cart Totals</h3>
                     <p class="d-flex">
                         <span>Subtotal</span>
-                        <span>$20.60</span>
+                        <span id="sub-total">$20.60</span>
                     </p>
                     <p class="d-flex">
                         <span>Delivery</span>
-                        <span>$0.00</span>
+                        <span id="delivery">₹0.00</span>
                     </p>
                     <p class="d-flex">
                         <span>Discount</span>
-                        <span>$3.00</span>
+                        <span id="discount-amount">₹0.00</span>
                     </p>
                     <hr>
                     <p class="d-flex total-price">
                         <span>Total</span>
-                        <span>$17.60</span>
+                        <span id="cart-total">$0.00</span>
                     </p>
                 </div>
                 <p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
@@ -210,10 +213,9 @@
       <div class="row">
         <div class="col-md-12 text-center">
 
-          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                       <p>
                         Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                      </p>
+                       </p>
         </div>
       </div>
     </div>
@@ -221,86 +223,274 @@
   
 
 
+
+
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 <div id="snackbar"></div>
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const quantityInputs = document.querySelectorAll('.quantity');
-        
-        quantityInputs.forEach(function (quantityInput) {
-            const input = quantityInput.querySelector('input');
-            const increaseButton = quantityInput.querySelector('.quantity-increase');
-            const decreaseButton = quantityInput.querySelector('.quantity-decrease');
 
-            increaseButton.addEventListener('click', function () {
-                let currentValue = parseInt(input.value);
-                if (currentValue < parseInt(input.max)) {
-                    input.value = currentValue + 1;
+<!-- <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let productRows = document.querySelectorAll('.product-row');
+        const subtotalElement = document.getElementById('sub-total');
+        const deliveryElement = document.getElementById('delivery');
+        const totalElement = document.getElementById('cart-total');
+        let deliveryCharge = 0;
+    
+  ty
+        function updateTotal(row) {
+            const quantityInput = row.querySelector('.quantity-input');
+            const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+            const quantity = parseInt(quantityInput.value);
+            const totalCell = row.querySelector('.total');
+            const total = (price * quantity).toFixed(2);
+            if (totalCell) {
+                totalCell.textContent = `₹${total}`;
+            }
+            updateSubtotal();
+        }
+    
+        function updateSubtotal() {
+            let subtotal = 0;
+            productRows.forEach(function (row) {
+                if (row.parentNode) { 
+                    const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
+                    subtotal += total;
                 }
             });
-
+    
+            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    
+         
+            if (subtotal < 500 && subtotal!== 0) {
+                deliveryCharge = 40;
+                deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
+            } else {
+                deliveryCharge = 0;
+                deliveryElement.textContent = '₹0.00';
+            }
+    
+            const total = subtotal + deliveryCharge;
+            totalElement.textContent = `₹${total.toFixed(2)}`;
+        }
+    
+        
+        productRows.forEach(function (row) {
+            updateTotal(row);
+        });
+    
+      
+        productRows.forEach(function (row) {
+            const decreaseButton = row.querySelector('.quantity-decrease');
+            const increaseButton = row.querySelector('.quantity-increase');
+            const quantityInput = row.querySelector('.quantity-input');
+    
             decreaseButton.addEventListener('click', function () {
-                let currentValue = parseInt(input.value);
-                if (currentValue > parseInt(input.min)) {
-                    input.value = currentValue - 1;
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > parseInt(quantityInput.min)) {
+                    quantityInput.value = currentValue - 1;
+                    updateTotal(row);
                 }
+            });
+    
+            increaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue < parseInt(quantityInput.max)) {
+                    quantityInput.value = currentValue + 1;
+                    updateTotal(row);
+                }
+            });
+    
+            quantityInput.addEventListener('input', function () {
+                updateTotal(row);
             });
         });
-    });
-</script>
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-    const removeButtons = document.querySelectorAll('.remove-product');
-
-    removeButtons.forEach(button => {
-        button.addEventListener('click', async function (event) {
-            event.preventDefault();
-            const productId = this.getAttribute('data-product-id');
-
-            try {
-                const response = await fetch(`/removeFromCart/${productId}`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to remove product from cart');
-                }
-
-                const data = await response.json();
-
-                if (data.success === true) {
-                    showsnackbar('product has been removed')
-                        // Optionally handle UI updates (like removing the row from the table)
-                        this.closest('tr').remove();
+    
+        function showsnackbar(text) {
+            const snackbar = document.getElementById("snackbar");
+            if (snackbar) {
+                snackbar.innerHTML = text;
+                snackbar.classList.add('show');
+                setTimeout(function () {
+                    snackbar.classList.remove('show');
+                }, 3000);
+            }
+        }
+    
+        const removeButtons = document.querySelectorAll('.remove-product');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+    
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+    
+                    if (!response.ok) {
+                        throw new Error('Failed to remove product from cart');
+                    }
+    
+                    const data = await response.json();
+    
+                    if (data.success === true) {
+                        showsnackbar('Product has been removed');
+                        const rowToRemove = this.closest('tr');
+                        rowToRemove.remove(); 
+                        productRows = document.querySelectorAll('.product-row');
+                        updateSubtotal(); 
                     } else {
                         throw new Error('Failed to remove product from cart');
                     }
                 } catch (error) {
                     console.error('Error removing product from cart:', error);
-                    showsnackbar('error occurd')
-            }
+                    showsnackbar('Error occurred');
+                }
+            });
         });
     });
-});
-function showsnackbar(text) {
-  // Get the snackbar DIV
-  var x = document.getElementById("snackbar");
-  x.innerHTML = text
-  // Add the "show" class to DIV
-  x.className = "show";
+    </script> -->
+    
 
-  // After 3 seconds, remove the show class from DIV
-  setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
-}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            let productRows = document.querySelectorAll('.product-row');
+            const subtotalElement = document.getElementById('sub-total');
+            const deliveryElement = document.getElementById('delivery');
+            const totalElement = document.getElementById('cart-total');
+            const discount = document.getElementById('discount')
+            let deliveryCharge = 0;
+            let discountAmount = 3.00; // Example discount amount, replace with your logic to fetch the discount
+    
+            // Function to update the total based on quantity and apply discount
+            function updateTotal(row) {
+                const quantityInput = row.querySelector('.quantity-input');
+                const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+                const quantity = parseInt(quantityInput.value);
+                const totalCell = row.querySelector('.total');
+                const total = (price * quantity).toFixed(2);
+                if (totalCell) {
+                    totalCell.textContent = `₹${total}`;
+                }
+                updateSubtotal();
+            }
+    
+            // Function to update the subtotal after applying discounts
+            function updateSubtotal() {
+                let subtotal = 0;
+                productRows.forEach(function (row) {
+                    if (row.parentNode) { // Check if the row is still in the DOM
+                        const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
+                        subtotal += total;
+                    }
+                });
+    
 
-</script>
+    
+                subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    
+                // Check for delivery charge
+                if (subtotal < 500 && subtotal !== 0) {
+                    deliveryCharge = 40;
+                    deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
+                } else {
+                    deliveryCharge = 0;
+                    deliveryElement.textContent = '₹0.00';
+                }
+    
+                const total = subtotal + deliveryCharge;
+                totalElement.textContent = `₹${total.toFixed(2)}`;
+            }
+    
+            // Initial total calculation on page load
+            productRows.forEach(function (row) {
+                updateTotal(row);
+            });
+    
+            // Event listeners for quantity buttons
+            productRows.forEach(function (row) {
+                const decreaseButton = row.querySelector('.quantity-decrease');
+                const increaseButton = row.querySelector('.quantity-increase');
+                const quantityInput = row.querySelector('.quantity-input');
+    
+                decreaseButton.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue > parseInt(quantityInput.min)) {
+                        quantityInput.value = currentValue - 1;
+                        updateTotal(row);
+                    }
+                });
+    
+                increaseButton.addEventListener('click', function () {
+                    let currentValue = parseInt(quantityInput.value);
+                    if (currentValue < parseInt(quantityInput.max)) {
+                        quantityInput.value = currentValue + 1;
+                        updateTotal(row);
+                    }
+                });
+    
+                quantityInput.addEventListener('input', function () {
+                    updateTotal(row);
+                });
+            });
+    
+            // Function to show snackbar
+            function showsnackbar(text) {
+                const snackbar = document.getElementById("snackbar");
+                if (snackbar) {
+                    snackbar.innerHTML = text;
+                    snackbar.classList.add('show');
+                    setTimeout(function () {
+                        snackbar.classList.remove('show');
+                    }, 3000);
+                }
+            }
+    
+            // Event listeners for remove buttons
+            const removeButtons = document.querySelectorAll('.remove-product');
+            removeButtons.forEach(button => {
+                button.addEventListener('click', async function (event) {
+                    event.preventDefault();
+                    const productId = this.getAttribute('data-product-id');
+    
+                    try {
+                        const response = await fetch(`/removeFromCart/${productId}`, {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            },
+                        });
+    
+                        if (!response.ok) {
+                            throw new Error('Failed to remove product from cart');
+                        }
+    
+                        const data = await response.json();
+    
+                        if (data.success === true) {
+                            showsnackbar('Product has been removed');
+                            const rowToRemove = this.closest('tr');
+                            rowToRemove.remove(); // Remove the row from DOM
+                            productRows = document.querySelectorAll('.product-row'); // Update productRows after removal
+                            updateSubtotal(); // Update subtotal after removal
+                        } else {
+                            throw new Error('Failed to remove product from cart');
+                        }
+                    } catch (error) {
+                        console.error('Error removing product from cart:', error);
+                        showsnackbar('Error occurred');
+                    }
+                });
+            });
+        });
+    </script>
+    
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
