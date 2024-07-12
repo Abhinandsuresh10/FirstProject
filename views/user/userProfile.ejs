@@ -92,7 +92,6 @@
       background-color: #555;
   }
 
-  /* Media Queries for Responsiveness */
   @media (min-width: 768px) {
       .loki-box {
           flex-direction: row;
@@ -215,11 +214,9 @@
                   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#changePasswordModal">
                   Change Password
                   </button>
-                <!-- <button onclick="changePassword()">Change password</button> -->
                 <button onclick="changeEmail()" class="btn btn-primary">Canceled orders</button>
                 <button onclick="editUserDetails()" class="btn btn-primary">Edit user details</button>
                 <%}else{%>
-                     <!-- <button onclick="changePassword()">Change password</button> -->
                 <button onclick="changeEmail()" class="btn btn-primary">Canceled orders</button>
                 <button onclick="editUserDetails()" class="btn btn-primary">Edit user details</button>
                 <%}%>
@@ -232,36 +229,32 @@
   </section> <!-- .section -->
   
 
-
-
-
-
 <!-- Edit User Details Modal -->
 <div id="editUserModal" class="modal">
-  <div class="modal-content">
-      <span class="close" onclick="closeModal()">&times;</span>
-      <h2>Edit Details</h2>
-      <form id="editUserForm" enctype="multipart/form-data"> 
-          <div class="form-group">
-              <label for="userImage">Profile Image</label>
-              <input type="file" id="userImage" name="image" accept="image/*">
-          </div>
-          <div class="form-group">
-              <label for="userName">Name</label>
-              <input type="text" id="userName" name="name" value="<%= users.name %>">
-          </div>
-          <div class="form-group">
-              <label for="userMobile">Mobile</label>
-              <input type="text" id="userMobile" name="mobile" value="<%= users.mobile %>">
-          </div>
-          <div class="form-group">
-            <input type="submit" value="save changes">
-              <!-- <button type="submit" >Save Changes</button>  -->
-          </div>
-      </form>
-  </div>
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Edit Details</h2>
+        <form id="editUserForm" enctype="multipart/form-data" onsubmit="return validateForm()"> 
+            <div class="form-group">
+                <label for="userImage">Profile Image</label>
+                <input type="file" id="userImage" name="image" accept="image/*">
+            </div>
+            <div class="form-group">
+                <label for="userName">Name</label>
+                <input type="text" id="userName" name="name" value="<%= users.name %>">
+                <span id="nameError" class="error" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+                <label for="userMobile">Mobile</label>
+                <input type="text" id="userMobile" name="mobile" value="<%= users.mobile %>">
+                <span id="mobileError" class="error" style="color: red;"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Save Changes">
+            </div>
+        </form>
+    </div>
 </div>
-
 
 
 
@@ -379,10 +372,44 @@
 
   <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
 
+  <script>
+    function validateForm() {
+      
+        document.getElementById('nameError').textContent = '';
+        document.getElementById('mobileError').textContent = '';
+
+        let name = document.getElementById('userName').value.trim();
+        let mobile = document.getElementById('userMobile').value.trim();
+
+  
+        if (name.length < 4) {
+            document.getElementById('nameError').textContent = 'Name must be at least 4 characters long.';
+            return false;
+        } else if (name.startsWith(' ')) {
+            document.getElementById('nameError').textContent = 'Name cannot start with a space.';
+            return false;
+        }
+
+        if (!/^\d{10}$/.test(mobile) || mobile.startsWith('0')) {
+            document.getElementById('mobileError').textContent = 'Mobile number must be 10 digits and cannot start with 0.';
+            return false;
+        }
+
+    
+        return true;
+    }
+</script>
+
 
   <script>
     document.getElementById('editUserForm').addEventListener('submit', (event) => {
         event.preventDefault();
+
+        if (!validateForm()) {
+           
+            return;
+        }
+
 
         const name = document.getElementById('userName').value;
         const mobile = document.getElementById('userMobile').value;
@@ -455,7 +482,7 @@
                 messageDiv.innerHTML = '<p class="text-success">Password changed successfully.</p>';
                 setTimeout(() => {
                     $('#changePasswordModal').modal('hide');
-                    messageDiv.innerHTML = ''; // Clear message
+                    messageDiv.innerHTML = '';
                 }, 2000);
             } else {
                 messageDiv.innerHTML = `<p class="text-danger">${result.message}</p>`;

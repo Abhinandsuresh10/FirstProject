@@ -1,6 +1,6 @@
 <%- include('./header.ejs') %>
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-<!-- Include Toastify CSS -->
+
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
 
@@ -161,7 +161,7 @@
                         <label for="editCountry">Country</label>
                         <input type="text" class="form-control" id="editCountry" placeholder="Enter country" value="<%=address[i].country%>" name="country" required>
                     </div>
-                    <!-- Ensure the buttons are inside the form -->
+                  
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -186,36 +186,42 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="addAddressForm" action="/addAddress" method="POST">
+                <form id="addAddressForm" action="/addAddress" method="POST" novalidate>
                     <div class="form-group">
                         <label for="name">Name</label>
                         <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
+                        <div class="invalid-feedback">Please enter a valid name. Name cannot start with a space.</div>
                     </div>
                     <div class="form-group">
                         <label for="mobile">Mobile</label>
                         <input type="text" class="form-control" id="mobile" placeholder="Enter mobile number" name="mobile" required>
+                        <div class="invalid-feedback">Please enter a valid 10-digit mobile number that does not start with 0.</div>
                     </div>
                     <div class="form-group">
                         <label for="street">Street</label>
                         <input type="text" class="form-control" id="street" placeholder="Enter street" name="street" required>
+                        <div class="invalid-feedback">Please enter a valid street.</div>
                     </div>
                     <div class="form-group">
                         <label for="city">City</label>
                         <input type="text" class="form-control" id="city" placeholder="Enter city" name="city" required>
+                        <div class="invalid-feedback">Please enter a valid city.</div>
                     </div>
                     <div class="form-group">
                         <label for="state">State</label>
                         <input type="text" class="form-control" id="state" placeholder="Enter state" name="state" required>
+                        <div class="invalid-feedback">Please enter a valid state.</div>
                     </div>
                     <div class="form-group">
                         <label for="zip">Zip Code</label>
                         <input type="text" class="form-control" id="zip" placeholder="Enter zip code" name="zipcode" required>
+                        <div class="invalid-feedback">Please enter a valid numeric zip code.</div>
                     </div>
                     <div class="form-group">
                         <label for="country">Country</label>
                         <input type="text" class="form-control" id="country" placeholder="Enter country" name="country" required>
+                        <div class="invalid-feedback">Please enter a valid country.</div>
                     </div>
-                    <!-- Ensure the buttons are inside the form -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save Address</button>
@@ -225,6 +231,7 @@
         </div>
     </div>
 </div>
+
 
 
 <footer class="ftco-footer bg-light ftco-section">
@@ -329,22 +336,22 @@
                             }
                         }).then(response => {
                             if (response.ok) {
-                                return response.json(); // Assuming the backend returns JSON
+                                return response.json(); 
                             } else {
                                 throw new Error('Failed to delete address');
                             }
                         }).then(data => {
-                            // Store success message in localStorage
+                            
                             localStorage.setItem('toastMessage', 'Address deleted successfully');
 
-                            // Reload the page after deletion
+                         
                             window.location.reload();
                         }).catch(error => {
                             console.error('Error:', error);
-                            // Store error message in localStorage
+                           
                             localStorage.setItem('toastMessage', 'Failed to delete address');
 
-                            // Reload the page after deletion
+                           
                             window.location.reload();
                         });
                     }
@@ -352,21 +359,105 @@
             });
         });
 
-        // Check for stored toast message after page reload
         const toastMessage = localStorage.getItem('toastMessage');
         if (toastMessage) {
             Toastify({
                 text: toastMessage,
-                duration: 3000, // Display duration in milliseconds
-                gravity: 'bottom', // Position of the toast message
-                position: 'right', // Position on the screen
+                duration: 3000, 
+                gravity: 'bottom', 
+                position: 'right', 
                 backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
-                stopOnFocus: true // Stops the toast from automatically fading out on hover
+                stopOnFocus: true 
             }).showToast();
             
-            // Clear stored toast message
+            
             localStorage.removeItem('toastMessage');
         }
     });
 </script>
+
+<script>
+    document.getElementById('addAddressForm').addEventListener('submit', function(event) {
+    event.preventDefault();
+    let isValid = true;
+
+    const name = document.getElementById('name');
+    const mobile = document.getElementById('mobile');
+    const street = document.getElementById('street');
+    const city = document.getElementById('city');
+    const state = document.getElementById('state');
+    const zip = document.getElementById('zip');
+    const country = document.getElementById('country');
+
+    // Reset validation messages
+    document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
+    if (!name.value.trim() || name.value.startsWith(' ')) {
+        name.classList.add('is-invalid');
+        name.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
+        mobile.classList.add('is-invalid');
+        mobile.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!street.value.trim()) {
+        street.classList.add('is-invalid');
+        street.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!city.value.trim()) {
+        city.classList.add('is-invalid');
+        city.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!state.value.trim()) {
+        state.classList.add('is-invalid');
+        state.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!zip.value.trim() || !/^\d+$/.test(zip.value)) {
+        zip.classList.add('is-invalid');
+        zip.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+    if (!country.value.trim()) {
+        country.classList.add('is-invalid');
+        country.nextElementSibling.style.display = 'block';
+        isValid = false;
+    }
+
+    if (isValid) {
+       
+        this.submit();
+    }
+});
+
+const inputs = document.querySelectorAll('#addAddressForm .form-control');
+
+inputs.forEach(input => {
+    input.addEventListener('input', function() {
+        if (this.id === 'name' && (this.value.trim() && !this.value.startsWith(' '))) {
+            this.classList.remove('is-invalid');
+            this.nextElementSibling.style.display = 'none';
+        }
+        if (this.id === 'mobile' && /^[1-9]\d{9}$/.test(this.value)) {
+            this.classList.remove('is-invalid');
+            this.nextElementSibling.style.display = 'none';
+        }
+        if (this.id === 'zip' && /^\d+$/.test(this.value)) {
+            this.classList.remove('is-invalid');
+            this.nextElementSibling.style.display = 'none';
+        }
+        if (this.value.trim() && this.id !== 'name' && this.id !== 'mobile' && this.id !== 'zip') {
+            this.classList.remove('is-invalid');
+            this.nextElementSibling.style.display = 'none';
+        }
+    });
+});
+
+</script>
+
 <%- include('./footer.ejs') %>

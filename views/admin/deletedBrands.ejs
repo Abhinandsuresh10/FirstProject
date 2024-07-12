@@ -60,7 +60,7 @@
                             }
                         })
                         .then(response => {
-                            console.log('Fetch response:', response); // Debug log
+                            console.log('Fetch response:', response); 
                             if (response.ok) {
                                 Swal.fire(
                                     'Recovered!',
@@ -78,7 +78,7 @@
                             }
                         })
                         .catch(error => {
-                            console.error('Fetch error:', error); // Debug log
+                            console.error('Fetch error:', error); 
                             Swal.fire(
                                 'Error!',
                                 'There was an error recovering the brand.',

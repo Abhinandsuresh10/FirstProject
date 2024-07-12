@@ -1214,3 +1214,991 @@ function showsnackbar(text) {
 
 
 <%- include('./footer.ejs') %>
+
+
+add product ejs
+
+<%- include('./adminHeader.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<div class="col-12 grid-margin stretch-card">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Basic form elements</h4>
+        <p class="card-description"> Basic form elements </p>
+        <form  id="productForm"  class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
+        
+          <div class="form-group">
+            <label for="exampleInputName1">Name</label>
+            <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" >
+            <small id="nameError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleSelectCategory">Category</label>
+            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" >
+              <option></option>
+              <% for(let i=0;i<categories.length;i++){ %>
+              <option><%= categories[i].name %></option>
+              <% } %>
+            </select>
+            <small id="categoryError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleSelectCategory">Brand</label>
+            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="brand" >
+              <option></option>
+              <% for(let i=0;i<brand.length;i++){ %>
+              <option><%= brand[i].name %></option>
+              <% } %>
+            </select>
+            <small id="brandError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Models</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="model" >
+            <small id="modelError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Material</label>
+            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="material" >
+            <small id="materialError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Price</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="price" >
+            <small id="priceError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">discount</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="discount" >
+            <small id="discountError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Stock</label>
+            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 15%;" name="stock" >
+            <small id="stockError" class="form-text text-danger"></small>
+          </div>
+          <div class="form-group">
+            <label for="exampleInputPassword4">Discription</label>
+            <textarea class="form-control" id="exampleInputPassword4" name="discription" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" ></textarea>
+            <small id="descriptionError" class="form-text text-danger"></small>
+          </div>
+
+          <div style="height: 100px; width: 30%;">
+            <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+            <input type="file" id="ocs-productImage" name="image"  class="form-control" multiple onchange="previewImages()">
+            <small id="imageError" class="form-text text-danger"></small>
+          </div>
+
+          <h4>Added images</h4>
+          <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
+
+          <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+
+          <div id="croppedImagesContainer"></div>
+
+          <button type="submit" class="btn btn-primary me-2">Submit</button>
+          <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+<!-- Cropping Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<!-- Include jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+
+<script>
+  function validateForm() {
+      let isValid = true;
+
+      // Get form elements
+      const name = document.getElementById('exampleInputName1');
+      const category = document.getElementById('exampleSelectCategory');
+      const brand = document.getElementById('exampleSelectBrand');
+      const model = document.getElementById('exampleInputModel');
+      const material = document.getElementById('exampleInputMaterial');
+      const price = document.getElementById('exampleInputPrice');
+      const discount = document.getElementById('exampleInputDiscount');
+      const stock = document.getElementById('exampleInputStock');
+      const description = document.getElementById('exampleInputDescription');
+      const image = document.getElementById('ocs-productImage');
+
+      // Clear previous error messages
+      document.getElementById('nameError').textContent = '';
+      document.getElementById('categoryError').textContent = '';
+      document.getElementById('brandError').textContent = '';
+      document.getElementById('modelError').textContent = '';
+      document.getElementById('materialError').textContent = '';
+      document.getElementById('priceError').textContent = '';
+      document.getElementById('discountError').textContent = '';
+      document.getElementById('stockError').textContent = '';
+      document.getElementById('descriptionError').textContent = '';
+      document.getElementById('imageError').textContent = '';
+
+      // Validate each field
+      if (name.value.trim() === '') {
+          document.getElementById('nameError').textContent = 'Name is required';
+          isValid = false;
+      }
+
+      if (category.value.trim() === '') {
+          document.getElementById('categoryError').textContent = 'Category is required';
+          isValid = false;
+      }
+
+      if (brand.value.trim() === '') {
+          document.getElementById('brandError').textContent = 'Brand is required';
+          isValid = false;
+      }
+
+      if (model.value.trim() === '') {
+          document.getElementById('modelError').textContent = 'Model is required';
+          isValid = false;
+      }
+
+      if (material.value.trim() === '') {
+          document.getElementById('materialError').textContent = 'Material is required';
+          isValid = false;
+      }
+
+      if (price.value.trim() === '' || price.value <= 0) {
+          document.getElementById('priceError').textContent = 'Price must be a positive number';
+          isValid = false;
+      }
+
+      if (discount.value.trim() === '' || discount.value < 0) {
+          document.getElementById('discountError').textContent = 'Discount cannot be negative';
+          isValid = false;
+      }
+
+      if (stock.value.trim() === '' || stock.value <= 0) {
+          document.getElementById('stockError').textContent = 'Stock must be a positive number';
+          isValid = false;
+      }
+
+      if (description.value.trim() === '') {
+          document.getElementById('descriptionError').textContent = 'Description is required';
+          isValid = false;
+      }
+
+      if (image.files.length === 0) {
+          document.getElementById('imageError').textContent = 'At least one image is required';
+          isValid = false;
+      }
+
+      return isValid;
+  }
+
+  function previewImages() {
+  }
+
+  function openCropModal() {
+  }
+</script>
+
+
+
+<script>
+  let croppers = [];
+  let cropperElements = [];
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      cropperElements = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+          });
+
+          croppers.push(cropper);
+          cropperElements.push(img);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('imagePreview');
+    croppedImagesContainer.innerHTML = '';
+
+    croppers.forEach((cropper, index) => {
+      const canvas = cropper.getCroppedCanvas();
+      const src = canvas.toDataURL();
+
+      const imgContainer = document.createElement('div');
+      imgContainer.style.position = 'relative';
+      imgContainer.style.margin = '10px';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.maxWidth = '100px';
+
+      const closeButton = document.createElement('span');
+      closeButton.innerHTML = '&times;';
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '5px';
+      closeButton.style.right = '5px';
+      closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+      closeButton.style.color = 'white';
+      closeButton.style.borderRadius = '50%';
+      closeButton.style.padding = '5px';
+      closeButton.style.cursor = 'pointer';
+      closeButton.addEventListener('click', () => {
+        croppers.splice(index, 1);
+        cropperElements.splice(index, 1);
+        imgContainer.remove();
+      });
+
+      imgContainer.appendChild(img);
+      imgContainer.appendChild(closeButton);
+      croppedImagesContainer.appendChild(imgContainer);
+    });
+
+    $('#cropModal').modal('hide');
+  }
+
+  function previewImages() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.margin = '10px';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+
+          const closeButton = document.createElement('span');
+          closeButton.innerHTML = '&times;';
+          closeButton.style.position = 'absolute';
+          closeButton.style.top = '5px';
+          closeButton.style.right = '5px';
+          closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+          closeButton.style.color = 'white';
+          closeButton.style.borderRadius = '50%';
+          closeButton.style.padding = '5px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.addEventListener('click', () => imgContainer.remove());
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(closeButton);
+          preview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  // Handle form submission
+  document.getElementById('productForm').addEventListener('submit', function (event) {
+    event.preventDefault(); // Prevent default form submission
+
+    const form = event.target;
+    const formData = new FormData(form);
+
+    // Remove original 'image' field from formData
+    formData.delete('image');
+
+    // Append cropped images as blobs
+    croppers.forEach((cropper, index) => {
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob(blob => {
+        formData.append('image', blob, `croppedImage${index}.png`);
+      });
+    });
+
+    // Wait for all blobs to be added to formData
+    setTimeout(() => {
+      fetch(form.action, {
+          method: form.method,
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/admin/products'; // Redirect on success
+          } else {
+            alert('An error occurred while submitting the form');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          alert('An error occurred while submitting the form');
+        });
+    }, 500); // Delay to ensure blobs are added to formData
+  });
+</script>
+
+
+<%- include('./adminFooter.ejs') %>
+
+
+edit product 
+
+<%- include('./adminHeader.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Basic form elements</h4>
+      <p class="card-description">Basic form elements</p>
+      <form id="productForm" class="forms-sample" method="post" action="/admin/insertEditProducts?pid=<%= product._id %>" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="exampleInputName1">Name</label>
+          <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" value="<%= product.name %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectCategory">Category</label>
+          <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" required>
+            <option><%= product.category %></option>
+            <% for(let i=0;i<categories.length;i++){ %>
+            <option><%=categories[i].name%></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectBrand">Brand</label>
+          <select class="form-control" id="exampleSelectBrand" style="color: rgb(252, 252, 252);width: 85%;" name="brand" required>
+            <option><%= product.brand %></option>
+            <% for(let i=0;i<brands.length;i++){ %>
+            <option><%=brands[i].name%></option>
+            <% } %>
+          </select>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputModel">Model</label>
+          <input type="text" class="form-control" id="exampleInputModel" style="color: rgb(252, 252, 252);width: 85%;" name="model" value="<%= product.model %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputMaterial">Material</label>
+          <input type="text" class="form-control" id="exampleInputMaterial" style="color: rgb(252, 252, 252);width: 85%;" name="material" value="<%= product.material %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPrice">Price</label>
+          <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;" name="price" value="<%= product.price %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPrice">discount</label>
+          <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputStock">Stock</label>
+          <input type="number" class="form-control" id="exampleInputStock" style="color: rgb(252, 252, 252);width: 15%;" name="stock" value="<%= product.stock %>" required>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDescription">Description</label>
+          <textarea class="form-control" id="exampleInputDescription" name="discription" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" required><%= product.discription %></textarea>
+        </div>
+
+        <h4>Images</h4>
+        <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
+          <% product.image.forEach((item, index) => { %>
+          <div style="position: relative; display: inline-block; margin: 10px;">
+            <img src="/static/productImages/<%= item %>" style="width: 100px; height: 100px; background-color: aliceblue;">
+            <span onclick="removeExistingImage(<%= index %>)" style="position: absolute; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.5); color: white; border-radius: 50%; padding: 5px; cursor: pointer;">&times;</span>
+            <input type="hidden" name="existingImages[]" value="<%= item %>">
+          </div>
+          <% }) %>
+        </div>
+
+        <div style="height: 100px; width: 30%;">
+          <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple onchange="previewImages()">
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+
+        <div id="croppedImagesContainer"></div>
+
+        <button type="submit" class="btn btn-primary me-2">Submit</button>
+        <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Cropping Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+
+<!-- Include jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  let croppers = [];
+
+  function previewImages() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.margin = '10px';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+
+          const closeButton = document.createElement('span');
+          closeButton.innerHTML = '&times;';
+          closeButton.style.position = 'absolute';
+          closeButton.style.top = '5px';
+          closeButton.style.right = '5px';
+          closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+          closeButton.style.color = 'white';
+          closeButton.style.borderRadius = '50%';
+          closeButton.style.padding = '5px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.addEventListener('click', () => imgContainer.remove());
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(closeButton);
+          preview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  function removeExistingImage(index) {
+    const existingImages = document.getElementsByName('existingImages[]');
+    if (existingImages[index]) {
+      existingImages[index].value = '';
+      const imgContainer = existingImages[index].parentElement;
+      imgContainer.style.display = 'none';
+    }
+  }
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            responsive: true
+          });
+
+          croppers.push(cropper);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('croppedImagesContainer');
+    croppedImagesContainer.innerHTML = '';
+
+    const promises = [];
+    croppers.forEach((cropper, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        cropper.getCroppedCanvas().toBlob((blob) => {
+          const croppedImg = new Image();
+          croppedImg.src = URL.createObjectURL(blob);
+          croppedImg.style.maxWidth = '100px';
+          croppedImg.style.margin = '10px';
+          croppedImagesContainer.appendChild(croppedImg);
+          resolve({ index, blob });
+        });
+      }));
+    });
+
+    Promise.all(promises).then((results) => {
+      results.forEach(({ index, blob }) => {
+        const file = document.getElementById('ocs-productImage').files[index];
+        const formData = new FormData();
+        formData.append('croppedImages[]', blob, file.name);
+      });
+
+      $('#cropModal').modal('hide');
+    });
+  }
+</script>
+
+
+  <%- include('./adminFooter.ejs') %>
+
+
+  address ejs 
+
+  <%- include('./header.ejs') %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<!-- Include Toastify CSS -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+
+<style>
+    .kpl-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        margin: 0;
+        background-color: #f9f9f9;
+        font-family: Arial, sans-serif;
+        padding: 7%;
+    }
+    .kpl-content {
+        width: 100%;
+        max-width: 800px;
+        padding: 20px;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .kpl-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 20px;
+    }
+    .kpl-title {
+        font-size: 24px;
+        color: #333;
+    }
+    .kpl-button {
+        padding: 10px 20px;
+        font-size: 16px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    .kpl-button-add {
+        background-color: #000000;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+    .kpl-address-list {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+    }
+    .kpl-address-item {
+        padding: 15px;
+        border: 1px solid #ccc;
+        border-radius: 10px;
+        background-color: #fff;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    .kpl-address-details {
+        font-size: 18px;
+        line-height: 1.6;
+        color: #555;
+    }
+    .kpl-button-container {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 10px;
+    }
+    .kpl-button-edit {
+        background-color: #1ba482;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+    .kpl-button-delete {
+        background-color: #f44336;
+        font-size: 13px;
+        font-weight: bolder;
+        color: white;
+    }
+</style>
+
+
+<div class="breadcrumbs" style="background-color: #f9f9f9;">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">home</a></span> / <span><a href="/userProfile" style="color: rgb(142, 142, 142);text-decoration: none;">profile</a></span> / <span style="color: rgb(142, 142, 142);">address</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
+
+<div class="kpl-container">
+    <div class="kpl-content">
+        <div class="kpl-header">
+            <div class="kpl-title" style="position: relative;left: 30%;font-family: Verdana, Geneva, Tahoma, sans-serif;">Manage Addresses</div>
+            <button class="kpl-button kpl-button-add" data-toggle="modal" data-target="#addAddressModal">Add Address</button>
+        </div>
+        <% for (let i = 0; i < address.length; i++) { %>
+            <div class="kpl-address-list">
+                <div class="kpl-address-item">
+                    <div class="kpl-address-details">
+                        <p><strong>Name:</strong> <span style="font-size: 15px;"> <%= address[i].name %></span></p>
+                        <p><strong>Mobile:</strong> <span style="font-size: 15px;"> <%= address[i].mobile%></span></p>
+                        <p><strong>Street:</strong> <span style="font-size: 15px;"> <%= address[i].street %></span></p>
+                        <p><strong>City:</strong> <span style="font-size: 15px;"> <%= address[i].city %></span></p>
+                        <p><strong>State:</strong> <span style="font-size: 15px;"> <%= address[i].state %></span></p>
+                        <p><strong>Zip Code:</strong> <span style="font-size: 15px;"> <%= address[i].zipcode %></span></p>
+                        <p><strong>Country:</strong> <span style="font-size: 15px;"> <%= address[i].country %></span></p>
+                    </div>
+                    <div class="kpl-button-container">
+                        <button class="kpl-button kpl-button-edit" data-toggle="modal" data-target="#editAddressModal">Edit</button>
+                        <button class="kpl-button kpl-button-delete" data-id="<%= address[i]._id %>">Delete</button>
+                    </div>
+                </div>
+            </div>
+            <br>
+
+            <!-- Edit Address Modal -->
+<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editAddressForm" action="/editAddress?id=<%=address[i]._id%>" method="POST">
+                  
+                    <div class="form-group">
+                        <label for="editName">Name</label>
+                        <input type="text" class="form-control" id="editName" placeholder="Enter name" value="<%=address[i].name%>" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editMobile">Mobile</label>
+                        <input type="text" class="form-control" id="editMobile" placeholder="Enter mobile number" value="<%=address[i].mobile%>" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editStreet">Street</label>
+                        <input type="text" class="form-control" id="editStreet" placeholder="Enter street" value="<%=address[i].street%>" name="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCity">City</label>
+                        <input type="text" class="form-control" id="editCity" placeholder="Enter city" value="<%=address[i].city%>" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editState">State</label>
+                        <input type="text" class="form-control" id="editState" placeholder="Enter state" value="<%=address[i].state%>" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editZip">Zip Code</label>
+                        <input type="text" class="form-control" id="editZip" placeholder="Enter zip code" value="<%=address[i].zipcode%>" name="zipcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editCountry">Country</label>
+                        <input type="text" class="form-control" id="editCountry" placeholder="Enter country" value="<%=address[i].country%>" name="country" required>
+                    </div>
+                    <!-- Ensure the buttons are inside the form -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+        <% } %>
+    </div>
+</div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="addAddressForm" action="/addAddress" method="POST">
+                    <div class="form-group">
+                        <label for="name">Name</label>
+                        <input type="text" class="form-control" id="name" placeholder="Enter name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile">Mobile</label>
+                        <input type="text" class="form-control" id="mobile" placeholder="Enter mobile number" name="mobile" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="street">Street</label>
+                        <input type="text" class="form-control" id="street" placeholder="Enter street" name="street" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="city">City</label>
+                        <input type="text" class="form-control" id="city" placeholder="Enter city" name="city" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="state">State</label>
+                        <input type="text" class="form-control" id="state" placeholder="Enter state" name="state" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="zip">Zip Code</label>
+                        <input type="text" class="form-control" id="zip" placeholder="Enter zip code" name="zipcode" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="country">Country</label>
+                        <input type="text" class="form-control" id="country" placeholder="Enter country" name="country" required>
+                    </div>
+                    <!-- Ensure the buttons are inside the form -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save Address</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+              <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+              </ul>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                <li><a href="#" class="py-2 d-block">Contact</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib.com</a>
+  <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+  </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  
+<!-- Include SweetAlert CDN -->
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.kpl-button-delete').forEach(button => {
+            button.addEventListener('click', function() {
+                const addressId = this.getAttribute('data-id');
+                    
+                    Swal.fire({
+                        title: 'Are you sure!',
+                        text: 'Are you sure you want to delete this address?',
+                        icon: 'question',
+                        showCancelButton: true,
+                        confirmButtonColor: '#3085d6',
+                        cancelButtonColor: '#d33',
+                        confirmButtonText: 'Yes, delete it!'
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        fetch(`/deleteAddress?id=${addressId}`, {
+                            method: 'GET',
+                            headers: {
+                                'Content-Type': 'application/json'
+                            }
+                        }).then(response => {
+                            if (response.ok) {
+                                return response.json(); // Assuming the backend returns JSON
+                            } else {
+                                throw new Error('Failed to delete address');
+                            }
+                        }).then(data => {
+                            // Store success message in localStorage
+                            localStorage.setItem('toastMessage', 'Address deleted successfully');
+
+                            // Reload the page after deletion
+                            window.location.reload();
+                        }).catch(error => {
+                            console.error('Error:', error);
+                            // Store error message in localStorage
+                            localStorage.setItem('toastMessage', 'Failed to delete address');
+
+                            // Reload the page after deletion
+                            window.location.reload();
+                        });
+                    }
+                });
+            });
+        });
+
+        // Check for stored toast message after page reload
+        const toastMessage = localStorage.getItem('toastMessage');
+        if (toastMessage) {
+            Toastify({
+                text: toastMessage,
+                duration: 3000, // Display duration in milliseconds
+                gravity: 'bottom', // Position of the toast message
+                position: 'right', // Position on the screen
+                backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+                stopOnFocus: true // Stops the toast from automatically fading out on hover
+            }).showToast();
+            
+            // Clear stored toast message
+            localStorage.removeItem('toastMessage');
+        }
+    });
+</script>
+<%- include('./footer.ejs') %>
+
+

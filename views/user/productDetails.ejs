@@ -135,13 +135,14 @@
               <div class="col-md-12">
                   <% if (product.stock > 0) { %>
                       <p style="color: green;"><span style="color: rgb(0, 0, 0);"><%= product.stock %></span> In stock</p>
+                    </div>
+                    <p><a href="#" class="btn btn-black py-3 px-5 cart-cls" >Add to Cart</a></p>
+                      </div>
                   <% } else { %>
                       <p style="color: red;">Out of stock</p>
                   <% } %>
               </div>
-          </div>
-          <p><a href="#" class="btn btn-black py-3 px-5 cart-cls" >Add to Cart</a></p>
-            </div>
+         
         </div>
     </div>
 </section>
@@ -383,6 +384,7 @@
                     gravity: 'bottom', 
                     position: 'right', 
                     backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+                    
                 }).showToast();
             } else {
                 Toastify({
@@ -392,6 +394,7 @@
                     position: 'right',
                     backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
                 }).showToast();
+                
             }
         } catch (error) {
             console.error('Error adding product to cart:', error);

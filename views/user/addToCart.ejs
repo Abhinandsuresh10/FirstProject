@@ -85,7 +85,7 @@
                         </thead>
                         <tbody>
                             <% cart.products.forEach(item => { %>
-                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>">
+                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>" data-stock="<%= item.productId.stock %>">
                                     <td class="product-remove">
                                         <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
                                             <span class="ion-ios-close"></span>
@@ -99,7 +99,7 @@
                                         <p><%= item.productId.description %></p>
                                     </td>
                                     <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
-                                    <td class="price">₹<%= item.productId.price.toFixed(2) %></td>
+                                    <td class="price" >₹<%= item.productId.price.toFixed(2) %></td>
                                     <td class="quantity">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -111,6 +111,7 @@
                                             </div>
                                         </div>
                                     </td>
+                                    
                                     <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
                                 </tr>
                             <% }); %>
@@ -142,7 +143,7 @@
                         <span id="cart-total">$0.00</span>
                     </p>
                 </div>
-                <p class="text-center"><a href="checkout.html" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+                <p class="text-center"><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
             </div>
         </div>
     </div>
@@ -231,83 +232,95 @@
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 
-<!-- <script>
+
+<script>
     document.addEventListener('DOMContentLoaded', function () {
         let productRows = document.querySelectorAll('.product-row');
         const subtotalElement = document.getElementById('sub-total');
         const deliveryElement = document.getElementById('delivery');
         const totalElement = document.getElementById('cart-total');
+        const discountAmountElement = document.getElementById('discount-amount');
         let deliveryCharge = 0;
-    
-  ty
+
         function updateTotal(row) {
             const quantityInput = row.querySelector('.quantity-input');
             const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+            const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
             const quantity = parseInt(quantityInput.value);
             const totalCell = row.querySelector('.total');
-            const total = (price * quantity).toFixed(2);
+            const total = ((price - discount) * quantity).toFixed(2); 
             if (totalCell) {
                 totalCell.textContent = `₹${total}`;
             }
-            updateSubtotal();
         }
-    
+
+        
         function updateSubtotal() {
             let subtotal = 0;
+            let totalDiscount = 0;
             productRows.forEach(function (row) {
-                if (row.parentNode) { 
+                if (row.parentNode) {
                     const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
+                    const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+                    const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+                    const quantity = parseInt(row.querySelector('.quantity-input').value);
+
                     subtotal += total;
+                    totalDiscount += (discount * quantity);
                 }
             });
-    
+
             subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-    
-         
-            if (subtotal < 500 && subtotal!== 0) {
+            discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
+
+            if (subtotal < 500 && subtotal !== 0) {
                 deliveryCharge = 40;
                 deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
             } else {
                 deliveryCharge = 0;
                 deliveryElement.textContent = '₹0.00';
             }
-    
-            const total = subtotal + deliveryCharge;
+
+            const total = subtotal + deliveryCharge - totalDiscount;
             totalElement.textContent = `₹${total.toFixed(2)}`;
         }
-    
-        
+
+
         productRows.forEach(function (row) {
-            updateTotal(row);
+            updateTotal(row); 
         });
-    
-      
+        updateSubtotal(); 
         productRows.forEach(function (row) {
             const decreaseButton = row.querySelector('.quantity-decrease');
             const increaseButton = row.querySelector('.quantity-increase');
             const quantityInput = row.querySelector('.quantity-input');
-    
+            const stock = parseInt(row.getAttribute('data-stock'));
+
             decreaseButton.addEventListener('click', function () {
                 let currentValue = parseInt(quantityInput.value);
                 if (currentValue > parseInt(quantityInput.min)) {
                     quantityInput.value = currentValue - 1;
                     updateTotal(row);
+                    updateSubtotal();
                 }
             });
-    
+
             increaseButton.addEventListener('click', function () {
-                let currentValue = parseInt(quantityInput.value);
-                if (currentValue < parseInt(quantityInput.max)) {
-                    quantityInput.value = currentValue + 1;
-                    updateTotal(row);
-                }
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < stock) {
+                quantityInput.value = currentQuantity + 1;
+                updateTotal(row);
+                updateSubtotal();
+            }
             });
-    
+
             quantityInput.addEventListener('input', function () {
                 updateTotal(row);
+                updateSubtotal();
             });
         });
-    
+
+        // Function to show snackbar
         function showsnackbar(text) {
             const snackbar = document.getElementById("snackbar");
             if (snackbar) {
@@ -318,13 +331,14 @@
                 }, 3000);
             }
         }
-    
+
+       
         const removeButtons = document.querySelectorAll('.remove-product');
         removeButtons.forEach(button => {
             button.addEventListener('click', async function (event) {
                 event.preventDefault();
                 const productId = this.getAttribute('data-product-id');
-    
+
                 try {
                     const response = await fetch(`/removeFromCart/${productId}`, {
                         method: 'POST',
@@ -332,18 +346,18 @@
                             'Content-Type': 'application/json'
                         },
                     });
-    
+
                     if (!response.ok) {
                         throw new Error('Failed to remove product from cart');
                     }
-    
+
                     const data = await response.json();
-    
+
                     if (data.success === true) {
                         showsnackbar('Product has been removed');
                         const rowToRemove = this.closest('tr');
                         rowToRemove.remove(); 
-                        productRows = document.querySelectorAll('.product-row');
+                        productRows = document.querySelectorAll('.product-row'); 
                         updateSubtotal(); 
                     } else {
                         throw new Error('Failed to remove product from cart');
@@ -355,142 +369,8 @@
             });
         });
     });
-    </script> -->
-    
+</script>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            let productRows = document.querySelectorAll('.product-row');
-            const subtotalElement = document.getElementById('sub-total');
-            const deliveryElement = document.getElementById('delivery');
-            const totalElement = document.getElementById('cart-total');
-            const discount = document.getElementById('discount')
-            let deliveryCharge = 0;
-            let discountAmount = 3.00; // Example discount amount, replace with your logic to fetch the discount
-    
-            // Function to update the total based on quantity and apply discount
-            function updateTotal(row) {
-                const quantityInput = row.querySelector('.quantity-input');
-                const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-                const quantity = parseInt(quantityInput.value);
-                const totalCell = row.querySelector('.total');
-                const total = (price * quantity).toFixed(2);
-                if (totalCell) {
-                    totalCell.textContent = `₹${total}`;
-                }
-                updateSubtotal();
-            }
-    
-            // Function to update the subtotal after applying discounts
-            function updateSubtotal() {
-                let subtotal = 0;
-                productRows.forEach(function (row) {
-                    if (row.parentNode) { // Check if the row is still in the DOM
-                        const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
-                        subtotal += total;
-                    }
-                });
-    
-
-    
-                subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-    
-                // Check for delivery charge
-                if (subtotal < 500 && subtotal !== 0) {
-                    deliveryCharge = 40;
-                    deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
-                } else {
-                    deliveryCharge = 0;
-                    deliveryElement.textContent = '₹0.00';
-                }
-    
-                const total = subtotal + deliveryCharge;
-                totalElement.textContent = `₹${total.toFixed(2)}`;
-            }
-    
-            // Initial total calculation on page load
-            productRows.forEach(function (row) {
-                updateTotal(row);
-            });
-    
-            // Event listeners for quantity buttons
-            productRows.forEach(function (row) {
-                const decreaseButton = row.querySelector('.quantity-decrease');
-                const increaseButton = row.querySelector('.quantity-increase');
-                const quantityInput = row.querySelector('.quantity-input');
-    
-                decreaseButton.addEventListener('click', function () {
-                    let currentValue = parseInt(quantityInput.value);
-                    if (currentValue > parseInt(quantityInput.min)) {
-                        quantityInput.value = currentValue - 1;
-                        updateTotal(row);
-                    }
-                });
-    
-                increaseButton.addEventListener('click', function () {
-                    let currentValue = parseInt(quantityInput.value);
-                    if (currentValue < parseInt(quantityInput.max)) {
-                        quantityInput.value = currentValue + 1;
-                        updateTotal(row);
-                    }
-                });
-    
-                quantityInput.addEventListener('input', function () {
-                    updateTotal(row);
-                });
-            });
-    
-            // Function to show snackbar
-            function showsnackbar(text) {
-                const snackbar = document.getElementById("snackbar");
-                if (snackbar) {
-                    snackbar.innerHTML = text;
-                    snackbar.classList.add('show');
-                    setTimeout(function () {
-                        snackbar.classList.remove('show');
-                    }, 3000);
-                }
-            }
-    
-            // Event listeners for remove buttons
-            const removeButtons = document.querySelectorAll('.remove-product');
-            removeButtons.forEach(button => {
-                button.addEventListener('click', async function (event) {
-                    event.preventDefault();
-                    const productId = this.getAttribute('data-product-id');
-    
-                    try {
-                        const response = await fetch(`/removeFromCart/${productId}`, {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json'
-                            },
-                        });
-    
-                        if (!response.ok) {
-                            throw new Error('Failed to remove product from cart');
-                        }
-    
-                        const data = await response.json();
-    
-                        if (data.success === true) {
-                            showsnackbar('Product has been removed');
-                            const rowToRemove = this.closest('tr');
-                            rowToRemove.remove(); // Remove the row from DOM
-                            productRows = document.querySelectorAll('.product-row'); // Update productRows after removal
-                            updateSubtotal(); // Update subtotal after removal
-                        } else {
-                            throw new Error('Failed to remove product from cart');
-                        }
-                    } catch (error) {
-                        console.error('Error removing product from cart:', error);
-                        showsnackbar('Error occurred');
-                    }
-                });
-            });
-        });
-    </script>
-    
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>

@@ -45,7 +45,8 @@ const userController = require('../controllers/userControllers.js');
 
 const userShopControllers = require('../controllers/userShopController.js');
 const userProfileController = require('../controllers/userProfileController.js');
-const cartController = require('../controllers/addToCartController.js')
+const cartController = require('../controllers/addToCartController.js');
+const checkoutController = require('../controllers/checkoutController.js')
 const passport = require('../config/googleAuth');
 
 userRoute.get('/auth/google',
@@ -94,6 +95,10 @@ userRoute.post('/editAddress',userProfileController.editAddress);
 
 userRoute.get('/cart',cartController.cartLoad);
 userRoute.post('/addToCart',cartController.insertCart);
-userRoute.post('/removeFromCart/:productId',cartController.deleteCart)
+userRoute.post('/removeFromCart/:productId',cartController.deleteCart);
+
+//checkout..
+
+userRoute.get('/checkout',checkoutController.loadCheckout)
 
 module.exports = userRoute;

@@ -37,8 +37,9 @@ const insertCart = async (req, res) => {
                 Cart.products.push({ productId, quantity: 1 });
             }
         }
-
+        
         await Cart.save();
+        
         res.json({ success: true, message: 'Product added to cart successfully.' });
     } catch (error) {
         console.error('Error adding product to cart:', error);

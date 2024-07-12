@@ -3,96 +3,116 @@
 
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
-      <div class="card-body">
-        <h4 class="card-title">Basic form elements</h4>
-        <p class="card-description"> Basic form elements </p>
-        <form  id="productForm"  class="forms-sample" method="post" action="/admin/insertProducts" enctype="multipart/form-data">
-        
-          <div class="form-group">
-            <label for="exampleInputName1">Name</label>
-            <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleSelectCategory">Category</label>
-            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" required>
-              <option></option>
-              <% for(let i=0;i<categories.length;i++){ %>
-              <option><%= categories[i].name %></option>
-              <% } %>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="exampleSelectCategory">Brand</label>
-            <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="brand" required>
-              <option></option>
-              <% for(let i=0;i<brand.length;i++){ %>
-              <option><%= brand[i].name %></option>
-              <% } %>
-            </select>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">Models</label>
-            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="model" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">Material</label>
-            <input type="text" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="material" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">Price</label>
-            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="price" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">discount</label>
-            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 85%;" name="discount" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">Stock</label>
-            <input type="number" class="form-control" id="exampleInputPassword4" style="color: rgb(252, 252, 252);width: 15%;" name="stock" required>
-          </div>
-          <div class="form-group">
-            <label for="exampleInputPassword4">Discription</label>
-            <textarea class="form-control" id="exampleInputPassword4" name="discription" style ="color: rgb(252, 252, 252);width: 85%; height: 80px;" required></textarea>
-          </div>
+        <div class="card-body">
+            <h4 class="card-title">Basic form elements</h4>
+            <p class="card-description"> Basic form elements </p>
+            <form id="productForm" class="forms-sample" method="post" action="/admin/insertProducts"
+                enctype="multipart/form-data">
 
-          <div style="height: 100px; width: 30%;">
-            <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
-            <input type="file" id="ocs-productImage" name="image"  class="form-control" multiple onchange="previewImages()">
-          </div>
+                <div class="form-group">
+                    <label for="exampleInputName1">Name</label>
+                    <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;"
+                        name="name">
+                    <small id="nameError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleSelectCategory">Category</label>
+                    <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" >
+                        <option></option>
+                        <% for(let i=0;i<categories.length;i++){ %>
+                        <option><%= categories[i].name %></option>
+                        <% } %>
+                    </select>
+                    <small id="categoryError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleSelectBrand">Brand</label>
+                    <select class="form-control" id="exampleSelectBrand" style="color: rgb(252, 252, 252);width: 85%;" name="brand">
+                        <option></option>
+                        <% for(let i=0;i<brand.length;i++){ %>
+                        <option><%= brand[i].name %></option>
+                        <% } %>
+                    </select>
+                    <small id="brandError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputModel">Model</label>
+                    <input type="text" class="form-control" id="exampleInputModel" style="color: rgb(252, 252, 252);width: 85%;"
+                        name="model">
+                    <small id="modelError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputMaterial">Material</label>
+                    <input type="text" class="form-control" id="exampleInputMaterial" style="color: rgb(252, 252, 252);width: 85%;"
+                        name="material">
+                    <small id="materialError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputPrice">Price</label>
+                    <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;"
+                        name="price">
+                    <small id="priceError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputDiscount">Discount</label>
+                    <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;"
+                        name="discount">
+                    <small id="discountError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputStock">Stock</label>
+                    <input type="number" class="form-control" id="exampleInputStock" style="color: rgb(252, 252, 252);width: 15%;"
+                        name="stock">
+                    <small id="stockError" class="form-text text-danger"></small>
+                </div>
+                <div class="form-group">
+                    <label for="exampleInputDescription">Description</label>
+                    <textarea class="form-control" id="exampleInputDescription" style="color: rgb(252, 252, 252);width: 85%; height: 80px;"
+                        name="description"></textarea>
+                    <small id="descriptionError" class="form-text text-danger"></small>
+                </div>
 
-          <h4>Added images</h4>
-          <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
+                <div style="height: 100px; width: 30%;">
+                    <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+                    <input type="file" id="ocs-productImage" name="image" class="form-control" multiple
+                        onchange="previewImages()">
+                    <small id="imageError" class="form-text text-danger"></small>
+                </div>
 
-          <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+                <h4>Added images</h4>
+                <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
 
-          <div id="croppedImagesContainer"></div>
+                <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
 
-          <button type="submit" class="btn btn-primary me-2">Submit</button>
-          <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
-        </form>
-      </div>
+                <div id="croppedImagesContainer"></div>
+
+                <button type="submit" class="btn btn-primary me-2">Submit</button>
+                <a href="/admin/products" class="btn btn-dark" style="text-decoration: none; color: white;">Cancel</a>
+            </form>
+        </div>
     </div>
-  </div>
+</div>
 
 <!-- Cropping Modal -->
-<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
-      </div>
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
@@ -100,6 +120,152 @@
 <!-- Include jQuery (necessary for Bootstrap's JavaScript plugins) -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<!-- Validation Script -->
+
+<script>
+  // Function to validate the form
+  function validateForm() {
+    let isValid = true;
+
+    // Get form elements
+    const name = document.getElementById('exampleInputName1');
+    const category = document.getElementById('exampleSelectCategory');
+    const brand = document.getElementById('exampleSelectBrand');
+    const model = document.getElementById('exampleInputModel');
+    const material = document.getElementById('exampleInputMaterial');
+    const price = document.getElementById('exampleInputPrice');
+    const discount = document.getElementById('exampleInputDiscount');
+    const stock = document.getElementById('exampleInputStock');
+    const description = document.getElementById('exampleInputDescription');
+    const image = document.getElementById('ocs-productImage');
+
+    // Clear previous error messages
+    clearError('nameError');
+    clearError('categoryError');
+    clearError('brandError');
+    clearError('modelError');
+    clearError('materialError');
+    clearError('priceError');
+    clearError('discountError');
+    clearError('stockError');
+    clearError('descriptionError');
+    clearError('imageError');
+
+    // Validate each field
+    if (name.value.trim() === '') {
+      showError('nameError', 'Name is required');
+      isValid = false;
+    }
+
+    if (category.value.trim() === '') {
+      showError('categoryError', 'Category is required');
+      isValid = false;
+    }
+
+    if (brand.value.trim() === '') {
+      showError('brandError', 'Brand is required');
+      isValid = false;
+    }
+
+    if (model.value.trim() === '') {
+      showError('modelError', 'Model is required');
+      isValid = false;
+    }
+
+    if (material.value.trim() === '') {
+      showError('materialError', 'Material is required');
+      isValid = false;
+    }
+
+    if (price.value.trim() === '' || price.value <= 0) {
+      showError('priceError', 'Price must be a positive number');
+      isValid = false;
+    }
+
+    if (discount.value.trim() === '' || discount.value < 0) {
+      showError('discountError', 'Discount cannot be negative');
+      isValid = false;
+    }
+
+    if (stock.value.trim() === '' || stock.value <= 0) {
+      showError('stockError', 'Stock must be a positive number');
+      isValid = false;
+    }
+
+    if (description.value.trim() === '') {
+      showError('descriptionError', 'Description is required');
+      isValid = false;
+    }
+
+    if (image.files.length <= 2) {
+      showError('imageError', 'At least three image is required');
+      isValid = false;
+    }
+
+    return isValid;
+  }
+
+  // Function to clear error messages
+  function clearError(errorId) {
+    document.getElementById(errorId).textContent = '';
+  }
+
+  // Function to show error messages
+  function showError(errorId, errorMessage) {
+    document.getElementById(errorId).textContent = errorMessage;
+  }
+
+  // Event listeners to clear validation errors on input change
+  document.getElementById('exampleInputName1').addEventListener('input', function () {
+    clearError('nameError');
+  });
+
+  document.getElementById('exampleSelectCategory').addEventListener('change', function () {
+    clearError('categoryError');
+  });
+
+  document.getElementById('exampleSelectBrand').addEventListener('change', function () {
+    clearError('brandError');
+  });
+
+  document.getElementById('exampleInputModel').addEventListener('input', function () {
+    clearError('modelError');
+  });
+
+  document.getElementById('exampleInputMaterial').addEventListener('input', function () {
+    clearError('materialError');
+  });
+
+  document.getElementById('exampleInputPrice').addEventListener('input', function () {
+    clearError('priceError');
+  });
+
+  document.getElementById('exampleInputDiscount').addEventListener('input', function () {
+    clearError('discountError');
+  });
+
+  document.getElementById('exampleInputStock').addEventListener('input', function () {
+    clearError('stockError');
+  });
+
+  document.getElementById('exampleInputDescription').addEventListener('input', function () {
+    clearError('descriptionError');
+  });
+
+  document.getElementById('ocs-productImage').addEventListener('change', function () {
+    clearError('imageError');
+  });
+
+  // Handle form submission
+  document.getElementById('productForm').addEventListener('submit', function (event) {
+    if (!validateForm()) {
+      event.preventDefault(); // Prevent form submission if validation fails
+    }
+  });
+</script>
+
+
 
 <script>
   let croppers = [];
@@ -224,8 +390,10 @@
     }
   }
 
-  // Handle form submission
   document.getElementById('productForm').addEventListener('submit', function (event) {
+  if (!validateForm()) {
+    event.preventDefault(); // Prevent form submission if validation fails
+  } else {
     event.preventDefault(); // Prevent default form submission
 
     const form = event.target;
@@ -260,12 +428,8 @@
           alert('An error occurred while submitting the form');
         });
     }, 500); // Delay to ensure blobs are added to formData
-  });
+  }
+});
 </script>
 
-
 <%- include('./adminFooter.ejs') %>
-
-
-
-

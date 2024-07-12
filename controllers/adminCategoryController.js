@@ -10,7 +10,7 @@ const categoryLoad = async(req,res)=>{
     try {
         
         const userList = await Category.find({is_delete:false});
-        res.render('category',{categories:userList});
+        res.render('category',{categories:userList,message:''});
     } catch (error) {
         console.log(error.message);
     }
@@ -20,15 +20,24 @@ const addCategory = async(req,res)=>{
     
        const {categoryName} = req.body;
     try {
+
+        const same = await Category.findOne({name:categoryName},{is_delete:true});
+        const userList = await Category.find({is_delete:false});
+
+        if(same){
+            res.render('category',{categories:userList,message:'already existed category'})
+        }else{
+            const newCategory = new Category({
+                name:categoryName,
+                is_delete:false
+            });
+           
+            await newCategory.save();
+         
+            res.redirect('/admin/category');
+        }
         
-        const newCategory = new Category({
-            name:categoryName,
-            is_delete:false
-        });
        
-        await newCategory.save();
-     
-        res.redirect('/admin/category');
 
     } catch (error) {
         console.log(error.message)
