@@ -42,7 +42,8 @@
                                 <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name%></a></h3>
                                 <div class="d-flex">
                                     <div class="pricing">
-                                        <p class="price"><span class="price-sale">₹<%= product[i].price - 150%></span></p>
+                                      <p class="price"><del><span class="price-sale">₹<%= product[i].price %></span></del>&nbsp;&nbsp;<span class="price-sale">₹<%= product[i].price - product[i].discount%></span></p>
+                                   
                                     </div>
                                   
                                 </div>

@@ -1,4 +1,31 @@
 <%-include ('./header.ejs') %>
+<style>
+  .card-shadow {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
+  }
+  .card-body {
+      padding: 0.5rem 1rem;
+  }
+  .underline {
+            border-bottom: 1px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .card.card-shadow {
+    margin-bottom: 20px;
+}
+
+.d-none {
+    display: none; /* Hide addresses */
+}
+.btn:hover {
+  transform: scale(1.2);
+  transition: 5s;
+}
+</style>
+
 
 <div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
     <div class="container">
@@ -11,88 +38,144 @@
     </div>
   </div>
 
+  <!-- address details -->
+
+  <div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="mb-4">Address Details</h3>
+
+            <% address.forEach(function(address, index) { %>
+            <div class="card card-shadow d-none"> <!-- Add d-none class to initially hide addresses -->
+                <div class="underline">
+                    <label for="checkbox-<%= index %>"></label>
+                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox">
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="name"><%= address.name %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="mobile" class="col-sm-2 col-form-label">Mobile</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="mobile"><%= address.mobile %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="street" class="col-sm-2 col-form-label">Street</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="street"><%= address.street %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="city" class="col-sm-2 col-form-label">City</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="city"><%= address.city %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="state" class="col-sm-2 col-form-label">State</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="state"><%= address.state %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="zip" class="col-sm-2 col-form-label">Zip Code</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="zip"><%= address.zipcode %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="country" class="col-sm-2 col-form-label">Country</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="country"><%= address.country %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+
+            <!-- Button to toggle addresses -->
+            <button type="button" id="toggleAddressesBtn" class="btn btn-primary mt-3">Show Addresses</button>
+
+        </div>
+    </div>
+</div>
+
+<!-- details ends -->
+
   <section class="ftco-section">
     <div class="container">
       <div class="row justify-content-center">
         <div class="col-xl-8 ftco-animate">
                       <form action="#" class="billing-form">
-                          <h3 class="mb-4 billing-heading">Billing Details</h3>
+                         
                 <div class="row align-items-end">
                     <div class="col-md-6">
                   <div class="form-group">
-                      <label for="firstname">Firt Name</label>
-                    <input type="text" class="form-control" placeholder="">
+            
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="lastname">Last Name</label>
-                    <input type="text" class="form-control" placeholder="">
+               
                   </div>
               </div>
               <div class="w-100"></div>
                   <div class="col-md-12">
                       <div class="form-group">
-                          <label for="country">State / Country</label>
+                   
                           <div class="select-wrap">
-                        <div class="icon"><span class="ion-ios-arrow-down"></span></div>
-                        <select name="" id="" class="form-control">
-                            <option value="">France</option>
-                          <option value="">Italy</option>
-                          <option value="">Philippines</option>
-                          <option value="">South Korea</option>
-                          <option value="">Hongkong</option>
-                          <option value="">Japan</option>
-                        </select>
+                        <div class="icon"></div>
+                        
                       </div>
                       </div>
                   </div>
                   <div class="w-100"></div>
                   <div class="col-md-6">
-                      <div class="form-group">
-                      <label for="streetaddress">Street Address</label>
-                    <input type="text" class="form-control" placeholder="House number and street name">
+                     
                   </div>
                   </div>
                   <div class="col-md-6">
                       <div class="form-group">
-                    <input type="text" class="form-control" placeholder="Appartment, suite, unit etc: (optional)">
+                   
                   </div>
                   </div>
                   <div class="w-100"></div>
                   <div class="col-md-6">
                       <div class="form-group">
-                      <label for="towncity">Town / City</label>
-                    <input type="text" class="form-control" placeholder="">
+                     
+                 
                   </div>
                   </div>
                   <div class="col-md-6">
                       <div class="form-group">
-                          <label for="postcodezip">Postcode / ZIP *</label>
-                    <input type="text" class="form-control" placeholder="">
+                      
+               
                   </div>
                   </div>
                   <div class="w-100"></div>
                   <div class="col-md-6">
                   <div class="form-group">
-                      <label for="phone">Phone</label>
-                    <input type="text" class="form-control" placeholder="">
+                   
                   </div>
                 </div>
                 <div class="col-md-6">
                   <div class="form-group">
-                      <label for="emailaddress">Email Address</label>
-                    <input type="text" class="form-control" placeholder="">
+                   
                   </div>
               </div>
               <div class="w-100"></div>
               <div class="col-md-12">
-                  <div class="form-group mt-4">
+                  <!-- <div class="form-group mt-4">
                                       <div class="radio">
                                         <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
                                         <label><input type="radio" name="optradio"> Ship to different address</label>
                                       </div>
-                                  </div>
+                                  </div> -->
               </div>
               </div>
             </form><!-- END -->
@@ -125,17 +208,11 @@
                 <div class="col-md-6">
                     <div class="cart-detail bg-light p-3 p-md-4">
                         <h3 class="billing-heading mb-4">Payment Method</h3>
+                               
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Direct Bank Tranfer</label>
-                                          </div>
-                                      </div>
-                                  </div>
-                                  <div class="form-group">
-                                      <div class="col-md-12">
-                                          <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Check Payment</label>
+                                             <label><input type="radio" name="optradio" class="mr-2"> Cash on delivery</label>
                                           </div>
                                       </div>
                                   </div>
@@ -161,6 +238,9 @@
       </div>
     </div>
   </section> <!-- .section -->
+
+
+
 
   <footer class="ftco-footer bg-light ftco-section">
     <div class="container">
@@ -240,6 +320,56 @@
 
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+      const toggleAddressesBtn = document.getElementById('toggleAddressesBtn');
+      const checkboxes = document.querySelectorAll('.address-checkbox');
+
+      checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+          checkbox.disabled = true; 
+      });
+
+      if (toggleAddressesBtn) {
+          toggleAddressesBtn.addEventListener('click', function() {
+              const addresses = document.querySelectorAll('.card.card-shadow');
+              addresses.forEach(address => {
+                  address.classList.toggle('d-none');
+              });
+
+             
+              checkboxes.forEach(checkbox => {
+                  checkbox.disabled = false;
+              });
+
+              
+              if (this.innerText === 'Show Addresses') {
+                  this.innerText = 'Hide Addresses';
+              } else {
+                  this.innerText = 'Show Addresses';
+               
+                  checkboxes.forEach(checkbox => {
+                      checkbox.checked = false;
+                  });
+              }
+          });
+      }
+
+     
+      checkboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+              if (this.checked) {
+                  checkboxes.forEach(otherCheckbox => {
+                      if (otherCheckbox !== this) {
+                          otherCheckbox.checked = false;
+                      }
+                  });
+              }
+          });
+      });
+  });
+</script>
 
 
 <script src="/static/user/js/jquery.min.js"></script>

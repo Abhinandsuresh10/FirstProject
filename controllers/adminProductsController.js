@@ -122,31 +122,6 @@ const editProduct = async (req, res) => {
     }
 }
 
-// const editProduct = async(req,res)=>{
-//     try {
-//         const imagePaths = req.files.map(file => file.filename);
-      
-//         const {name,category,brand,model,material,price,stock,discription} = req.body;
-//         const id = req.query.pid;
-//         await prducts.updateOne({_id:id},{$set:{
-//             name:name,
-//             category:category,
-//             brand:brand,
-//             model:model,
-//             material:material,
-//             price:price,
-//             stock:stock,
-//             discription:discription,
-//             image:imagePaths
-//         }});
-     
-//         const isProducts = await prducts.find({is_delete:false});
-//         res.render('products',{product:isProducts});
-
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
 
 module.exports = {
     productsLoad,

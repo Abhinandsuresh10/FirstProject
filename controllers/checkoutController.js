@@ -1,9 +1,11 @@
-
+const address = require('../models/addressModel')
 
 
 const loadCheckout = async(req,res)=>{
     try {
-        res.render('checkout',{isLoggedIn : req.session.userData})
+        const id = req.session.userData._id;
+        const addresses = await address.find({userId : id})
+        res.render('checkout',{isLoggedIn : req.session.userData,address:addresses})
     } catch (error) {
         console.log(error.message)
     }

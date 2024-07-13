@@ -7,9 +7,8 @@ const bcrypt = require('bcrypt');
 const loadProfile = async(req,res)=>{
     try {
       const id = req.session.userData._id;
-      const users = await user.findOne({_id:id});
-      
-      
+      const users = await user.findOne({_id : id});
+
     res.render('userProfile',{isLoggedIn : req.session.userData,users})
     } catch (error) {
         console.log(error.message);
@@ -18,7 +17,9 @@ const loadProfile = async(req,res)=>{
 
 const loadAddress = async(req,res)=>{
     try {
-        const addresses = await address.find();
+        const id = req.session.userData._id;
+        const addresses = await address.find({userId : id});
+        console.log(address);
         res.render('address',{isLoggedIn : req.session.userData,address:addresses})
     } catch (error) {
         console.log(error.message);
@@ -125,13 +126,11 @@ const changePassword = async(req,res)=>{
             return res.status(404).json({ success: false, message: 'User not found' });
         }
 
-        // Compare current password with the hashed password in the database
         const isMatch = await bcrypt.compare(currentPassword, User.password);
         if (!isMatch) {
             return res.status(400).json({ success: false, message: 'Current password is incorrect' });
         }
 
-        // Hash the new password and update the user record
         const salt = await bcrypt.genSalt(10);
         User.password = await bcrypt.hash(newPassword, salt);
         await User.save();

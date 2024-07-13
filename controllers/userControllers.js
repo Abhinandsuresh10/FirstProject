@@ -110,23 +110,23 @@ const verifyOtp = async (req, res) => {
     try {
         const { otp } = req.body;
         if (otp == req.session.otp) {
-            // Handle successful OTP verification
+        
             const userData = new User(req.session.userData);
             const savedUser = await userData.save();
 
             if (savedUser) {
                 delete req.session.otp;
                  req.session.userData = userData;
-                res.status(201).json({ message: 'OTP verification successful' }); // Send success message
+                res.status(201).json({ message: 'OTP verification successful' }); 
             } else {
-                res.status(400).json({ message: 'Failed to register user' }); // Send failure message
+                res.status(400).json({ message: 'Failed to register user' }); 
             }
         } else {
-            res.status(400).json({ message: 'Invalid OTP. Please try again.' }); // Send OTP error message
+            res.status(400).json({ message: 'Invalid OTP. Please try again.' }); 
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'OTP verification failed' }); // Handle server error
+        res.status(500).json({ message: 'OTP verification failed' });
     }
 };
 
@@ -154,10 +154,11 @@ const verifyLogin = async(req,res)=>{
       
          const userData = await User.findOne({email:email});
 
-        if(userData.is_blocked){
-          return  res.render('login',{message:'user is blocked',data: {email,password},isLoggedIn : req.session.userData })
-             }
-        if(userData){
+         if(userData){
+            
+            if(userData.is_blocked){
+              return  res.render('login',{message:'user is blocked',data: {email,password},isLoggedIn : req.session.userData })
+          }
 
         const passwordMatch = await bcrypt.compare(password,userData.password);
      if(passwordMatch){
