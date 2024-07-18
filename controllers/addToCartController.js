@@ -47,6 +47,9 @@ const insertCart = async (req, res) => {
     }
 };
 
+
+
+
 const deleteCart = async(req,res)=>{
  
     const { productId } = req.params;
@@ -69,8 +72,32 @@ const deleteCart = async(req,res)=>{
     }
 }
 
+
+ const quantityAdd = async(req,res)=>{
+    try {
+        const { productId, quantity } = req.body;
+        const userId = req.session.userData._id;
+
+        let Cart = await cart.findOneAndUpdate(
+            { userId, 'products.productId': productId },
+            { $set: { 'products.$.quantity': quantity } },
+            { new: true }
+        );
+
+        if (!Cart) {
+            return res.status(404).json({ success: false, message: 'Cart or product not found.' });
+        }
+
+        res.json({ success: true, message: 'Cart quantity updated successfully.' });
+    } catch (error) {
+        console.log(error.message)
+    }
+ }
+
+
 module.exports = {
     cartLoad,
     insertCart,
-    deleteCart
+    deleteCart,
+    quantityAdd
 }

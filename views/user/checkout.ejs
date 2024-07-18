@@ -1,4 +1,11 @@
 <%-include ('./header.ejs') %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .validation-message {
+    color: red;
+    font-size: 0.875em;
+  }
+</style>
 <style>
   .card-shadow {
       box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -24,6 +31,48 @@
   transform: scale(1.2);
   transition: 5s;
 }
+
+
+.cart-section {
+    background-color: #eeeeee; 
+    padding: 8px; 
+    border-radius: 8px;
+    margin-top: 20px;
+    width: 50%; 
+    margin: 0 auto; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.cart-header {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.cart-items ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-item {
+    background-color: #FFF;
+    padding: 6px; 
+    margin-bottom: 6px; 
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
+    font-size: 14px; 
+}
+
+.cart-empty {
+    text-align: center;
+    padding: 10px;
+    background-color: #FFF;
+    border-radius: 5px;
+    margin-top: 10px; 
+    font-size: 16px; 
+}
+
 </style>
 
 
@@ -46,7 +95,7 @@
             <h3 class="mb-4">Address Details</h3>
 
             <% address.forEach(function(address, index) { %>
-            <div class="card card-shadow d-none"> <!-- Add d-none class to initially hide addresses -->
+            <div class="card card-shadow d-none">
                 <div class="underline">
                     <label for="checkbox-<%= index %>"></label>
                     <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox">
@@ -99,8 +148,10 @@
             <% }); %>
 
             <!-- Button to toggle addresses -->
-            <button type="button" id="toggleAddressesBtn" class="btn btn-primary mt-3">Show Addresses</button>
-
+            <button type="button" id="toggleAddressesBtn" class="btn btn-primary mt-3">Show Addresses</button><br><br>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal">
+              Add Address
+            </button>
         </div>
     </div>
 </div>
@@ -181,30 +232,54 @@
             </form><!-- END -->
 
 
+            <div class="cart-section">
+              <% if (cart && cart.products && cart.products.length > 0) { %>
+                  <div class="cart-header">
+                      <h4>Your Items</h4>
+                  </div>
+                  <div class="cart-items">
+                      <ul>
+                          <% cart.products.forEach(product => { %>
+                              <li class="cart-item">
+                                  <h6><%= product.productId.name %></h6>
+                                  <p>Quantity: <%= product.quantity %></p>
+                                  <p>Price: ₹<%= product.productId.price.toFixed(2) %></p>
+                              </li>
+                          <% }); %>
+                      </ul>
+                  </div>
+              <% } else { %>
+                  <div class="cart-empty">
+                      <p>Your cart is empty.</p>
+                  </div>
+              <% } %>
+          </div>
+
+
 
             <div class="row mt-5 pt-3 d-flex">
-                <div class="col-md-6 d-flex">
-                    <div class="cart-detail cart-total bg-light p-3 p-md-4">
-                        <h3 class="billing-heading mb-4">Cart Total</h3>
-                        <p class="d-flex">
-                                  <span>Subtotal</span>
-                                  <span>$20.60</span>
-                              </p>
-                              <p class="d-flex">
-                                  <span>Delivery</span>
-                                  <span>$0.00</span>
-                              </p>
-                              <p class="d-flex">
-                                  <span>Discount</span>
-                                  <span>$3.00</span>
-                              </p>
-                              <hr>
-                              <p class="d-flex total-price">
-                                  <span>Total</span>
-                                  <span>$17.60</span>
-                              </p>
-                              </div>
+              <div class="col-md-6 d-flex">
+                <div class="cart-detail cart-total bg-light p-3 p-md-4">
+                    <h3 class="billing-heading mb-4">Cart Total</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span id="sub-total">₹subtotal </span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span id="delivery">₹deliveryCharge</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span id="discount-amount">₹ discountAmount </span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span id="cart-total">₹total </span>
+                    </p>
                 </div>
+            </div>
                 <div class="col-md-6">
                     <div class="cart-detail bg-light p-3 p-md-4">
                         <h3 class="billing-heading mb-4">Payment Method</h3>
@@ -320,6 +395,175 @@
 
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="addAddressForm" action="/addAddressCheckout" method="POST">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name">
+            <span class="validation-message" id="nameValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="tel" class="form-control" id="mobile" name="mobile">
+            <span class="validation-message" id="mobileValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="street">Street</label>
+            <input type="text" class="form-control" id="street" name="street">
+            <span class="validation-message" id="streetValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" name="city">
+            <span class="validation-message" id="cityValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <input type="text" class="form-control" id="state" name="state">
+            <span class="validation-message" id="stateValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="zip">Zip Code</label>
+            <input type="text" class="form-control" id="zip" name="zipcode">
+            <span class="validation-message" id="zipValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" class="form-control" id="country" name="country">
+            <span class="validation-message" id="countryValidation"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>&nbsp;&nbsp;
+          <button type="submit" class="btn btn-primary">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function updateCartTotalFromLocalStorage() {
+    // Retrieve values from localStorage
+    let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+    let totalDiscount = parseFloat(localStorage.getItem('cartDiscount')) || 0;
+    let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+    let total = parseFloat(localStorage.getItem('cartTotal')) || 0;
+
+    // Update DOM elements
+    document.getElementById('sub-total').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('delivery').textContent = `₹${deliveryCharge.toFixed(2)}`;
+    document.getElementById('discount-amount').textContent = `₹${totalDiscount.toFixed(2)}`;
+    document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+}
+
+// Call the function to update the cart total initially
+updateCartTotalFromLocalStorage();
+
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('addAddressForm');
+
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        let isValid = true;
+
+        const name = form.querySelector('#name');
+        const mobile = form.querySelector('#mobile');
+        const street = form.querySelector('#street');
+        const city = form.querySelector('#city');
+        const state = form.querySelector('#state');
+        const zip = form.querySelector('#zip');
+        const country = form.querySelector('#country');
+
+        form.querySelectorAll('.validation-message').forEach(el => {
+          el.textContent = ''; 
+          el.style.display = 'none'; 
+        });
+        form.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
+        if (!name.value.trim() || name.value.startsWith(' ')) {
+          name.classList.add('is-invalid');
+          document.getElementById('nameValidation').textContent = 'Name is required';
+          document.getElementById('nameValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
+          mobile.classList.add('is-invalid');
+          document.getElementById('mobileValidation').textContent = 'Invalid mobile number';
+          document.getElementById('mobileValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!street.value.trim()) {
+          street.classList.add('is-invalid');
+          document.getElementById('streetValidation').textContent = 'Street is required';
+          document.getElementById('streetValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!city.value.trim()) {
+          city.classList.add('is-invalid');
+          document.getElementById('cityValidation').textContent = 'City is required';
+          document.getElementById('cityValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!state.value.trim()) {
+          state.classList.add('is-invalid');
+          document.getElementById('stateValidation').textContent = 'State is required';
+          document.getElementById('stateValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!zip.value.trim() || !/^\d{6}$/.test(zip.value)) {
+          zip.classList.add('is-invalid');
+          document.getElementById('zipValidation').textContent = 'ZIP code must be exactly 6 digits';
+          document.getElementById('zipValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!country.value.trim()) {
+          country.classList.add('is-invalid');
+          document.getElementById('countryValidation').textContent = 'Country is required';
+          document.getElementById('countryValidation').style.display = 'block';
+          isValid = false;
+        }
+
+        if (isValid) {
+      
+          form.submit();
+        }
+      });
+e
+      form.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+          const validationMessage = input.nextElementSibling;
+          if (validationMessage.textContent) {
+            validationMessage.textContent = '';
+            validationMessage.style.display = 'none';
+            input.classList.remove('is-invalid');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+
 
 <script>
   document.addEventListener('DOMContentLoaded', (event) => {

@@ -1,3 +1,4 @@
+
 <%- include('./adminHeader.ejs') %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 
@@ -77,7 +78,7 @@
 
         <div style="height: 100px; width: 30%;">
           <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
-          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple onchange="previewImages()">
+          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple accept="image/*" onchange="previewImages()">
         </div>
 
         <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>

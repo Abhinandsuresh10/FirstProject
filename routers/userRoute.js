@@ -74,8 +74,8 @@ userRoute.get('/logout',userController.userLogout);
 
 //shop controls
 
-userRoute.get('/productShop',userAuth.isLogin,userShopControllers.shopLoad);
-userRoute.get('/productDetails',userAuth.isLogin,userShopControllers.loadProductDetails);
+userRoute.get('/productShop',userShopControllers.shopLoad);
+userRoute.get('/productDetails',userShopControllers.loadProductDetails);
 
 //profile..
 
@@ -96,9 +96,11 @@ userRoute.post('/editAddress',userProfileController.editAddress);
 userRoute.get('/cart',cartController.cartLoad);
 userRoute.post('/addToCart',cartController.insertCart);
 userRoute.post('/removeFromCart/:productId',cartController.deleteCart);
+userRoute.post('/updateCartQuantity',cartController.quantityAdd)
 
 //checkout..
 
-userRoute.get('/checkout',checkoutController.loadCheckout)
+userRoute.get('/checkout',checkoutController.loadCheckout);
+userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress)
 
 module.exports = userRoute;

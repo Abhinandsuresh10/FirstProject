@@ -133,6 +133,7 @@
          
               <div class="w-100"></div>
               <div class="col-md-12">
+                <% if (isLoggedIn) { %>
                   <% if (product.stock > 0) { %>
                       <p style="color: green;"><span style="color: rgb(0, 0, 0);"><%= product.stock %></span> In stock</p>
                     </div>
@@ -140,6 +141,7 @@
                       </div>
                   <% } else { %>
                       <p style="color: red;">Out of stock</p>
+                  <% } %>
                   <% } %>
               </div>
          

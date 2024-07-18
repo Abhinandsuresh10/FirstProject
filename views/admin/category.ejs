@@ -43,11 +43,12 @@
                                             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                                         </div>
                                         <div class="modal-body">
-                                            <form method="post" action="/admin/editCategory">
+                                            <form id="editForm<%= i %>" method="post" action="/admin/editCategory">
                                                 <div class="mb-3">
                                                     <label for="categoryName<%= i %>" class="form-label">Category Name</label>
-                                                    <input type="text" class="form-control" style="color: aliceblue;" id="categoryName<%= i %>" name="categoryName" placeholder="Enter category name" value="<%= category.name %>">
+                                                    <input type="text" class="form-control" style="color: aliceblue;" id="categoryName<%= i %>" name="categoryName" placeholder="Enter category name" value="<%= category.name %>" required>
                                                     <input type="hidden" name="categoryId" value="<%= category._id %>">
+                                                    <div id="categoryNameError<%= i %>" style="color: red; display: none;">Please enter a category name.</div>
                                                 </div>
                                         </div>
                                         <div class="modal-footer">
@@ -83,19 +84,19 @@
                 <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
-            <div class="modal-body">
-                <form method="post" action="/admin/category ">
+            <form id="addCategoryForm" method="post" action="/admin/category">
+                <div class="modal-body">
                     <div class="mb-3">
                         <label for="categoryName" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" style="color: aliceblue;" id="categoryName" name="categoryName" placeholder="Enter category name">
+                        <input type="text" class="form-control" style="color: aliceblue;" id="categoryName" name="categoryName" placeholder="Enter category name" required>
+                        <div id="categoryNameError" style="color: red; display: none;">Please enter a category name.</div>
                     </div>
-              
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                <button type="submit" class="btn btn-primary">Save changes</button>
-            </div>
-        </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button id="addCategorySubmit" type="submit" class="btn btn-primary">Save changes</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -110,6 +111,32 @@
 
 </script>
 
+<script>
+    document.getElementById('addCategoryForm').addEventListener('submit', function(event) {
+        const categoryName = document.getElementById('categoryName').value.trim();
+        if (categoryName === '') {
+            document.getElementById('categoryNameError').style.display = 'block';
+            event.preventDefault(); 
+        }
+    });
+
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const forms = document.querySelectorAll('[id^="editForm"]');
+        forms.forEach(form => {
+            form.addEventListener('submit', function(event) {
+                const index = form.id.replace('editForm', '');
+                const categoryName = document.getElementById(`categoryName${index}`).value.trim();
+                if (categoryName === '') {
+                    document.getElementById(`categoryNameError${index}`).style.display = 'block';
+                    event.preventDefault(); // Prevent form submission
+                }
+            });
+        });
+    });
+</script>
 
 <script>
     document.querySelectorAll('.delete-btn').forEach(button => {

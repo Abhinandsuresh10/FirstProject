@@ -2202,3 +2202,1572 @@ edit product
 <%- include('./footer.ejs') %>
 
 
+
+
+
+
+edit prduct page 
+
+
+
+
+
+<%- include('./adminHeader.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Basic form elements</h4>
+      <p class="card-description">Basic form elements</p>
+      <form id="productForm" class="forms-sample" method="post" action="/admin/insertEditProducts?pid=<%= product._id %>" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="exampleInputName1">Name</label>
+          <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" value="<%= product.name %>" >
+          <small class="form-text text-danger" id="errorName"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectCategory">Category</label>
+          <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" >
+            <option><%= product.category %></option>
+            <% for(let i=0;i<categories.length;i++){ %>
+            <option><%=categories[i].name%></option>
+            <% } %>
+          </select>
+          <small class="form-text text-danger" id="errorCategory"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectBrand">Brand</label>
+          <select class="form-control" id="exampleSelectBrand" style="color: rgb(252, 252, 252);width: 85%;" name="brand" >
+            <option><%= product.brand %></option>
+            <% for(let i=0;i<brands.length;i++){ %>
+            <option><%=brands[i].name%></option>
+            <% } %>
+          </select>
+          <small class="form-text text-danger" id="errorBrand"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputModel">Model</label>
+          <input type="text" class="form-control" id="exampleInputModel" style="color: rgb(252, 252, 252);width: 85%;" name="model" value="<%= product.model %>" >
+          <small class="form-text text-danger" id="errorModel"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputMaterial">Material</label>
+          <input type="text" class="form-control" id="exampleInputMaterial" style="color: rgb(252, 252, 252);width: 85%;" name="material" value="<%= product.material %>" >
+          <small class="form-text text-danger" id="errorMaterial"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPrice">Price</label>
+          <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;" name="price" value="<%= product.price %>" >
+          <small class="form-text text-danger" id="errorPrice"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDiscount">Discount</label>
+          <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" >
+          <small class="form-text text-danger" id="errorDiscount"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputStock">Stock</label>
+          <input type="number" class="form-control" id="exampleInputStock" style="color: rgb(252, 252, 252);width: 15%;" name="stock" value="<%= product.stock %>" >
+          <small class="form-text text-danger" id="errorStock"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDescription">Description</label>
+          <textarea class="form-control" id="exampleInputDescription" name="discription" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" ><%= product.discription %></textarea>
+          <small class="form-text text-danger" id="errorDescription"></small>
+        </div>
+
+        <h4>Images</h4>
+        <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
+          <% product.image.forEach((item, index) => { %>
+          <div style="position: relative; display: inline-block; margin: 10px;">
+            <img src="/static/productImages/<%= item %>" style="width: 100px; height: 100px; background-color: aliceblue;">
+            <span onclick="removeExistingImage(<%= index %>)" style="position: absolute; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.5); color: white; border-radius: 50%; padding: 5px; cursor: pointer;">&times;</span>
+            <input type="hidden" name="existingImages[]" value="<%= item %>">
+          </div>
+          <% }) %>
+        </div>
+
+        <div style="height: 100px; width: 30%;">
+          <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple onchange="previewImages()">
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+
+        <div id="croppedImagesContainer"></div>
+
+        <button type="submit" class="btn btn-primary me-2">Submit</button>
+        <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Cropping Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  let croppers = [];
+
+  function previewImages() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.margin = '10px';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+
+          const closeButton = document.createElement('span');
+          closeButton.innerHTML = '&times;';
+          closeButton.style.position = 'absolute';
+          closeButton.style.top = '5px';
+          closeButton.style.right = '5px';
+          closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+          closeButton.style.color = 'white';
+          closeButton.style.borderRadius = '50%';
+          closeButton.style.padding = '5px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.addEventListener('click', () => imgContainer.remove());
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(closeButton);
+          preview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  function removeExistingImage(index) {
+    const existingImages = document.getElementsByName('existingImages[]');
+    if (existingImages[index]) {
+      existingImages[index].value = '';
+      const imgContainer = existingImages[index].parentElement;
+      imgContainer.style.display = 'none';
+    }
+  }
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            responsive: true
+          });
+
+          croppers.push(cropper);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('croppedImagesContainer');
+    croppedImagesContainer.innerHTML = '';
+
+    const promises = [];
+    croppers.forEach((cropper, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        cropper.getCroppedCanvas().toBlob((blob) => {
+          const croppedImg = new Image();
+          croppedImg.src = URL.createObjectURL(blob);
+          croppedImg.style.maxWidth = '100px';
+          croppedImg.style.margin = '10px';
+          croppedImagesContainer.appendChild(croppedImg);
+          resolve({ index, blob });
+        });
+      }));
+    });
+
+    Promise.all(promises).then((results) => {
+      results.forEach(({ index, blob }) => {
+        const file = document.getElementById('ocs-productImage').files[index];
+        const formData = new FormData();
+        formData.append('croppedImages[]', blob, file.name);
+      });
+
+      $('#cropModal').modal('hide');
+    });
+  }
+
+  function clearValidationMessages() {
+    const validationMessages = document.querySelectorAll('.validation-message');
+    validationMessages.forEach((message) => message.innerText = '');
+  }
+
+  document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach((input) => {
+    input.addEventListener('input', clearValidationMessages);
+  });
+
+  function validateForm() {
+    let isValid = true;
+
+    const name = document.getElementById('exampleInputName1').value.trim();
+    const category = document.getElementById('exampleSelectCategory').value.trim();
+    const brand = document.getElementById('exampleSelectBrand').value.trim();
+    const model = document.getElementById('exampleInputModel').value.trim();
+    const material = document.getElementById('exampleInputMaterial').value.trim();
+    const price = document.getElementById('exampleInputPrice').value.trim();
+    const discount = document.getElementById('exampleInputDiscount').value.trim();
+    const stock = document.getElementById('exampleInputStock').value.trim();
+    const description = document.getElementById('exampleInputDescription').value.trim();
+
+    if (!name) {
+      document.getElementById('errorName').innerText = 'Name is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorName').innerText = '';
+    }
+
+    if (!category) {
+      document.getElementById('errorCategory').innerText = 'Category is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorCategory').innerText = '';
+    }
+
+    if (!brand) {
+      document.getElementById('errorBrand').innerText = 'Brand is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorBrand').innerText = '';
+    }
+
+    if (!model) {
+      document.getElementById('errorModel').innerText = 'Model is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorModel').innerText = '';
+    }
+
+    if (!material) {
+      document.getElementById('errorMaterial').innerText = 'Material is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorMaterial').innerText = '';
+    }
+
+    if (!price) {
+      document.getElementById('errorPrice').innerText = 'Price is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorPrice').innerText = '';
+    }
+
+    if (!discount || discount < 100 || discount > 1000) {
+      document.getElementById('errorDiscount').innerText = 'Discount is required and discount should be in 100 to 1000';
+      isValid = false;
+    } else {
+      document.getElementById('errorDiscount').innerText = '';
+    }
+
+    if (!stock || stock < 0) {
+      document.getElementById('errorStock').innerText = 'Stock is required and stock cannot be negative';
+      isValid = false;
+    } else {
+      document.getElementById('errorStock').innerText = '';
+    }
+
+    if (!description) {
+      document.getElementById('errorDescription').innerText = 'Description is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorDescription').innerText = '';
+    }
+
+    return isValid;
+  }
+
+  document.getElementById('productForm').addEventListener('submit', function (e) {
+    if (!validateForm()) {
+      e.preventDefault();
+    }
+  });
+</script>
+
+<%- include('./adminFooter.ejs') %>
+
+
+category page 
+
+
+
+
+
+
+<%- include('./adminHeader.ejs') %>
+
+<div class="col-lg-12 grid-margin stretch-card">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Striped Table</h4>
+            <p class="card-description">Add class <code>.table-striped</code></p>
+
+            <div class="table-responsive">
+                <div style="margin-left: 50%;">
+                    <button type="button" class="btn btn-outline-danger " data-bs-toggle="modal" data-bs-target="#addCategoryModal">Add Category</button>
+                    <button type="button" class="btn btn-outline-danger " > <a href="/admin/deletedCategory" style="text-decoration: none;color: rgb(188, 188, 188);">Restore category</a></button>
+
+                </div>
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Category name</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% categories.forEach((category, i) => { %>
+                            <tr>
+                                <td style="color: aliceblue;"><%= i + 1 %></td>
+                                <td style="color: aliceblue;"><%= category.name %></td>
+                                <td>
+                                    <button type="button" class="btn" data-bs-toggle="modal" data-bs-target="#editCategoryModal<%= i %>" style="width: 80px; background-color: rgb(13, 73, 152);">EDIT</button><br><br>
+                                    <button type="button" class="btn btn-danger delete-btn" data-id="<%= category._id %>">DELETE</button>
+                                </td>
+                            </tr>
+
+                        
+                            
+                            <!-- Edit Category Modal -->
+                            <div class="modal fade" id="editCategoryModal<%= i %>" tabindex="-1" aria-labelledby="editCategoryModalLabel<%= i %>" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="editCategoryModalLabel<%= i %>">Edit Category</h5>
+                                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form method="post" action="/admin/editCategory">
+                                                <div class="mb-3">
+                                                    <label for="categoryName<%= i %>" class="form-label">Category Name</label>
+                                                    <input type="text" class="form-control" style="color: aliceblue;" id="categoryName<%= i %>" name="categoryName" placeholder="Enter category name" value="<%= category.name %>">
+                                                    <input type="hidden" name="categoryId" value="<%= category._id %>">
+                                                </div>
+                                        </div>
+                                        <div class="modal-footer">
+                                            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                            <button type="submit" class="btn btn-primary">Save changes</button>
+                                        </div>
+                                    </form>
+                                    </div>
+                                </div>
+                            </div>
+                            <!-- Edit Category Modal ends -->
+                            
+                            <% }); %>
+
+                            <% if(message) {%>
+                                <div style="height: 20px;">
+                                <p style="color: rgb(246, 0, 0); margin-left: 30%;" id="message"><b><%= message%></b></p>
+                                </div>
+                                <%}%>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+  
+<!-- Add Category Modal -->
+
+<div class="modal fade" id="addCategoryModal" tabindex="-1" aria-labelledby="addCategoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCategoryModalLabel">Add Category</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="post" action="/admin/category ">
+                    <div class="mb-3">
+                        <label for="categoryName" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" style="color: aliceblue;" id="categoryName" name="categoryName" placeholder="Enter category name">
+                    </div>
+              
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Save changes</button>
+            </div>
+        </form>
+        </div>
+    </div>
+</div>
+
+<script>
+      setTimeout(() => {
+       const message = document.getElementById('message');
+       if (message) {
+           message.remove();
+       }
+    }, 3000);
+
+</script>
+
+
+<script>
+    document.querySelectorAll('.delete-btn').forEach(button => {
+        button.addEventListener('click', function() {
+            const categoryId = this.getAttribute('data-id');
+        
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Are you sure you want to delete this!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, delete it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/admin/delete-category?id=${categoryId}`, {
+                        method: 'POST'
+                    })
+                    .then(response => {
+                        if (response.ok) {
+                            Swal.fire(
+                                'Deleted!',
+                                'The category has been deleted.',
+                                'success'
+                            ).then(() => {
+                                location.reload();
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'There was an error deleting the category.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        Swal.fire(
+                            'Error!',
+                            'There was an error deleting the category.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        });
+    });
+</script>
+
+<%- include('./adminFooter.ejs') %>
+
+
+
+
+addtocart page 
+
+
+
+
+
+<%-include ('./header.ejs') %>
+<style>
+   .input-group-prepend,
+    .input-group-append {
+        flex: 0 0 auto;
+    }
+
+    .quantity-decrease,
+    .quantity-increase {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .quantity {
+        min-width: 100px; 
+    }
+    .thead-primary th {
+        background-color: black;
+        color: white;
+    }
+
+
+
+    #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background: linear-gradient(to right, #b05200, #c93d3d); 
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+    }
+
+
+#snackbar.show {
+  visibility: visible; 
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
+
+<!-- breadcrumbs -->
+<div class="breadcrumbs" >
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span><a href="/productShop" style="color: rgb(142, 142, 142);text-decoration: none;">shop</a></span> / <span style="color: rgb(142, 142, 142);">Cart</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
+
+<section class="ftco-section ftco-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list" >
+                    <table class="table">
+                        <thead class="thead-primary text-white" style="background-color: black;">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="text-white">Product</th>
+                                <th class="text-white">Discount</th>
+                                <th class="text-white">Price</th>
+                                <th class="text-white">Quantity</th>
+                                <th class="text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cart.products.forEach(item => { %>
+                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>" data-stock="<%= item.productId.stock %>">
+                                    <td class="product-remove">
+                                        <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
+                                            <span class="ion-ios-close"></span>
+                                        </a>
+                                    </td>
+                                    <td class="image-prod">
+                                        <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
+                                    </td>
+                                    <td class="product-name">
+                                        <h3><%= item.productId.name %></h3>
+                                        <p><%= item.productId.description %></p>
+                                    </td>
+                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
+                                    <td class="price" >₹<%= item.productId.price.toFixed(2) %></td>
+                                    <td class="quantity">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
+                                            </div>
+                                            <input type="number" name="quantity" class="quantity-input form-control text-center" value="<%= item.quantity %>" min="1" max="100">
+                                            <div class="input-group-append">
+                                                <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                    <h3>Cart Totals</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span id="sub-total">$20.60</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span id="delivery">₹0.00</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span id="discount-amount">₹0.00</span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span id="cart-total">$0.00</span>
+                    </p>
+                </div>
+                <p class="text-center"><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+                       <p>
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                       </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+<div id="snackbar"></div>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let productRows = document.querySelectorAll('.product-row');
+        const subtotalElement = document.getElementById('sub-total');
+        const deliveryElement = document.getElementById('delivery');
+        const totalElement = document.getElementById('cart-total');
+        const discountAmountElement = document.getElementById('discount-amount');
+        let deliveryCharge = 0;
+
+        function updateTotal(row) {
+            const quantityInput = row.querySelector('.quantity-input');
+            const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+            const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+            const quantity = parseInt(quantityInput.value);
+            const totalCell = row.querySelector('.total');
+            const total = ((price - discount) * quantity).toFixed(2); 
+            if (totalCell) {
+                totalCell.textContent = `₹${total}`;
+            }
+        }
+
+        
+        function updateSubtotal() {
+            let subtotal = 0;
+            let totalDiscount = 0;
+            productRows.forEach(function (row) {
+                if (row.parentNode) {
+                    const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
+                    const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+                    const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+                    const quantity = parseInt(row.querySelector('.quantity-input').value);
+
+                    subtotal += total;
+                    totalDiscount += (discount * quantity);
+                }
+            });
+
+            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+            discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
+
+            if (subtotal < 500 && subtotal !== 0) {
+                deliveryCharge = 40;
+                deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
+            } else {
+                deliveryCharge = 0;
+                deliveryElement.textContent = '₹0.00';
+            }
+
+            const total = subtotal + deliveryCharge - totalDiscount;
+            totalElement.textContent = `₹${total.toFixed(2)}`;
+        }
+
+
+        productRows.forEach(function (row) {
+            updateTotal(row); 
+        });
+        updateSubtotal(); 
+        productRows.forEach(function (row) {
+            const decreaseButton = row.querySelector('.quantity-decrease');
+            const increaseButton = row.querySelector('.quantity-increase');
+            const quantityInput = row.querySelector('.quantity-input');
+            const stock = parseInt(row.getAttribute('data-stock'));
+
+            decreaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > parseInt(quantityInput.min)) {
+                    quantityInput.value = currentValue - 1;
+                    updateTotal(row);
+                    updateSubtotal();
+                }
+            });
+
+            increaseButton.addEventListener('click', function () {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < stock) {
+                quantityInput.value = currentQuantity + 1;
+                updateTotal(row);
+                updateSubtotal();
+            }
+            });
+
+            quantityInput.addEventListener('input', function () {
+                updateTotal(row);
+                updateSubtotal();
+            });
+        });
+
+        // Function to show snackbar
+        function showsnackbar(text) {
+            const snackbar = document.getElementById("snackbar");
+            if (snackbar) {
+                snackbar.innerHTML = text;
+                snackbar.classList.add('show');
+                setTimeout(function () {
+                    snackbar.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+       
+        const removeButtons = document.querySelectorAll('.remove-product');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to remove product from cart');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success === true) {
+                        showsnackbar('Product has been removed');
+                        const rowToRemove = this.closest('tr');
+                        rowToRemove.remove(); 
+                        productRows = document.querySelectorAll('.product-row'); 
+                        updateSubtotal(); 
+                    } else {
+                        throw new Error('Failed to remove product from cart');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from cart:', error);
+                    showsnackbar('Error occurred');
+                }
+            });
+        });
+    });
+</script>
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+
+<%- include('./footer.ejs') %>
+
+
+
+
+checkout page 
+
+
+<%-include ('./header.ejs') %>
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  .validation-message {
+    color: red;
+    font-size: 0.875em;
+  }
+</style>
+<style>
+  .card-shadow {
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      border: 1px solid #ddd;
+  }
+  .card-body {
+      padding: 0.5rem 1rem;
+  }
+  .underline {
+            border-bottom: 1px solid #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1rem;
+        }
+
+        .card.card-shadow {
+    margin-bottom: 20px;
+}
+
+.d-none {
+    display: none; /* Hide addresses */
+}
+.btn:hover {
+  transform: scale(1.2);
+  transition: 5s;
+}
+
+
+.cart-section {
+    background-color: #eeeeee; 
+    padding: 8px; 
+    border-radius: 8px;
+    margin-top: 20px;
+    width: 50%; 
+    margin: 0 auto; 
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.cart-header {
+    text-align: center;
+    margin-bottom: 5px;
+    font-size: 18px;
+}
+
+.cart-items ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.cart-item {
+    background-color: #FFF;
+    padding: 6px; 
+    margin-bottom: 6px; 
+    border-radius: 5px;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1); 
+    font-size: 14px; 
+}
+
+.cart-empty {
+    text-align: center;
+    padding: 10px;
+    background-color: #FFF;
+    border-radius: 5px;
+    margin-top: 10px; 
+    font-size: 16px; 
+}
+
+</style>
+
+
+<div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
+    <div class="container">
+      <div class="row no-gutters slider-text align-items-center justify-content-center">
+        <div class="col-md-9 ftco-animate text-center">
+            <p class="breadcrumbs"><span class="mr-2"><a href="index.html">Home</a></span> <span>Checkout</span></p>
+          <h1 class="mb-0 bread">Checkout</h1>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- address details -->
+
+  <div class="container mt-5">
+    <div class="row">
+        <div class="col-md-12">
+            <h3 class="mb-4">Address Details</h3>
+
+            <% address.forEach(function(address, index) { %>
+            <div class="card card-shadow d-none">
+                <div class="underline">
+                    <label for="checkbox-<%= index %>"></label>
+                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox">
+                </div>
+                <div class="card-body">
+                    <div class="form-group row">
+                        <label for="name" class="col-sm-2 col-form-label">Name</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="name"><%= address.name %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="mobile" class="col-sm-2 col-form-label">Mobile</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="mobile"><%= address.mobile %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="street" class="col-sm-2 col-form-label">Street</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="street"><%= address.street %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="city" class="col-sm-2 col-form-label">City</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="city"><%= address.city %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="state" class="col-sm-2 col-form-label">State</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="state"><%= address.state %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="zip" class="col-sm-2 col-form-label">Zip Code</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="zip"><%= address.zipcode %></p>
+                        </div>
+                    </div>
+                    <div class="form-group row">
+                        <label for="country" class="col-sm-2 col-form-label">Country</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-plaintext" id="country"><%= address.country %></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <% }); %>
+
+            <!-- Button to toggle addresses -->
+            <button type="button" id="toggleAddressesBtn" class="btn btn-primary mt-3">Show Addresses</button><br><br>
+            <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#addAddressModal">
+              Add Address
+            </button>
+        </div>
+    </div>
+</div>
+
+<!-- details ends -->
+
+  <section class="ftco-section">
+    <div class="container">
+      <div class="row justify-content-center">
+        <div class="col-xl-8 ftco-animate">
+                      <form action="#" class="billing-form">
+                         
+                <div class="row align-items-end">
+                    <div class="col-md-6">
+                  <div class="form-group">
+            
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+               
+                  </div>
+              </div>
+              <div class="w-100"></div>
+                  <div class="col-md-12">
+                      <div class="form-group">
+                   
+                          <div class="select-wrap">
+                        <div class="icon"></div>
+                        
+                      </div>
+                      </div>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col-md-6">
+                     
+                  </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                   
+                  </div>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                     
+                 
+                  </div>
+                  </div>
+                  <div class="col-md-6">
+                      <div class="form-group">
+                      
+               
+                  </div>
+                  </div>
+                  <div class="w-100"></div>
+                  <div class="col-md-6">
+                  <div class="form-group">
+                   
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-group">
+                   
+                  </div>
+              </div>
+              <div class="w-100"></div>
+              <div class="col-md-12">
+                  <!-- <div class="form-group mt-4">
+                                      <div class="radio">
+                                        <label class="mr-3"><input type="radio" name="optradio"> Create an Account? </label>
+                                        <label><input type="radio" name="optradio"> Ship to different address</label>
+                                      </div>
+                                  </div> -->
+              </div>
+              </div>
+            </form><!-- END -->
+
+
+            <div class="cart-section">
+              <% if (cart && cart.products && cart.products.length > 0) { %>
+                  <div class="cart-header">
+                      <h4>Your Items</h4>
+                  </div>
+                  <div class="cart-items">
+                      <ul>
+                          <% cart.products.forEach(product => { %>
+                              <li class="cart-item">
+                                  <h6><%= product.productId.name %></h6>
+                                  <p>Quantity: <%= product.quantity %></p>
+                                  <p>Price: ₹<%= product.productId.price.toFixed(2) %></p>
+                              </li>
+                          <% }); %>
+                      </ul>
+                  </div>
+              <% } else { %>
+                  <div class="cart-empty">
+                      <p>Your cart is empty.</p>
+                  </div>
+              <% } %>
+          </div>
+
+
+
+            <div class="row mt-5 pt-3 d-flex">
+              <div class="col-md-6 d-flex">
+                <div class="cart-detail cart-total bg-light p-3 p-md-4">
+                    <h3 class="billing-heading mb-4">Cart Total</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span id="sub-total">₹subtotal </span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span id="delivery">₹deliveryCharge</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span id="discount-amount">₹ discountAmount </span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span id="cart-total">₹total </span>
+                    </p>
+                </div>
+            </div>
+                <div class="col-md-6">
+                    <div class="cart-detail bg-light p-3 p-md-4">
+                        <h3 class="billing-heading mb-4">Payment Method</h3>
+                               
+                                  <div class="form-group">
+                                      <div class="col-md-12">
+                                          <div class="radio">
+                                             <label><input type="radio" name="optradio" class="mr-2"> Cash on delivery</label>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <div class="col-md-12">
+                                          <div class="radio">
+                                             <label><input type="radio" name="optradio" class="mr-2"> Paypal</label>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class="form-group">
+                                      <div class="col-md-12">
+                                          <div class="checkbox">
+                                             <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <p><a href="#"class="btn btn-primary py-3 px-4">Place an order</a></p>
+                              </div>
+                </div>
+            </div>
+        </div> 
+      </div>
+    </div>
+  </section> <!-- .section -->
+
+
+
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+<!-- Add Address Modal -->
+<div class="modal fade" id="addAddressModal" tabindex="-1" role="dialog" aria-labelledby="addAddressModalLabel" aria-hidden="true">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="addAddressModalLabel">Add Address</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <form id="addAddressForm" action="/addAddressCheckout" method="POST">
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input type="text" class="form-control" id="name" name="name">
+            <span class="validation-message" id="nameValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="mobile">Mobile</label>
+            <input type="tel" class="form-control" id="mobile" name="mobile">
+            <span class="validation-message" id="mobileValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="street">Street</label>
+            <input type="text" class="form-control" id="street" name="street">
+            <span class="validation-message" id="streetValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" class="form-control" id="city" name="city">
+            <span class="validation-message" id="cityValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <input type="text" class="form-control" id="state" name="state">
+            <span class="validation-message" id="stateValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="zip">Zip Code</label>
+            <input type="text" class="form-control" id="zip" name="zipcode">
+            <span class="validation-message" id="zipValidation"></span>
+          </div>
+          <div class="form-group">
+            <label for="country">Country</label>
+            <input type="text" class="form-control" id="country" name="country">
+            <span class="validation-message" id="countryValidation"></span>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>&nbsp;&nbsp;
+          <button type="submit" class="btn btn-primary">Save Address</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
+
+<script>
+
+function updateCartTotalFromLocalStorage() {
+    // Retrieve values from localStorage
+    let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+    let totalDiscount = parseFloat(localStorage.getItem('cartDiscount')) || 0;
+    let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+    let total = parseFloat(localStorage.getItem('cartTotal')) || 0;
+
+    // Update DOM elements
+    document.getElementById('sub-total').textContent = `₹${subtotal.toFixed(2)}`;
+    document.getElementById('delivery').textContent = `₹${deliveryCharge.toFixed(2)}`;
+    document.getElementById('discount-amount').textContent = `₹${totalDiscount.toFixed(2)}`;
+    document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+}
+
+// Call the function to update the cart total initially
+updateCartTotalFromLocalStorage();
+
+</script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('addAddressForm');
+
+    if (form) {
+      form.addEventListener('submit', function(event) {
+        event.preventDefault();
+        let isValid = true;
+
+        const name = form.querySelector('#name');
+        const mobile = form.querySelector('#mobile');
+        const street = form.querySelector('#street');
+        const city = form.querySelector('#city');
+        const state = form.querySelector('#state');
+        const zip = form.querySelector('#zip');
+        const country = form.querySelector('#country');
+
+        form.querySelectorAll('.validation-message').forEach(el => {
+          el.textContent = ''; 
+          el.style.display = 'none'; 
+        });
+        form.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+
+        if (!name.value.trim() || name.value.startsWith(' ')) {
+          name.classList.add('is-invalid');
+          document.getElementById('nameValidation').textContent = 'Name is required';
+          document.getElementById('nameValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
+          mobile.classList.add('is-invalid');
+          document.getElementById('mobileValidation').textContent = 'Invalid mobile number';
+          document.getElementById('mobileValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!street.value.trim()) {
+          street.classList.add('is-invalid');
+          document.getElementById('streetValidation').textContent = 'Street is required';
+          document.getElementById('streetValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!city.value.trim()) {
+          city.classList.add('is-invalid');
+          document.getElementById('cityValidation').textContent = 'City is required';
+          document.getElementById('cityValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!state.value.trim()) {
+          state.classList.add('is-invalid');
+          document.getElementById('stateValidation').textContent = 'State is required';
+          document.getElementById('stateValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!zip.value.trim() || !/^\d{6}$/.test(zip.value)) {
+          zip.classList.add('is-invalid');
+          document.getElementById('zipValidation').textContent = 'ZIP code must be exactly 6 digits';
+          document.getElementById('zipValidation').style.display = 'block';
+          isValid = false;
+        }
+        if (!country.value.trim()) {
+          country.classList.add('is-invalid');
+          document.getElementById('countryValidation').textContent = 'Country is required';
+          document.getElementById('countryValidation').style.display = 'block';
+          isValid = false;
+        }
+
+        if (isValid) {
+      
+          form.submit();
+        }
+      });
+e
+      form.querySelectorAll('.form-control').forEach(input => {
+        input.addEventListener('input', function() {
+          const validationMessage = input.nextElementSibling;
+          if (validationMessage.textContent) {
+            validationMessage.textContent = '';
+            validationMessage.style.display = 'none';
+            input.classList.remove('is-invalid');
+          }
+        });
+      });
+    }
+  });
+</script>
+
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', (event) => {
+      const toggleAddressesBtn = document.getElementById('toggleAddressesBtn');
+      const checkboxes = document.querySelectorAll('.address-checkbox');
+
+      checkboxes.forEach(checkbox => {
+          checkbox.checked = false;
+          checkbox.disabled = true; 
+      });
+
+      if (toggleAddressesBtn) {
+          toggleAddressesBtn.addEventListener('click', function() {
+              const addresses = document.querySelectorAll('.card.card-shadow');
+              addresses.forEach(address => {
+                  address.classList.toggle('d-none');
+              });
+
+             
+              checkboxes.forEach(checkbox => {
+                  checkbox.disabled = false;
+              });
+
+              
+              if (this.innerText === 'Show Addresses') {
+                  this.innerText = 'Hide Addresses';
+              } else {
+                  this.innerText = 'Show Addresses';
+               
+                  checkboxes.forEach(checkbox => {
+                      checkbox.checked = false;
+                  });
+              }
+          });
+      }
+
+     
+      checkboxes.forEach(checkbox => {
+          checkbox.addEventListener('change', function() {
+              if (this.checked) {
+                  checkboxes.forEach(otherCheckbox => {
+                      if (otherCheckbox !== this) {
+                          otherCheckbox.checked = false;
+                      }
+                  });
+              }
+          });
+      });
+  });
+</script>
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+  
+
+<%-include ('./footer.ejs') %>

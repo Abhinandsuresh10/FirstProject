@@ -87,8 +87,9 @@
                                 <th>&nbsp;</th>
                                 <th>&nbsp;</th>
                                 <th class="text-white">Product</th>
-                                <th class="text-white">Discount</th>
+                               
                                 <th class="text-white">Price</th>
+                                <th class="text-white">Discount</th>
                                 <th class="text-white">Quantity</th>
                                 <th class="text-white">Total</th>
                             </tr>
@@ -108,8 +109,9 @@
                                         <h3><%= item.productId.name %></h3>
                                         <p><%= item.productId.description %></p>
                                     </td>
-                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
+                               
                                     <td class="price" >₹<%= item.productId.price.toFixed(2) %></td>
+                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
                                     <td class="quantity">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -264,38 +266,40 @@
             }
         }
 
-        
         function updateSubtotal() {
-            let subtotal = 0;
-            let totalDiscount = 0;
-            productRows.forEach(function (row) {
-                if (row.parentNode) {
-                    const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
-                    const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-                    const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
-                    const quantity = parseInt(row.querySelector('.quantity-input').value);
+    let subtotal = 0;
+    let totalDiscount = 0;
 
-                    subtotal += total;
-                    totalDiscount += (discount * quantity);
-                }
-            });
+   
+    productRows.forEach(function (row) {
+        const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+        const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+        const quantity = parseInt(row.querySelector('.quantity-input').value);
 
-            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-            discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
+        subtotal += price * quantity; 
+        totalDiscount += (discount * quantity); 
+    });
 
-            if (subtotal < 500 && subtotal !== 0) {
-                deliveryCharge = 40;
-                deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
-            } else {
-                deliveryCharge = 0;
-                deliveryElement.textContent = '₹0.00';
-            }
+    subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
 
-            const total = subtotal + deliveryCharge - totalDiscount;
-            totalElement.textContent = `₹${total.toFixed(2)}`;
-        }
+  
+    if (subtotal < 500 && subtotal !== 0) {
+        deliveryCharge = 40;
+    } else {
+        deliveryCharge = 0;
+    }
+    deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
 
 
+    const total = subtotal + deliveryCharge - totalDiscount;
+    totalElement.textContent = `₹${total.toFixed(2)}`;
+
+    localStorage.setItem('cartSubtotal', subtotal.toFixed(2));
+    localStorage.setItem('cartDiscount', totalDiscount.toFixed(2));
+    localStorage.setItem('cartDelivery', deliveryCharge.toFixed(2));
+    localStorage.setItem('cartTotal', total.toFixed(2));
+}
         productRows.forEach(function (row) {
             updateTotal(row); 
         });
@@ -318,10 +322,10 @@
             increaseButton.addEventListener('click', function () {
                 let currentQuantity = parseInt(quantityInput.value);
                 if (currentQuantity < stock) {
-                quantityInput.value = currentQuantity + 1;
-                updateTotal(row);
-                updateSubtotal();
-            }
+                    quantityInput.value = currentQuantity + 1;
+                    updateTotal(row);
+                    updateSubtotal();
+                }
             });
 
             quantityInput.addEventListener('input', function () {
@@ -330,7 +334,7 @@
             });
         });
 
-        // Function to show snackbar
+       
         function showsnackbar(text) {
             const snackbar = document.getElementById("snackbar");
             if (snackbar) {
@@ -342,7 +346,6 @@
             }
         }
 
-       
         const removeButtons = document.querySelectorAll('.remove-product');
         removeButtons.forEach(button => {
             button.addEventListener('click', async function (event) {
@@ -379,7 +382,49 @@
             });
         });
     });
+
+
+    
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+    
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const productId = input.dataset.productId;
+            const quantity = parseInt(input.value);
+
+            updateCartQuantity(productId, quantity);
+        });
+    });
+});
+
+function updateCartQuantity(productId, quantity) {
+    fetch('/updateCartQuantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Cart quantity updated successfully.');
+        } else {
+            console.error('Failed to update cart quantity:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart quantity:', error);
+    });
+}
+
+
 </script>
+
 
 
 <script src="/static/user/js/jquery.min.js"></script>

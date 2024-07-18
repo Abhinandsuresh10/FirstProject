@@ -97,7 +97,7 @@ const editProductLoad  = async(req,res)=>{
 const editProduct = async (req, res) => {
     try {
         const imagePaths = req.files.map(file => file.filename);
-        const { name, category, brand, model, material, price, discount, stock, description } = req.body;
+        const { name, category, brand, model, material, price, discount, stock, discription } = req.body;
         const id = req.query.pid;
         let updateData = {
             name,
@@ -108,7 +108,7 @@ const editProduct = async (req, res) => {
             price,
             discount,
             stock,
-            description
+            discription
         };
         if (imagePaths.length > 0) {
             updateData.image = imagePaths;
@@ -121,6 +121,8 @@ const editProduct = async (req, res) => {
         console.log(error.message);
     }
 }
+
+
 
 
 module.exports = {

@@ -120,7 +120,7 @@
             </div>
             <br>
 
-            <!-- Edit Address Modal -->
+<!-- Edit Address Modal -->
 <div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -131,37 +131,42 @@
                 </button>
             </div>
             <div class="modal-body">
-                <form id="editAddressForm" action="/editAddress?id=<%=address[i]._id%>" method="POST">
-                  
+                <form id="editAddressForm" action="/editAddress?id=<%=address[i]._id%>" method="POST" novalidate>
                     <div class="form-group">
                         <label for="editName">Name</label>
                         <input type="text" class="form-control" id="editName" placeholder="Enter name" value="<%=address[i].name%>" name="name" required>
+                        <div class="invalid-feedback">Please enter a valid name. Name cannot start with a space.</div>
                     </div>
                     <div class="form-group">
                         <label for="editMobile">Mobile</label>
                         <input type="text" class="form-control" id="editMobile" placeholder="Enter mobile number" value="<%=address[i].mobile%>" name="mobile" required>
+                        <div class="invalid-feedback">Please enter a valid 10-digit mobile number that does not start with 0.</div>
                     </div>
                     <div class="form-group">
                         <label for="editStreet">Street</label>
                         <input type="text" class="form-control" id="editStreet" placeholder="Enter street" value="<%=address[i].street%>" name="street" required>
+                        <div class="invalid-feedback">Please enter a valid street.</div>
                     </div>
                     <div class="form-group">
                         <label for="editCity">City</label>
                         <input type="text" class="form-control" id="editCity" placeholder="Enter city" value="<%=address[i].city%>" name="city" required>
+                        <div class="invalid-feedback">Please enter a valid city.</div>
                     </div>
                     <div class="form-group">
                         <label for="editState">State</label>
                         <input type="text" class="form-control" id="editState" placeholder="Enter state" value="<%=address[i].state%>" name="state" required>
+                        <div class="invalid-feedback">Please enter a valid state.</div>
                     </div>
                     <div class="form-group">
                         <label for="editZip">Zip Code</label>
                         <input type="text" class="form-control" id="editZip" placeholder="Enter zip code" value="<%=address[i].zipcode%>" name="zipcode" required>
+                        <div class="invalid-feedback">Please enter a valid numeric zip code.</div>
                     </div>
                     <div class="form-group">
                         <label for="editCountry">Country</label>
                         <input type="text" class="form-control" id="editCountry" placeholder="Enter country" value="<%=address[i].country%>" name="country" required>
+                        <div class="invalid-feedback">Please enter a valid country.</div>
                     </div>
-                  
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                         <button type="submit" class="btn btn-primary">Save Changes</button>
@@ -171,6 +176,7 @@
         </div>
     </div>
 </div>
+
         <% } %>
     </div>
 </div>
@@ -377,83 +383,72 @@
 </script>
 
 <script>
-    document.getElementById('addAddressForm').addEventListener('submit', function(event) {
-    event.preventDefault();
-    let isValid = true;
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = ['addAddressForm', 'editAddressForm'];
 
-    const name = document.getElementById('name');
-    const mobile = document.getElementById('mobile');
-    const street = document.getElementById('street');
-    const city = document.getElementById('city');
-    const state = document.getElementById('state');
-    const zip = document.getElementById('zip');
-    const country = document.getElementById('country');
+    forms.forEach(formId => {
+        const form = document.getElementById(formId);
+        if (form) {
+            form.addEventListener('submit', function(event) {
+                event.preventDefault();
+                let isValid = true;
 
-    // Reset validation messages
-    document.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
-    document.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+                const name = form.querySelector('#name') || form.querySelector('#editName');
+                const mobile = form.querySelector('#mobile') || form.querySelector('#editMobile');
+                const street = form.querySelector('#street') || form.querySelector('#editStreet');
+                const city = form.querySelector('#city') || form.querySelector('#editCity');
+                const state = form.querySelector('#state') || form.querySelector('#editState');
+                const zip = form.querySelector('#zip') || form.querySelector('#editZip');
+                const country = form.querySelector('#country') || form.querySelector('#editCountry');
 
-    if (!name.value.trim() || name.value.startsWith(' ')) {
-        name.classList.add('is-invalid');
-        name.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
-        mobile.classList.add('is-invalid');
-        mobile.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!street.value.trim()) {
-        street.classList.add('is-invalid');
-        street.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!city.value.trim()) {
-        city.classList.add('is-invalid');
-        city.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!state.value.trim()) {
-        state.classList.add('is-invalid');
-        state.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!zip.value.trim() || !/^\d+$/.test(zip.value)) {
-        zip.classList.add('is-invalid');
-        zip.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
-    if (!country.value.trim()) {
-        country.classList.add('is-invalid');
-        country.nextElementSibling.style.display = 'block';
-        isValid = false;
-    }
+                // Reset validation messages
+                form.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+                form.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
 
-    if (isValid) {
-       
-        this.submit();
-    }
-});
+                if (!name.value.trim() || name.value.startsWith(' ')) {
+                    name.classList.add('is-invalid');
+                    name.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
+                if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
+                    mobile.classList.add('is-invalid');
+                    mobile.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
+                if (!street.value.trim()) {
+                    street.classList.add('is-invalid');
+                    street.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
+                if (!city.value.trim()) {
+                    city.classList.add('is-invalid');
+                    city.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
+                if (!state.value.trim()) {
+                    state.classList.add('is-invalid');
+                    state.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
+                if (!zip.value.trim() || !/^\d+$/.test(zip.value) || zip.value.length > 6) {
+                    zip.classList.add('is-invalid');
+                    zip.nextElementSibling.style.display = 'block';
+                    zip.nextElementSibling.textContent = 'Invalid ZIP code';
+                    isValid = false;
+                } else {
+                    zip.classList.remove('is-invalid');
+                    zip.nextElementSibling.style.display = 'none';
+                }
+                if (!country.value.trim()) {
+                    country.classList.add('is-invalid');
+                    country.nextElementSibling.style.display = 'block';
+                    isValid = false;
+                }
 
-const inputs = document.querySelectorAll('#addAddressForm .form-control');
-
-inputs.forEach(input => {
-    input.addEventListener('input', function() {
-        if (this.id === 'name' && (this.value.trim() && !this.value.startsWith(' '))) {
-            this.classList.remove('is-invalid');
-            this.nextElementSibling.style.display = 'none';
-        }
-        if (this.id === 'mobile' && /^[1-9]\d{9}$/.test(this.value)) {
-            this.classList.remove('is-invalid');
-            this.nextElementSibling.style.display = 'none';
-        }
-        if (this.id === 'zip' && /^\d+$/.test(this.value)) {
-            this.classList.remove('is-invalid');
-            this.nextElementSibling.style.display = 'none';
-        }
-        if (this.value.trim() && this.id !== 'name' && this.id !== 'mobile' && this.id !== 'zip') {
-            this.classList.remove('is-invalid');
-            this.nextElementSibling.style.display = 'none';
+                if (isValid) {
+                    form.submit();
+                }
+            });
         }
     });
 });

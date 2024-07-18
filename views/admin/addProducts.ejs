@@ -68,13 +68,13 @@
                 <div class="form-group">
                     <label for="exampleInputDescription">Description</label>
                     <textarea class="form-control" id="exampleInputDescription" style="color: rgb(252, 252, 252);width: 85%; height: 80px;"
-                        name="description"></textarea>
+                        name="discription"></textarea>
                     <small id="descriptionError" class="form-text text-danger"></small>
                 </div>
 
                 <div style="height: 100px; width: 30%;">
                     <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
-                    <input type="file" id="ocs-productImage" name="image" class="form-control" multiple
+                    <input type="file" id="ocs-productImage" name="image" class="form-control" multiple accept="image/*"
                         onchange="previewImages()">
                     <small id="imageError" class="form-text text-danger"></small>
                 </div>
@@ -206,17 +206,15 @@
     return isValid;
   }
 
-  // Function to clear error messages
   function clearError(errorId) {
     document.getElementById(errorId).textContent = '';
   }
 
-  // Function to show error messages
+
   function showError(errorId, errorMessage) {
     document.getElementById(errorId).textContent = errorMessage;
   }
 
-  // Event listeners to clear validation errors on input change
   document.getElementById('exampleInputName1').addEventListener('input', function () {
     clearError('nameError');
   });
@@ -257,10 +255,10 @@
     clearError('imageError');
   });
 
-  // Handle form submission
+  
   document.getElementById('productForm').addEventListener('submit', function (event) {
     if (!validateForm()) {
-      event.preventDefault(); // Prevent form submission if validation fails
+      event.preventDefault(); 
     }
   });
 </script>
@@ -392,17 +390,15 @@
 
   document.getElementById('productForm').addEventListener('submit', function (event) {
   if (!validateForm()) {
-    event.preventDefault(); // Prevent form submission if validation fails
+    event.preventDefault(); 
   } else {
-    event.preventDefault(); // Prevent default form submission
+    event.preventDefault(); 
 
     const form = event.target;
     const formData = new FormData(form);
 
-    // Remove original 'image' field from formData
     formData.delete('image');
 
-    // Append cropped images as blobs
     croppers.forEach((cropper, index) => {
       const canvas = cropper.getCroppedCanvas();
       canvas.toBlob(blob => {
@@ -410,7 +406,6 @@
       });
     });
 
-    // Wait for all blobs to be added to formData
     setTimeout(() => {
       fetch(form.action, {
           method: form.method,
@@ -418,7 +413,7 @@
         })
         .then(response => {
           if (response.ok) {
-            window.location.href = '/admin/products'; // Redirect on success
+            window.location.href = '/admin/products';
           } else {
             alert('An error occurred while submitting the form');
           }
