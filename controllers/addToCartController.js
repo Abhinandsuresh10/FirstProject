@@ -77,7 +77,7 @@ const deleteCart = async(req,res)=>{
     try {
         const { productId, quantity } = req.body;
         const userId = req.session.userData._id;
-
+       
         let Cart = await cart.findOneAndUpdate(
             { userId, 'products.productId': productId },
             { $set: { 'products.$.quantity': quantity } },

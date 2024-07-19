@@ -42,7 +42,20 @@ const insertCheckoutAddress = async(req,res)=>{
     }
 }
 
+//load loadUserOrderDetails
+
+const loadUserOrderDetails = async(req,res)=>{
+
+    try {
+        res.render('orderDetails',{isLoggedIn : req.session.userData})
+    } catch (error) {
+        console.log(error.message);
+    }
+
+}
+
 module.exports = {
     loadCheckout,
-    insertCheckoutAddress
+    insertCheckoutAddress,
+    loadUserOrderDetails
 }

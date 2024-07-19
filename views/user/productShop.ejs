@@ -1,226 +1,442 @@
-<%- include('./header.ejs') %>
+  <%- include('./header.ejs') %>
 
 
-<div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
-  <div class="container">
-    <div class="row no-gutters slider-text align-items-center justify-content-center">
-      <div class="col-md-9 ftco-animate text-center">
-          <p class="breadcrumbs"><span class="mr-2"><a href="index.html" style="text-decoration: none;" !important>Home</a></span> <span>Products</span></p>
-        <h1 class="mb-0 bread">Product Shop</h1>
+  <style>
+  .price-range {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .price-output {
+    margin-top: 10px;
+    font-size: 16px;
+  }
+
+
+  .search-sort-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    max-width: 600px;
+    margin-right: 20px;
+  }
+
+  .form-control {
+    border-radius: 4px 0 0 4px;
+    border: 1px solid #ccc;
+    font-size: 16px;
+  }
+
+  .input-group-append .btn {
+    border-radius: 0 4px 4px 0;
+    border: 1px solid #da8e2c;
+    background-color: #da8e2c;
+    color: white;
+    font-size: 16px;
+  }
+
+  .input-group-append .btn:hover {
+    background-color: #f4d9bd;
+  }
+
+  .sort-options {
+    display: flex;
+    align-items: center;
+  }
+
+  .sort-label {
+    margin-right: 10px;
+    font-weight: bold;
+  }
+
+  .form-control {
+    width: auto;
+  }
+  </style>
+
+  <div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
+    <div class="container">
+      <div class="row no-gutters slider-text align-items-center justify-content-center">
+        <div class="col-md-9 ftco-animate text-center">
+            <p class="breadcrumbs"><span class="mr-2"><a href="index.html" style="text-decoration: none;" !important>Home</a></span> <span>Products</span></p>
+          <h1 class="mb-0 bread">Product Shop</h1>
+        </div>
       </div>
+    </div>
+  </div>
+
+
+
+  <div class="breadcrumbs" >
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span style="color: rgb(142, 142, 142);">Product Shop</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
+
+  <!-- search bar -->
+<div class="col-lg-12 mb-5 ftco-animate">
+  <div class="search-sort-container">
+    <form id="search-form" class="d-flex align-items-center">
+      <div class="input-group">
+        <input type="text" class="form-control" placeholder="Search products..." id="search-input">
+        <div class="input-group-append">
+          <button class="btn btn-primary" type="button" id="search-button">Search</button>
+        </div>
+      </div>
+    </form>
+    <div class="sort-options d-flex align-items-center">
+      <label for="sortOptions" class="sort-label">Sort By:</label>
+      <select id="sortOptions" class="form-control">
+        <option value="default">Default</option>
+        <option value="az">Name: A to Z</option>
+        <option value="za">Name: Z to A</option>
+      </select>
     </div>
   </div>
 </div>
 
+  
 
-<div class="breadcrumbs" >
-  <div class="container">
+
+  <section class="ftco-section bg-light">
+    <div class="container">
       <div class="row">
-          <div class="col">
-              <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span style="color: rgb(142, 142, 142);">Product Shop</span></p>
+        <div class="col-md-8 col-lg-10 order-md-last">
+          <div class="row" id="productContainer"> 
+            <% for (let i = 0; i < product.length; i++) { %>
+            <div class="col-sm-6 col-md-6 col-lg-4 ftco-animate product-item" data-price="<%= product[i].price - product[i].discount %>"  data-brand="<%= product[i].brand %>" data-category="<%= product[i].category %>" >
+              <div class="product">
+                <a href="/productDetails?id=<%= product[i]._id %>" class="img-prod">
+                  <img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
+                  <div class="overlay"></div>
+                </a>
+                <div class="text py-3 px-3">
+                  <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name %></a></h3>
+                  <div class="d-flex">
+                    <div class="pricing">
+                      <p class="price">
+                        <del><span class="price-sale">₹<%= product[i].price %></span></del>&nbsp;&nbsp;
+                        <span class="price-sale">₹<%= product[i].price - product[i].discount %></span>
+                      </p>
+                    </div>
+                  </div>
+                  <div class="pricing" style="width: 100%;">
+                    <h6 class="price" style="color: rgb(76, 75, 75);"><span class="price-sale"><%= product[i].discription %></span></h6>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <% } %>
+          </div>
+       
+
+        <div class="row mt-5">
+          <div class="col text-center">
+              <div class="block-27">
+                  <ul>
+                      <% if (currentPage > 1) { %>
+                          <li><a href="?page=<%= currentPage - 1 %>">&lt;</a></li>
+                      <% } else { %>
+                          <li><span>&lt;</span></li>
+                      <% } %>
+                      <% for (let i = 1; i <= totalPages; i++) { %>
+                          <li class="<%= i === currentPage ? 'active' : '' %>">
+                              <a href="?page=<%= i %>"><%= i %></a>
+                          </li>
+                      <% } %>
+                      <% if (currentPage < totalPages) { %>
+                          <li><a href="?page=<%= currentPage + 1 %>">&gt;</a></li>
+                      <% } else { %>
+                          <li><span>&gt;</span></li>
+                      <% } %>
+                  </ul>
+              </div>
           </div>
       </div>
-   </div>
-</div>
-
-<section class="ftco-section bg-light">
-    <div class="container">
-     
-        <div class="row">
-            <div class="col-md-8 col-lg-10 order-md-last">
-                
-                <div class="row">
-                    <% for (let i=0; i<product.length; i++){ %>
-                    <div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
-                       
-                        <div class="product">
-                            <a href="/productDetails?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
-                            
-                                <div class="overlay"></div>
-                            </a>
-                            <div class="text py-3 px-3">
-                                <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name%></a></h3>
-                                <div class="d-flex">
-                                    <div class="pricing">
-                                      <p class="price"><del><span class="price-sale">₹<%= product[i].price %></span></del>&nbsp;&nbsp;<span class="price-sale">₹<%= product[i].price - product[i].discount%></span></p>
-                                   
-                                    </div>
-                                  
-                                </div>
-                                
-                                <!-- <p class="bottom-area d-flex px-3">
-                                    <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-                                    <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-                                </p> -->
-                                <div class="pricing" style="width: 100%;">
-                                    <h6 class="price" style="color: rgb(76, 75, 75);"><span class="price-sale"><%= product[i].discription%></span></h6>
-                                </div>
-                            </div>
-                           
-                        </div>
-                       
-                    </div>
-                    <%}%>
-                  
-                  
-                </div>
-                <div class="row mt-5">
-              <div class="col text-center">
-                <div class="block-27">
-                  <ul>
-                    <li><a href="#" style="text-decoration: none !important;">&lt;</a></li>
-                    <li class="active" style="text-decoration: none !important;"><span>1</span></li>
-                    <li><a href="#" style="text-decoration: none !important;">2</a></li>
-                    <li><a href="#" style="text-decoration: none !important;">3</a></li>
-                    <li><a href="#" style="text-decoration: none !important;">4</a></li>
-                    <li><a href="#" style="text-decoration: none !important;">5</a></li>
-                    <li><a href="#" style="text-decoration: none !important;">&gt;</a></li>
-                  </ul>
-                </div>
-              </div>
-            </div>
-            </div>
-
-            <div class="col-md-4 col-lg-2 sidebar">
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Category</a></h2>
-                    <ul>
-                        <li><a href="#" style="text-decoration: none !important;">Leather &amp; cotton</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Full black bags</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Sling bags &amp; purse</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Tote bags</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Clutch purse</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Shoulder bags</a></li>
-                    </ul>
-                </div>
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Brands</a></h2>
-                    <ul>
-                        <li><a href="#" style="text-decoration: none !important;">Lavie</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Baggit</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Gucci</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Fendi</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Louis Vuitton</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Chanel</a></li>
-                            <li><a href="#" style="text-decoration: none !important;">Prada</a></li>
-                    </ul>
-                </div>
-                <div class="sidebar-box-2">
-                    <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Bags</a></h2>
-                    <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Accessories</a></h2>
-                </div>
-                <div class="sidebar-box-2">
-                  <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Price Filter</a></h2>
-                  <ul>
-                      <li><a href="#" style="text-decoration: none !important;">Under ₹800</a></li>
-                      <li><a href="#" style="text-decoration: none !important;">₹800 - ₹1200</a></li>
-                      <li><a href="#" style="text-decoration: none !important;">₹1200 - ₹1800</a></li>
-                      <li><a href="#" style="text-decoration: none !important;">₹1800 - ₹2500</a></li>
-                      <li><a href="#" style="text-decoration: none !important;">₹2500 - ₹3000</a></li>
-                      <li><a href="#" style="text-decoration: none !important;">Above ₹3000</a></li>
-                  </ul>
-              </div>
-              
-            </div>
-        </div>
-    </div>
-</section>
-
-<footer class="ftco-footer bg-light ftco-section">
-  <div class="container">
-      <div class="row">
-          <div class="mouse">
-                    <a href="#" class="mouse-icon">
-                        <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
-                    </a>
-                </div>
-      </div>
-    <div class="row mb-5">
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Winkel</h2>
-          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-          <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
-            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md">
-        <div class="ftco-footer-widget mb-4 ml-md-5">
-          <h2 class="ftco-heading-2">Menu</h2>
-          <ul class="list-unstyled">
-            <li><a href="#" class="py-2 d-block">Shop</a></li>
-            <li><a href="#" class="py-2 d-block">About</a></li>
-            <li><a href="#" class="py-2 d-block">Journal</a></li>
-            <li><a href="#" class="py-2 d-block">Contact Us</a></li>
-          </ul>
-        </div>
-      </div>
-      <div class="col-md-4">
-         <div class="ftco-footer-widget mb-4">
-          <h2 class="ftco-heading-2">Help</h2>
-          <div class="d-flex">
-              <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
-                <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
-                <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
-                <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
-                <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
-              </ul>
-              <ul class="list-unstyled">
-                <li><a href="#" class="py-2 d-block">FAQs</a></li>
-                <li><a href="#" class="py-2 d-block">Contact</a></li>
-              </ul>
-            </div>
-        </div>
-      </div>
-      <div class="col-md">  
-        <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Have a Questions?</h2>
-            <div class="block-23 mb-3">
-              <ul>
-                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
-              </ul>
-            </div>
-        </div>
-      </div>
-    </div>
-    <div class="row">
-      <div class="col-md-12 text-center">
-
-        <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                      Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                      <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-                    </p>
-      </div>
-    </div>
   </div>
-</footer>
+
+        <div class="col-md-4 col-lg-2 sidebar">
+
+          <div class="sidebar-box-2">
+            <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Category</a></h2>
+            <ul id="categoryFilter">
+                <li><input type="checkbox" class="category-checkbox" value="TOTEBAGS" id="categoryToteBag"> <label for="categoryToteBag">TOTEBAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="SLINGBAGS" id="categorySlingBags"> <label for="categorySlingBags">SLINGBAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="SHOULDER BAGS" id="categoryShoulderBags"> <label for="categoryShoulderBags">SHOULDER BAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="CLUTCH PURSE" id="categoryPurses"> <label for="categoryPurses">CLUTCH PURSE</label></li>
+            </ul>
+        </div>
+          <div class="sidebar-box-2">
+            <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Brands</a></h2>
+            <ul id="brandFilter">
+                <li><input type="checkbox" class="brand-checkbox" value="Lavie" id="brandLavie"> <label for="brandLavie">Lavie</label></li>
+                <li><input type="checkbox" class="brand-checkbox" value="Baggit" id="brandBaggit"> <label for="brandBaggit">Baggit</label></li>
+                <li><input type="checkbox" class="brand-checkbox" value="Gucci" id="brandGucci"> <label for="brandGucci">Gucci</label></li>
+                <li><input type="checkbox" class="brand-checkbox" value="Bandid" id="brandBandid"> <label for="brandBandid">Bandid</label></li>
+            </ul>
+        </div>
+          <div class="sidebar-box-2">
+            <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Price Filter</a></h2>
+            <div class="price-range">
+              <input type="range" id="priceRange" min="0" max="5000" step="100" value="2500">
+              <div class="price-output">
+                <span id="minPrice">₹0</span> - <span id="maxPrice">₹2500</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">  
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+          <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                        <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      </p>
+        </div>
+      </div>
+    </div>
+  </footer>
 
 
 
-<!-- loader -->
-<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+  <!-- loader -->
+  <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
 
-<script src="/static/user/js/jquery.min.js"></script>
-<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
-<script src="/static/user/js/popper.min.js"></script>
-<script src="/static/user/js/bootstrap.min.js"></script>
-<script src="/static/user/js/jquery.easing.1.3.js"></script>
-<script src="/static/user/js/jquery.waypoints.min.js"></script>
-<script src="/static/user/js/jquery.stellar.min.js"></script>
-<script src="/static/user/js/owl.carousel.min.js"></script>
-<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
-<script src="/static/user/js/aos.js"></script>
-<script src="/static/user/js/jquery.animateNumber.min.js"></script>
-<script src="/static/user/js/bootstrap-datepicker.js"></script>
-<script src="/static/user/js/scrollax.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-<script src="/static/user/js/google-map.js"></script>
-<script src="/static/user/js/main.js"></script>
 
-<%- include('./footer.ejs') %>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const searchButton = document.getElementById('search-button');
+      const searchInput = document.getElementById('search-input');
+      const productItems = document.querySelectorAll('.product-item');
+
+      searchButton.addEventListener('click', function() {
+          const query = searchInput.value.toLowerCase();
+          filterProducts(query);
+      });
+
+      searchInput.addEventListener('keyup', function(event) {
+          if (event.key === 'Enter') {
+              const query = searchInput.value.toLowerCase();
+              filterProducts(query);
+          }
+      });
+
+      function filterProducts(query) {
+          productItems.forEach(item => {
+              const productName = item.querySelector('h3').innerText.toLowerCase();
+              
+              if (productName.includes(query)) {
+                  item.style.display = 'block';
+              } else {
+                  item.style.display = 'none';
+              }
+          });
+      }
+  });
+  </script>
+
+
+
+
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const priceRange = document.getElementById('priceRange');
+      const minPrice = document.getElementById('minPrice');
+      const maxPrice = document.getElementById('maxPrice');
+      const productContainer = document.getElementById('productContainer');
+      const productItems = document.querySelectorAll('.product-item');
+      const brandCheckboxes = document.querySelectorAll('.brand-checkbox');
+
+      function filterProducts() {
+          const max = parseInt(priceRange.value, 10);
+          const selectedBrands = Array.from(brandCheckboxes)
+                                      .filter(checkbox => checkbox.checked)
+                                      .map(checkbox => checkbox.value);
+          maxPrice.textContent = `₹${max}`;
+          
+          productItems.forEach(item => {
+              const price = parseInt(item.getAttribute('data-price'), 10);
+              const brand = item.getAttribute('data-brand'); 
+              
+              const withinPriceRange = price <= max;
+              const brandMatches = selectedBrands.length === 0 || selectedBrands.includes(brand);
+              
+              if (withinPriceRange && brandMatches) {
+                  item.style.display = 'block'; 
+              } else {
+                  item.style.display = 'none'; 
+              }
+          });
+      }
+
+      priceRange.addEventListener('input', filterProducts);
+      brandCheckboxes.forEach(checkbox => checkbox.addEventListener('change', filterProducts));
+
+      filterProducts();
+  });
+  </script>
+  <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const categoryCheckboxes = document.querySelectorAll('.category-checkbox');
+    const productItems = document.querySelectorAll('.product-item');
+
+    function filterProducts() {
+        const selectedCategories = Array.from(categoryCheckboxes)
+                                        .filter(checkbox => checkbox.checked)
+                                        .map(checkbox => checkbox.value);
+        
+        productItems.forEach(item => {
+            const categories = item.getAttribute('data-category').split(','); 
+            
+            const matchesCategory = selectedCategories.length === 0 || selectedCategories.some(cat => categories.includes(cat));
+            
+            if (matchesCategory) {
+                item.style.display = 'block'; 
+            } else {
+                item.style.display = 'none'; 
+            }
+        });
+    }
+
+    categoryCheckboxes.forEach(checkbox => checkbox.addEventListener('change', filterProducts));
+    
+    filterProducts(); // Initial filter to set the correct visibility
+  });
+
+  </script>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const sortOptions = document.getElementById('sortOptions');
+        const productContainer = document.getElementById('productContainer');
+        const productItems = Array.from(document.querySelectorAll('.product-item'));
+    
+        sortOptions.addEventListener('change', function() {
+            const sortValue = sortOptions.value;
+            sortProducts(sortValue);
+        });
+    
+        function sortProducts(sortValue) {
+            let sortedItems;
+    
+            if (sortValue === 'az') {
+                sortedItems = productItems.sort((a, b) => {
+                    const nameA = a.querySelector('h3 a').innerText.toUpperCase();
+                    const nameB = b.querySelector('h3 a').innerText.toUpperCase();
+                    return nameA.localeCompare(nameB);
+                });
+            } else if (sortValue === 'za') {
+                sortedItems = productItems.sort((a, b) => {
+                    const nameA = a.querySelector('h3 a').innerText.toUpperCase();
+                    const nameB = b.querySelector('h3 a').innerText.toUpperCase();
+                    return nameB.localeCompare(nameA);
+                });
+            } else {
+                sortedItems = productItems;
+            }
+    
+            productContainer.innerHTML = '';
+            sortedItems.forEach(item => productContainer.appendChild(item));
+        }
+    });
+    </script>
+    
+
+  <script src="/static/user/js/jquery.min.js"></script>
+  <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+  <script src="/static/user/js/popper.min.js"></script>
+  <script src="/static/user/js/bootstrap.min.js"></script>
+  <script src="/static/user/js/jquery.easing.1.3.js"></script>
+  <script src="/static/user/js/jquery.waypoints.min.js"></script>
+  <script src="/static/user/js/jquery.stellar.min.js"></script>
+  <script src="/static/user/js/owl.carousel.min.js"></script>
+  <script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+  <script src="/static/user/js/aos.js"></script>
+  <script src="/static/user/js/jquery.animateNumber.min.js"></script>
+  <script src="/static/user/js/bootstrap-datepicker.js"></script>
+  <script src="/static/user/js/scrollax.min.js"></script>
+  <script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+  <script src="/static/user/js/google-map.js"></script>
+  <script src="/static/user/js/main.js"></script>
+
+  <%- include('./footer.ejs') %>

@@ -1,0 +1,243 @@
+<%-include ('./header.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+<style>
+ .tob-container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.tob-header {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.tob-title {
+    font-size: 24px;
+    color: #333;
+    margin: 0;
+}
+
+.tob-tick-container {
+    margin-top: 10px;
+}
+
+.tob-tick-icon {
+    font-size: 80px;
+    color: #28a745;
+}
+
+.tob-main {
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.tob-order-summary,
+.tob-next-steps {
+    margin-bottom: 20px;
+}
+
+.tob-subtitle {
+    font-size: 20px;
+    color: #555;
+    margin-bottom: 10px;
+}
+
+.tob-order-details,
+.tob-shipping-details {
+    background-color: #f4f4f4;
+    padding: 15px;
+    border-radius: 4px;
+}
+
+.tob-order-text {
+    font-size: 16px;
+    color: #333;
+    margin: 5px 0;
+}
+
+.tob-text {
+    font-size: 16px;
+    color: #666;
+}
+
+.tob-btn {
+    display: inline-block;
+    padding: 10px 20px;
+    font-size: 16px;
+    border-radius: 4px;
+    text-align: center;
+    text-decoration: none;
+    margin-right: 10px;
+}
+
+.tob-btn-primary {
+    background-color: #28a745;
+    color: white;
+}
+
+.tob-btn-primary:hover {
+    background-color: #218838;
+}
+
+.tob-btn-secondary {
+    background-color: #007bff;
+    color: white;
+}
+
+.tob-btn-secondary:hover {
+    background-color: #0056b3;
+}
+
+.tob-footer {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.tob-footer-text {
+    font-size: 14px;
+    color: #999;
+}
+  </style>
+
+<br>
+<div class="tob-container">
+    <header class="tob-header">
+        <h1 class="tob-title">Thank You for Your Order!</h1><br>
+        <div class="tob-tick-container">
+            <i class="fas fa-check-circle tob-tick-icon"></i>
+        </div>
+    </header>
+    <main class="tob-main">
+        <section class="tob-order-summary">
+            <h2 class="tob-subtitle">Order Summary</h2>
+            <div class="tob-order-details">
+                <p class="tob-order-text"><strong>Order Number:</strong> #123456789</p>
+                <p class="tob-order-text"><strong>Date:</strong> July 19, 2024</p>
+                <p class="tob-order-text"><strong>Total:</strong> $123.45</p>
+            </div>
+            <h3 class="tob-subtitle">Shipping Information</h3>
+            <div class="tob-shipping-details">
+                <p class="tob-order-text"><strong>Recipient:</strong> John Doe</p>
+                <p class="tob-order-text"><strong>Address:</strong> 123 Main Street, City, State, ZIP</p>
+            </div>
+        </section>
+        <section class="tob-next-steps">
+           
+            <a href="#" class="tob-btn tob-btn-primary">Track Your Order</a>
+            <a href="#" class="tob-btn tob-btn-secondary">Return to Shop</a>
+        </section>
+    </main>
+</div>
+
+<br>
+
+    <footer class="ftco-footer bg-light ftco-section">
+        <div class="container">
+            <div class="row">
+                <div class="mouse">
+                          <a href="#" class="mouse-icon">
+                              <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                          </a>
+                      </div>
+            </div>
+          <div class="row mb-5">
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4">
+                <h2 class="ftco-heading-2">Winkel</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+                <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+                  <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+                  <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+                  <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md">
+              <div class="ftco-footer-widget mb-4 ml-md-5">
+                <h2 class="ftco-heading-2">Menu</h2>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">Shop</a></li>
+                  <li><a href="#" class="py-2 d-block">About</a></li>
+                  <li><a href="#" class="py-2 d-block">Journal</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+                </ul>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="ftco-footer-widget mb-4">
+                <h2 class="ftco-heading-2">Help</h2>
+                <div class="d-flex">
+                    <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                      <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                      <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                      <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                      <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                    </ul>
+                    <ul class="list-unstyled">
+                      <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                      <li><a href="#" class="py-2 d-block">Contact</a></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+            <div class="col-md">  
+              <div class="ftco-footer-widget mb-4">
+                  <h2 class="ftco-heading-2">Have a Questions?</h2>
+                  <div class="block-23 mb-3">
+                    <ul>
+                      <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                      <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                      <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                    </ul>
+                  </div>
+              </div>
+            </div>
+          </div>
+          <div class="row">
+            <div class="col-md-12 text-center">
+    
+              <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                            <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                          </p>
+            </div>
+          </div>
+        </div>
+      </footer>
+    
+    
+    
+      <!-- loader -->
+      <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+    
+    
+    
+
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+
+<%-include ('./footer.ejs') %>

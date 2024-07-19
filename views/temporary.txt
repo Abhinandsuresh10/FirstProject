@@ -2718,417 +2718,6 @@ category page
 
 
 
-addtocart page 
-
-
-
-
-
-<%-include ('./header.ejs') %>
-<style>
-   .input-group-prepend,
-    .input-group-append {
-        flex: 0 0 auto;
-    }
-
-    .quantity-decrease,
-    .quantity-increase {
-        width: 38px;
-        height: 38px;
-        font-size: 1rem;
-    }
-
-    .quantity {
-        min-width: 100px; 
-    }
-    .thead-primary th {
-        background-color: black;
-        color: white;
-    }
-
-
-
-    #snackbar {
-        visibility: hidden;
-        min-width: 250px;
-        margin-left: -125px;
-        background: linear-gradient(to right, #b05200, #c93d3d); 
-        color: #fff;
-        text-align: center;
-        border-radius: 2px;
-        padding: 16px;
-        position: fixed;
-        z-index: 1;
-        left: 50%;
-        bottom: 30px;
-    }
-
-
-#snackbar.show {
-  visibility: visible; 
-  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
-  animation: fadein 0.5s, fadeout 0.5s 2.5s;
-}
-
-@-webkit-keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
-}
-
-@keyframes fadein {
-  from {bottom: 0; opacity: 0;}
-  to {bottom: 30px; opacity: 1;}
-}
-
-@-webkit-keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
-}
-
-@keyframes fadeout {
-  from {bottom: 30px; opacity: 1;}
-  to {bottom: 0; opacity: 0;}
-}
-</style>
-
-<!-- breadcrumbs -->
-<div class="breadcrumbs" >
-    <div class="container">
-        <div class="row">
-            <div class="col">
-                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span><a href="/productShop" style="color: rgb(142, 142, 142);text-decoration: none;">shop</a></span> / <span style="color: rgb(142, 142, 142);">Cart</span></p>
-            </div>
-        </div>
-     </div>
-  </div>
-
-<section class="ftco-section ftco-cart">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-12 ftco-animate">
-                <div class="cart-list" >
-                    <table class="table">
-                        <thead class="thead-primary text-white" style="background-color: black;">
-                            <tr class="text-center">
-                                <th>&nbsp;</th>
-                                <th>&nbsp;</th>
-                                <th class="text-white">Product</th>
-                                <th class="text-white">Discount</th>
-                                <th class="text-white">Price</th>
-                                <th class="text-white">Quantity</th>
-                                <th class="text-white">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <% cart.products.forEach(item => { %>
-                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>" data-stock="<%= item.productId.stock %>">
-                                    <td class="product-remove">
-                                        <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
-                                            <span class="ion-ios-close"></span>
-                                        </a>
-                                    </td>
-                                    <td class="image-prod">
-                                        <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
-                                    </td>
-                                    <td class="product-name">
-                                        <h3><%= item.productId.name %></h3>
-                                        <p><%= item.productId.description %></p>
-                                    </td>
-                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
-                                    <td class="price" >₹<%= item.productId.price.toFixed(2) %></td>
-                                    <td class="quantity">
-                                        <div class="input-group">
-                                            <div class="input-group-prepend">
-                                                <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
-                                            </div>
-                                            <input type="number" name="quantity" class="quantity-input form-control text-center" value="<%= item.quantity %>" min="1" max="100">
-                                            <div class="input-group-append">
-                                                <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    
-                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
-                                </tr>
-                            <% }); %>
-                        </tbody>
-                    </table>
-                    
-                </div>
-            </div>
-        </div>
-        <div class="row justify-content-center">
-            <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
-                <div class="cart-total mb-3">
-                    <h3>Cart Totals</h3>
-                    <p class="d-flex">
-                        <span>Subtotal</span>
-                        <span id="sub-total">$20.60</span>
-                    </p>
-                    <p class="d-flex">
-                        <span>Delivery</span>
-                        <span id="delivery">₹0.00</span>
-                    </p>
-                    <p class="d-flex">
-                        <span>Discount</span>
-                        <span id="discount-amount">₹0.00</span>
-                    </p>
-                    <hr>
-                    <p class="d-flex total-price">
-                        <span>Total</span>
-                        <span id="cart-total">$0.00</span>
-                    </p>
-                </div>
-                <p class="text-center"><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
-            </div>
-        </div>
-    </div>
-</section>
-
-  <footer class="ftco-footer bg-light ftco-section">
-    <div class="container">
-        <div class="row">
-            <div class="mouse">
-                      <a href="#" class="mouse-icon">
-                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
-                      </a>
-                  </div>
-        </div>
-      <div class="row mb-5">
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Winkel</h2>
-            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
-            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
-              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
-              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
-              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4 ml-md-5">
-            <h2 class="ftco-heading-2">Menu</h2>
-            <ul class="list-unstyled">
-              <li><a href="#" class="py-2 d-block">Shop</a></li>
-              <li><a href="#" class="py-2 d-block">About</a></li>
-              <li><a href="#" class="py-2 d-block">Journal</a></li>
-              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
-            </ul>
-          </div>
-        </div>
-        <div class="col-md-4">
-           <div class="ftco-footer-widget mb-4">
-            <h2 class="ftco-heading-2">Help</h2>
-            <div class="d-flex">
-                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
-                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
-                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
-                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
-                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
-                </ul>
-                <ul class="list-unstyled">
-                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
-                  <li><a href="#" class="py-2 d-block">Contact</a></li>
-                </ul>
-              </div>
-          </div>
-        </div>
-        <div class="col-md">
-          <div class="ftco-footer-widget mb-4">
-              <h2 class="ftco-heading-2">Have a Questions?</h2>
-              <div class="block-23 mb-3">
-                <ul>
-                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
-                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
-                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
-                </ul>
-              </div>
-          </div>
-        </div>
-      </div>
-      <div class="row">
-        <div class="col-md-12 text-center">
-
-                       <p>
-                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
-                       </p>
-        </div>
-      </div>
-    </div>
-  </footer>
-  
-
-
-
-
-<!-- loader -->
-<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-<div id="snackbar"></div>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
-
-
-
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        let productRows = document.querySelectorAll('.product-row');
-        const subtotalElement = document.getElementById('sub-total');
-        const deliveryElement = document.getElementById('delivery');
-        const totalElement = document.getElementById('cart-total');
-        const discountAmountElement = document.getElementById('discount-amount');
-        let deliveryCharge = 0;
-
-        function updateTotal(row) {
-            const quantityInput = row.querySelector('.quantity-input');
-            const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-            const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
-            const quantity = parseInt(quantityInput.value);
-            const totalCell = row.querySelector('.total');
-            const total = ((price - discount) * quantity).toFixed(2); 
-            if (totalCell) {
-                totalCell.textContent = `₹${total}`;
-            }
-        }
-
-        
-        function updateSubtotal() {
-            let subtotal = 0;
-            let totalDiscount = 0;
-            productRows.forEach(function (row) {
-                if (row.parentNode) {
-                    const total = parseFloat(row.querySelector('.total').textContent.replace('₹', ''));
-                    const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-                    const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
-                    const quantity = parseInt(row.querySelector('.quantity-input').value);
-
-                    subtotal += total;
-                    totalDiscount += (discount * quantity);
-                }
-            });
-
-            subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
-            discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
-
-            if (subtotal < 500 && subtotal !== 0) {
-                deliveryCharge = 40;
-                deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
-            } else {
-                deliveryCharge = 0;
-                deliveryElement.textContent = '₹0.00';
-            }
-
-            const total = subtotal + deliveryCharge - totalDiscount;
-            totalElement.textContent = `₹${total.toFixed(2)}`;
-        }
-
-
-        productRows.forEach(function (row) {
-            updateTotal(row); 
-        });
-        updateSubtotal(); 
-        productRows.forEach(function (row) {
-            const decreaseButton = row.querySelector('.quantity-decrease');
-            const increaseButton = row.querySelector('.quantity-increase');
-            const quantityInput = row.querySelector('.quantity-input');
-            const stock = parseInt(row.getAttribute('data-stock'));
-
-            decreaseButton.addEventListener('click', function () {
-                let currentValue = parseInt(quantityInput.value);
-                if (currentValue > parseInt(quantityInput.min)) {
-                    quantityInput.value = currentValue - 1;
-                    updateTotal(row);
-                    updateSubtotal();
-                }
-            });
-
-            increaseButton.addEventListener('click', function () {
-                let currentQuantity = parseInt(quantityInput.value);
-                if (currentQuantity < stock) {
-                quantityInput.value = currentQuantity + 1;
-                updateTotal(row);
-                updateSubtotal();
-            }
-            });
-
-            quantityInput.addEventListener('input', function () {
-                updateTotal(row);
-                updateSubtotal();
-            });
-        });
-
-        // Function to show snackbar
-        function showsnackbar(text) {
-            const snackbar = document.getElementById("snackbar");
-            if (snackbar) {
-                snackbar.innerHTML = text;
-                snackbar.classList.add('show');
-                setTimeout(function () {
-                    snackbar.classList.remove('show');
-                }, 3000);
-            }
-        }
-
-       
-        const removeButtons = document.querySelectorAll('.remove-product');
-        removeButtons.forEach(button => {
-            button.addEventListener('click', async function (event) {
-                event.preventDefault();
-                const productId = this.getAttribute('data-product-id');
-
-                try {
-                    const response = await fetch(`/removeFromCart/${productId}`, {
-                        method: 'POST',
-                        headers: {
-                            'Content-Type': 'application/json'
-                        },
-                    });
-
-                    if (!response.ok) {
-                        throw new Error('Failed to remove product from cart');
-                    }
-
-                    const data = await response.json();
-
-                    if (data.success === true) {
-                        showsnackbar('Product has been removed');
-                        const rowToRemove = this.closest('tr');
-                        rowToRemove.remove(); 
-                        productRows = document.querySelectorAll('.product-row'); 
-                        updateSubtotal(); 
-                    } else {
-                        throw new Error('Failed to remove product from cart');
-                    }
-                } catch (error) {
-                    console.error('Error removing product from cart:', error);
-                    showsnackbar('Error occurred');
-                }
-            });
-        });
-    });
-</script>
-
-
-<script src="/static/user/js/jquery.min.js"></script>
-<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
-<script src="/static/user/js/popper.min.js"></script>
-<script src="/static/user/js/bootstrap.min.js"></script>
-<script src="/static/user/js/jquery.easing.1.3.js"></script>
-<script src="/static/user/js/jquery.waypoints.min.js"></script>
-<script src="/static/user/js/jquery.stellar.min.js"></script>
-<script src="/static/user/js/owl.carousel.min.js"></script>
-<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
-<script src="/static/user/js/aos.js"></script>
-<script src="/static/user/js/jquery.animateNumber.min.js"></script>
-<script src="/static/user/js/bootstrap-datepicker.js"></script>
-<script src="/static/user/js/scrollax.min.js"></script>
-<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
-<script src="/static/user/js/google-map.js"></script>
-<script src="/static/user/js/main.js"></script>
-
-
-<%- include('./footer.ejs') %>
-
-
 
 
 checkout page 
@@ -3771,3 +3360,694 @@ e
   
 
 <%-include ('./footer.ejs') %>
+
+
+
+
+
+
+addtocart page 
+
+
+
+
+
+<%-include ('./header.ejs') %>
+<style>
+   .input-group-prepend,
+    .input-group-append {
+        flex: 0 0 auto;
+    }
+
+    .quantity-decrease,
+    .quantity-increase {
+        width: 38px;
+        height: 38px;
+        font-size: 1rem;
+    }
+
+    .quantity {
+        min-width: 100px; 
+    }
+    .thead-primary th {
+        background-color: black;
+        color: white;
+    }
+
+
+
+    #snackbar {
+        visibility: hidden;
+        min-width: 250px;
+        margin-left: -125px;
+        background: linear-gradient(to right, #b05200, #c93d3d); 
+        color: #fff;
+        text-align: center;
+        border-radius: 2px;
+        padding: 16px;
+        position: fixed;
+        z-index: 1;
+        left: 50%;
+        bottom: 30px;
+    }
+
+
+#snackbar.show {
+  visibility: visible; 
+  -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  animation: fadein 0.5s, fadeout 0.5s 2.5s;
+}
+
+@-webkit-keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@keyframes fadein {
+  from {bottom: 0; opacity: 0;}
+  to {bottom: 30px; opacity: 1;}
+}
+
+@-webkit-keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+
+@keyframes fadeout {
+  from {bottom: 30px; opacity: 1;}
+  to {bottom: 0; opacity: 0;}
+}
+</style>
+
+<!-- breadcrumbs -->
+<div class="breadcrumbs" >
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span><a href="/productShop" style="color: rgb(142, 142, 142);text-decoration: none;">shop</a></span> / <span style="color: rgb(142, 142, 142);">Cart</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
+
+<section class="ftco-section ftco-cart">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="cart-list" >
+                    <table class="table">
+                        <thead class="thead-primary text-white" style="background-color: black;">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="text-white">Product</th>
+                               
+                                <th class="text-white">Price</th>
+                                <th class="text-white">Discount</th>
+                                <th class="text-white">Quantity</th>
+                                <th class="text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% cart.products.forEach(item => { %>
+                                <tr class="text-center product-row" data-product-id="<%= item.productId._id %>" data-stock="<%= item.productId.stock %>">
+                                    <td class="product-remove">
+                                        <a href="#" class="remove-product" data-product-id="<%= item.productId._id %>">
+                                            <span class="ion-ios-close"></span>
+                                        </a>
+                                    </td>
+                                    <td class="image-prod">
+                                        <div class="img" style="background-image: url('<%= '/static/productimages/' + item.productId.image[0] %>');"></div>
+                                    </td>
+                                    <td class="product-name">
+                                        <h3><%= item.productId.name %></h3>
+                                        <p><%= item.productId.description %></p>
+                                    </td>
+                               
+                                    <td class="price" >₹<%= item.productId.price.toFixed(2) %></td>
+                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
+                                    <td class="quantity">
+                                        <div class="input-group">
+                                            <div class="input-group-prepend">
+                                                <button class="quantity-decrease btn btn-outline-secondary" type="button">-</button>
+                                            </div>
+                                            <input type="number" name="quantity" class="quantity-input form-control text-center" value="<%= item.quantity %>" min="1" max="100">
+                                            <div class="input-group-append">
+                                                <button class="quantity-increase btn btn-outline-secondary" type="button">+</button>
+                                            </div>
+                                        </div>
+                                    </td>
+                                    
+                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                </tr>
+                            <% }); %>
+                        </tbody>
+                    </table>
+                    
+                </div>
+            </div>
+        </div>
+        <div class="row justify-content-center">
+            <div class="col col-lg-5 col-md-6 mt-5 cart-wrap ftco-animate">
+                <div class="cart-total mb-3">
+                    <h3>Cart Totals</h3>
+                    <p class="d-flex">
+                        <span>Subtotal</span>
+                        <span id="sub-total">$20.60</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Delivery</span>
+                        <span id="delivery">₹0.00</span>
+                    </p>
+                    <p class="d-flex">
+                        <span>Discount</span>
+                        <span id="discount-amount">₹0.00</span>
+                    </p>
+                    <hr>
+                    <p class="d-flex total-price">
+                        <span>Total</span>
+                        <span id="cart-total">$0.00</span>
+                    </p>
+                </div>
+                <p class="text-center"><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+            </div>
+        </div>
+    </div>
+</section>
+
+  <footer class="ftco-footer bg-light ftco-section">
+    <div class="container">
+        <div class="row">
+            <div class="mouse">
+                      <a href="#" class="mouse-icon">
+                          <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                      </a>
+                  </div>
+        </div>
+      <div class="row mb-5">
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Winkel</h2>
+            <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+            <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+              <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+              <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4 ml-md-5">
+            <h2 class="ftco-heading-2">Menu</h2>
+            <ul class="list-unstyled">
+              <li><a href="#" class="py-2 d-block">Shop</a></li>
+              <li><a href="#" class="py-2 d-block">About</a></li>
+              <li><a href="#" class="py-2 d-block">Journal</a></li>
+              <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+            </ul>
+          </div>
+        </div>
+        <div class="col-md-4">
+           <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Help</h2>
+            <div class="d-flex">
+                <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                  <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                  <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                  <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                  <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+                </ul>
+                <ul class="list-unstyled">
+                  <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                  <li><a href="#" class="py-2 d-block">Contact</a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+        <div class="col-md">
+          <div class="ftco-footer-widget mb-4">
+              <h2 class="ftco-heading-2">Have a Questions?</h2>
+              <div class="block-23 mb-3">
+                <ul>
+                  <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                  <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                  <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+                </ul>
+              </div>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-md-12 text-center">
+
+                       <p>
+                        Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                       </p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  
+
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+<div id="snackbar"></div>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        let productRows = document.querySelectorAll('.product-row');
+        const subtotalElement = document.getElementById('sub-total');
+        const deliveryElement = document.getElementById('delivery');
+        const totalElement = document.getElementById('cart-total');
+        const discountAmountElement = document.getElementById('discount-amount');
+        let deliveryCharge = 0;
+
+        function updateTotal(row) {
+            const quantityInput = row.querySelector('.quantity-input');
+            const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+            const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+            const quantity = parseInt(quantityInput.value);
+            const totalCell = row.querySelector('.total');
+            const total = ((price - discount) * quantity).toFixed(2); 
+            if (totalCell) {
+                totalCell.textContent = `₹${total}`;
+            }
+        }
+
+        function updateSubtotal() {
+    let subtotal = 0;
+    let totalDiscount = 0;
+
+   
+    productRows.forEach(function (row) {
+        const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
+        const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+        const quantity = parseInt(row.querySelector('.quantity-input').value);
+
+        subtotal += price * quantity; 
+        totalDiscount += (discount * quantity); 
+    });
+
+    subtotalElement.textContent = `₹${subtotal.toFixed(2)}`;
+    discountAmountElement.textContent = `₹${totalDiscount.toFixed(2)}`;
+
+  
+    if (subtotal < 500 && subtotal !== 0) {
+        deliveryCharge = 40;
+    } else {
+        deliveryCharge = 0;
+    }
+    deliveryElement.textContent = `₹${deliveryCharge.toFixed(2)}`;
+
+
+    const total = subtotal + deliveryCharge - totalDiscount;
+    totalElement.textContent = `₹${total.toFixed(2)}`;
+
+    localStorage.setItem('cartSubtotal', subtotal.toFixed(2));
+    localStorage.setItem('cartDiscount', totalDiscount.toFixed(2));
+    localStorage.setItem('cartDelivery', deliveryCharge.toFixed(2));
+    localStorage.setItem('cartTotal', total.toFixed(2));
+}
+        productRows.forEach(function (row) {
+            updateTotal(row); 
+        });
+        updateSubtotal(); 
+        productRows.forEach(function (row) {
+            const decreaseButton = row.querySelector('.quantity-decrease');
+            const increaseButton = row.querySelector('.quantity-increase');
+            const quantityInput = row.querySelector('.quantity-input');
+            const stock = parseInt(row.getAttribute('data-stock'));
+
+            decreaseButton.addEventListener('click', function () {
+                let currentValue = parseInt(quantityInput.value);
+                if (currentValue > parseInt(quantityInput.min)) {
+                    quantityInput.value = currentValue - 1;
+                    updateTotal(row);
+                    updateSubtotal();
+                }
+            });
+
+            increaseButton.addEventListener('click', function () {
+                let currentQuantity = parseInt(quantityInput.value);
+                if (currentQuantity < stock) {
+                    quantityInput.value = currentQuantity + 1;
+                    updateTotal(row);
+                    updateSubtotal();
+                }
+            });
+
+            quantityInput.addEventListener('input', function () {
+                updateTotal(row);
+                updateSubtotal();
+            });
+        });
+
+       
+        function showsnackbar(text) {
+            const snackbar = document.getElementById("snackbar");
+            if (snackbar) {
+                snackbar.innerHTML = text;
+                snackbar.classList.add('show');
+                setTimeout(function () {
+                    snackbar.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        const removeButtons = document.querySelectorAll('.remove-product');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch(`/removeFromCart/${productId}`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to remove product from cart');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success === true) {
+                        showsnackbar('Product has been removed');
+                        const rowToRemove = this.closest('tr');
+                        rowToRemove.remove(); 
+                        productRows = document.querySelectorAll('.product-row'); 
+                        updateSubtotal(); 
+                    } else {
+                        throw new Error('Failed to remove product from cart');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from cart:', error);
+                    showsnackbar('Error occurred');
+                }
+            });
+        });
+    });
+
+
+    
+
+    
+    document.addEventListener('DOMContentLoaded', function () {
+    
+    const quantityInputs = document.querySelectorAll('.quantity-input');
+
+    quantityInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const productId = input.dataset.productId;
+            const quantity = parseInt(input.value);
+
+            updateCartQuantity(productId, quantity);
+        });
+    });
+});
+
+function updateCartQuantity(productId, quantity) {
+    fetch('/updateCartQuantity', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ productId, quantity })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            console.log('Cart quantity updated successfully.');
+        } else {
+            console.error('Failed to update cart quantity:', data.message);
+        }
+    })
+    .catch(error => {
+        console.error('Error updating cart quantity:', error);
+    });
+}
+
+
+</script>
+
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+
+<%- include('./footer.ejs') %>
+
+
+
+productShop page 
+
+<%- include('./header.ejs') %>
+
+
+<div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
+  <div class="container">
+    <div class="row no-gutters slider-text align-items-center justify-content-center">
+      <div class="col-md-9 ftco-animate text-center">
+          <p class="breadcrumbs"><span class="mr-2"><a href="index.html" style="text-decoration: none;" !important>Home</a></span> <span>Products</span></p>
+        <h1 class="mb-0 bread">Product Shop</h1>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<div class="breadcrumbs" >
+  <div class="container">
+      <div class="row">
+          <div class="col">
+              <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span style="color: rgb(142, 142, 142);">Product Shop</span></p>
+          </div>
+      </div>
+   </div>
+</div>
+
+<section class="ftco-section bg-light">
+    <div class="container">
+     
+        <div class="row">
+            <div class="col-md-8 col-lg-10 order-md-last">
+                
+                <div class="row">
+                    <% for (let i=0; i<product.length; i++){ %>
+                    <div class="col-sm-6 col-md-6 col-lg-4 ftco-animate">
+                       
+                        <div class="product">
+                            <a href="/productDetails?id=<%= product[i]._id %>" class="img-prod"><img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
+                            
+                                <div class="overlay"></div>
+                            </a>
+                            <div class="text py-3 px-3">
+                                <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name%></a></h3>
+                                <div class="d-flex">
+                                    <div class="pricing">
+                                      <p class="price"><del><span class="price-sale">₹<%= product[i].price %></span></del>&nbsp;&nbsp;<span class="price-sale">₹<%= product[i].price - product[i].discount%></span></p>
+                                   
+                                    </div>
+                                  
+                                </div>
+                                
+                                <!-- <p class="bottom-area d-flex px-3">
+                                    <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
+                                    <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
+                                </p> -->
+                                <div class="pricing" style="width: 100%;">
+                                    <h6 class="price" style="color: rgb(76, 75, 75);"><span class="price-sale"><%= product[i].discription%></span></h6>
+                                </div>
+                            </div>
+                           
+                        </div>
+                       
+                    </div>
+                    <%}%>
+                  
+                  
+                </div>
+                <div class="row mt-5">
+              <div class="col text-center">
+                <div class="block-27">
+                  <ul>
+                    <li><a href="#" style="text-decoration: none !important;">&lt;</a></li>
+                    <li class="active" style="text-decoration: none !important;"><span>1</span></li>
+                    <li><a href="#" style="text-decoration: none !important;">2</a></li>
+                    <li><a href="#" style="text-decoration: none !important;">3</a></li>
+                    <li><a href="#" style="text-decoration: none !important;">4</a></li>
+                    <li><a href="#" style="text-decoration: none !important;">5</a></li>
+                    <li><a href="#" style="text-decoration: none !important;">&gt;</a></li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+            </div>
+
+            <div class="col-md-4 col-lg-2 sidebar">
+                <div class="sidebar-box-2">
+                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Category</a></h2>
+                    <ul>
+                        <li><a href="#" style="text-decoration: none !important;">Leather &amp; cotton</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Full black bags</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Sling bags &amp; purse</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Tote bags</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Clutch purse</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Shoulder bags</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-box-2">
+                    <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Brands</a></h2>
+                    <ul>
+                        <li><a href="#" style="text-decoration: none !important;">Lavie</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Baggit</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Gucci</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Fendi</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Louis Vuitton</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Chanel</a></li>
+                            <li><a href="#" style="text-decoration: none !important;">Prada</a></li>
+                    </ul>
+                </div>
+                <div class="sidebar-box-2">
+                    <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Bags</a></h2>
+                    <h2 class="heading mb-2"><a href="#" style="text-decoration: none !important;">Accessories</a></h2>
+                </div>
+                <div class="sidebar-box-2">
+                  <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Price Filter</a></h2>
+                  <ul>
+                      <li><a href="#" style="text-decoration: none !important;">Under ₹800</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹800 - ₹1200</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹1200 - ₹1800</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹1800 - ₹2500</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">₹2500 - ₹3000</a></li>
+                      <li><a href="#" style="text-decoration: none !important;">Above ₹3000</a></li>
+                  </ul>
+              </div>
+              
+            </div>
+        </div>
+    </div>
+</section>
+
+<footer class="ftco-footer bg-light ftco-section">
+  <div class="container">
+      <div class="row">
+          <div class="mouse">
+                    <a href="#" class="mouse-icon">
+                        <div class="mouse-wheel"><span class="ion-ios-arrow-up"></span></div>
+                    </a>
+                </div>
+      </div>
+    <div class="row mb-5">
+      <div class="col-md">
+        <div class="ftco-footer-widget mb-4">
+          <h2 class="ftco-heading-2">Winkel</h2>
+          <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia.</p>
+          <ul class="ftco-footer-social list-unstyled float-md-left float-lft mt-5">
+            <li class="ftco-animate"><a href="#"><span class="icon-twitter"></span></a></li>
+            <li class="ftco-animate"><a href="#"><span class="icon-facebook"></span></a></li>
+            <li class="ftco-animate"><a href="#"><span class="icon-instagram"></span></a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md">
+        <div class="ftco-footer-widget mb-4 ml-md-5">
+          <h2 class="ftco-heading-2">Menu</h2>
+          <ul class="list-unstyled">
+            <li><a href="#" class="py-2 d-block">Shop</a></li>
+            <li><a href="#" class="py-2 d-block">About</a></li>
+            <li><a href="#" class="py-2 d-block">Journal</a></li>
+            <li><a href="#" class="py-2 d-block">Contact Us</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-4">
+         <div class="ftco-footer-widget mb-4">
+          <h2 class="ftco-heading-2">Help</h2>
+          <div class="d-flex">
+              <ul class="list-unstyled mr-l-5 pr-l-3 mr-4">
+                <li><a href="#" class="py-2 d-block">Shipping Information</a></li>
+                <li><a href="#" class="py-2 d-block">Returns &amp; Exchange</a></li>
+                <li><a href="#" class="py-2 d-block">Terms &amp; Conditions</a></li>
+                <li><a href="#" class="py-2 d-block">Privacy Policy</a></li>
+              </ul>
+              <ul class="list-unstyled">
+                <li><a href="#" class="py-2 d-block">FAQs</a></li>
+                <li><a href="#" class="py-2 d-block">Contact</a></li>
+              </ul>
+            </div>
+        </div>
+      </div>
+      <div class="col-md">  
+        <div class="ftco-footer-widget mb-4">
+            <h2 class="ftco-heading-2">Have a Questions?</h2>
+            <div class="block-23 mb-3">
+              <ul>
+                <li><span class="icon icon-map-marker"></span><span class="text">203 Fake St. Mountain View, San Francisco, California, USA</span></li>
+                <li><a href="#"><span class="icon icon-phone"></span><span class="text">+2 392 3929 210</span></a></li>
+                <li><a href="#"><span class="icon icon-envelope"></span><span class="text">info@yourdomain.com</span></a></li>
+              </ul>
+            </div>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center">
+
+        <p><!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                      Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with <i class="icon-heart color-danger" aria-hidden="true"></i> by <a href="https://colorlib.com" target="_blank">Colorlib</a>
+                      <!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+                    </p>
+      </div>
+    </div>
+  </div>
+</footer>
+
+
+
+<!-- loader -->
+<div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+<%- include('./footer.ejs') %>

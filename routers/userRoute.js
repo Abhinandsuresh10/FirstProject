@@ -101,6 +101,7 @@ userRoute.post('/updateCartQuantity',cartController.quantityAdd)
 //checkout..
 
 userRoute.get('/checkout',checkoutController.loadCheckout);
-userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress)
+userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress);
+userRoute.get('/userOrderDetails',checkoutController.loadUserOrderDetails)
 
 module.exports = userRoute;
