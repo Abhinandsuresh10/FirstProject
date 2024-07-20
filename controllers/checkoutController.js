@@ -1,6 +1,7 @@
 const address = require('../models/addressModel');
 const Product = require('../models/produntsModel');
-const Cart = require('../models/cartModal')
+const Cart = require('../models/cartModal');
+const order = require('../models/orderSchema');
 
 
 const loadCheckout = async(req,res)=>{
@@ -47,15 +48,43 @@ const insertCheckoutAddress = async(req,res)=>{
 const loadUserOrderDetails = async(req,res)=>{
 
     try {
-        res.render('orderDetails',{isLoggedIn : req.session.userData})
+        const { addressId ,orderId  } = req.query;
+        const addresses =  await address.findOne({_id:addressId});
+        const orders = await order.findOne({_id:orderId})
+        res.render('orderDetails',{isLoggedIn : req.session.userData,Address:addresses})
+       
     } catch (error) {
         console.log(error.message);
     }
 
 }
 
+//insert placeorder
+
+const insertPlaceOrder = async(req,res)=>{
+    try {
+   
+     const userId = req.session.userData._id;
+     const {addressId,paymentMethod} = req.body;
+     
+     const addresses = await address.findOne({_id:addressId})
+     const orders = await order({
+        userId:userId,
+        shippingAddress:addresses,
+        paymentMethod:paymentMethod
+     })
+     
+      await orders.save()
+      res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?addressId=${addressId}&orderId=${order._id}`  });
+
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 module.exports = {
     loadCheckout,
     insertCheckoutAddress,
-    loadUserOrderDetails
+    loadUserOrderDetails,
+    insertPlaceOrder
 }

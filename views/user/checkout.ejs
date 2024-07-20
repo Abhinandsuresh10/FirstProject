@@ -5,6 +5,52 @@
     color: red;
     font-size: 0.875em;
   }
+
+
+  #snackbar {
+  visibility: hidden;
+  min-width: 250px;
+  margin-left: -125px;
+  background: linear-gradient(to right, #51a3c1, #255361); 
+  color: #fff;
+  text-align: center;
+  border-radius: 2px;
+  position: fixed;
+  z-index: 1;
+  left: 50%;
+  bottom: 30px;
+  font-size: 17px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.5);
+  padding: 16px;
+}
+
+/* Snackbar Show Class */
+#snackbar.show {
+  visibility: visible;
+  -webkit-animation: fadeIn 0.5s, fadeOut 0.5s 4.5s;
+  animation: fadeIn 0.5s, fadeOut 0.5s 4.5s;
+}
+
+/* Animations */
+@-webkit-keyframes fadeIn {
+  from { bottom: 0; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
+}
+
+@keyframes fadeIn {
+  from { bottom: 0; opacity: 0; }
+  to { bottom: 30px; opacity: 1; }
+}
+
+@-webkit-keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+@keyframes fadeOut {
+  from { opacity: 1; }
+  to { opacity: 0; }
+} 
 </style>
 <style>
   .card-shadow {
@@ -92,7 +138,7 @@
             <div class="card card-shadow d-none">
                 <div class="underline">
                     <label for="checkbox-<%= index %>"></label>
-                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox">
+                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox" value="<%= address._id %>">
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
@@ -282,25 +328,23 @@
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Cash on delivery</label>
+                                             <label><input type="radio" name="optradio" class="mr-2" value="Cash on delivery"> Cash on delivery</label>
                                           </div>
                                       </div>
                                   </div>
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Paypal</label>
+                                             <label><input type="radio" name="optradio" class="mr-2" value="PayPal"> Paypal</label>
                                           </div>
                                       </div>
                                   </div>
                                   <div class="form-group">
                                       <div class="col-md-12">
-                                          <div class="checkbox">
-                                             <label><input type="checkbox" value="" class="mr-2"> I have read and accept the terms and conditions</label>
-                                          </div>
+                                         
                                       </div>
                                   </div>
-                                  <p><a href="/userOrderDetails"class="btn btn-primary py-3 px-4">Place an order</a></p>
+                                  <p><a href="#" id="placeOrderBtn" class="btn btn-primary py-3 px-4">Place an order</a></p>
                               </div>
                 </div>
             </div>
@@ -447,27 +491,24 @@
     </div>
   </div>
 </div>
-
+<div id="snackbar"></div>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
 
 function updateCartTotalFromLocalStorage() {
-    // Retrieve values from localStorage
     let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
     let totalDiscount = parseFloat(localStorage.getItem('cartDiscount')) || 0;
     let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
     let total = parseFloat(localStorage.getItem('cartTotal')) || 0;
 
-    // Update DOM elements
     document.getElementById('sub-total').textContent = `₹${subtotal.toFixed(2)}`;
     document.getElementById('delivery').textContent = `₹${deliveryCharge.toFixed(2)}`;
     document.getElementById('discount-amount').textContent = `₹${totalDiscount.toFixed(2)}`;
     document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
 }
-
-// Call the function to update the cart total initially
+  
 updateCartTotalFromLocalStorage();
 
 </script>
@@ -610,6 +651,87 @@ e
   });
 </script>
 
+
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+  
+      function showSnackbar(message, backgroundColor) {
+          const snackbar = document.getElementById('snackbar');
+          snackbar.textContent = message;
+          snackbar.style.backgroundColor = backgroundColor;
+          snackbar.className = 'show';
+        
+          setTimeout(function() {
+              snackbar.className = snackbar.className.replace('show', '');
+          }, 3000);
+      }
+  
+      function validateForm() {
+          const addressChecked = document.querySelector('.address-checkbox:checked');
+          const paymentMethodInput = document.querySelector('input[name="optradio"]:checked');
+        
+          if (!addressChecked) {
+              showSnackbar('Select an address.', '#ff4444');
+              return false;
+          }
+  
+          if (!paymentMethodInput) {
+              showSnackbar('Select a payment method.', '#ff4444');
+              return false;
+          }
+  
+          const paymentMethod = paymentMethodInput.value; 
+          const validPaymentMethods = {
+              'Cash on delivery': 'Cash on delivery',
+              'Paypal': 'PayPal'
+          };
+  
+          if (!validPaymentMethods[paymentMethod]) {
+              showSnackbar('Invalid payment method selected.', '#ff4444');
+              return false;
+          }
+  
+          return {
+              addressId: addressChecked.value,
+              paymentMethod: validPaymentMethods[paymentMethod]
+          };
+      }
+  
+      placeOrderBtn.addEventListener('click', async function(event) {
+          event.preventDefault();
+          
+          const formData = validateForm();
+          console.log('Form Data:', formData); 
+  
+          if (formData) {
+              try {
+                  const response = await fetch('/placeOrder', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(formData)
+                  });
+  
+                  if (response.ok) {
+                      const result = await response.json();
+                      showSnackbar('Order placed successfully!', '#00C851');
+                      setTimeout(() => window.location.href = result.redirectUrl, 1500);
+                  } else {
+                      showSnackbar('Failed to place order. Please try again.', '#ff4444');
+                  }
+              } catch (error) {
+                  console.error('Fetch error:', error); 
+                  showSnackbar('An error occurred. Please try again.', '#ff4444');
+              }
+          }
+      });
+  });
+  </script>
+  
+  
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>

@@ -118,15 +118,18 @@
         <section class="tob-order-summary">
             <h2 class="tob-subtitle">Order Summary</h2>
             <div class="tob-order-details">
-                <p class="tob-order-text"><strong>Order Number:</strong> #123456789</p>
                 <p class="tob-order-text"><strong>Date:</strong> July 19, 2024</p>
                 <p class="tob-order-text"><strong>Total:</strong> $123.45</p>
             </div>
             <h3 class="tob-subtitle">Shipping Information</h3>
             <div class="tob-shipping-details">
-                <p class="tob-order-text"><strong>Recipient:</strong> John Doe</p>
-                <p class="tob-order-text"><strong>Address:</strong> 123 Main Street, City, State, ZIP</p>
-            </div>
+              <% if (Address) { %>
+                <p class="tob-order-text"><strong>Recipient:</strong> <%= Address.name%>,</p>
+                <p class="tob-order-text"><strong>Address:</strong> <%= Address.mobile%>,<%= Address.city%>, <%= Address.state%>, <%= Address.zipcode%></p>
+                <% } else { %>
+                  <p class="tob-order-text">Address information not available</p>
+              <% } %>
+              </div>
         </section>
         <section class="tob-next-steps">
            

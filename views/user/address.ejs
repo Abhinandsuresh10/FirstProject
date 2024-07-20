@@ -105,7 +105,7 @@
                 <div class="kpl-address-item">
                     <div class="kpl-address-details">
                         <p><strong>Name:</strong> <span style="font-size: 15px;"> <%= address[i].name %></span></p>
-                        <p><strong>Mobile:</strong> <span style="font-size: 15px;"> <%= address[i].mobile%></span></p>
+                        <p><strong>Mobile:</strong> <span style="font-size: 15px;"> <%= address[i].mobile %></span></p>
                         <p><strong>Street:</strong> <span style="font-size: 15px;"> <%= address[i].street %></span></p>
                         <p><strong>City:</strong> <span style="font-size: 15px;"> <%= address[i].city %></span></p>
                         <p><strong>State:</strong> <span style="font-size: 15px;"> <%= address[i].state %></span></p>
@@ -113,71 +113,71 @@
                         <p><strong>Country:</strong> <span style="font-size: 15px;"> <%= address[i].country %></span></p>
                     </div>
                     <div class="kpl-button-container">
-                        <button class="kpl-button kpl-button-edit" data-toggle="modal" data-target="#editAddressModal">Edit</button>
+                        <button class="kpl-button kpl-button-edit" data-toggle="modal" data-target="#editAddressModal-<%= i %>">Edit</button>
                         <button class="kpl-button kpl-button-delete" data-id="<%= address[i]._id %>">Delete</button>
                     </div>
                 </div>
             </div>
             <br>
-
-<!-- Edit Address Modal -->
-<div class="modal fade" id="editAddressModal" tabindex="-1" aria-labelledby="editAddressModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="editAddressModalLabel">Edit Address</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                    <span aria-hidden="true">&times;</span>
-                </button>
+        
+            <!-- Edit Address Modal -->
+            <div class="modal fade" id="editAddressModal-<%= i %>" tabindex="-1" aria-labelledby="editAddressModalLabel-<%= i %>" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="editAddressModalLabel-<%= i %>">Edit Address</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <form id="editAddressForm-<%= i %>" action="/editAddress?id=<%= address[i]._id %>" method="POST" novalidate>
+                                <div class="form-group">
+                                    <label for="editName-<%= i %>">Name</label>
+                                    <input type="text" class="form-control" id="editName-<%= i %>" placeholder="Enter name" value="<%= address[i].name %>" name="name" required>
+                                    <div class="invalid-feedback">Please enter a valid name. Name cannot start with a space.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editMobile-<%= i %>">Mobile</label>
+                                    <input type="text" class="form-control" id="editMobile-<%= i %>" placeholder="Enter mobile number" value="<%= address[i].mobile %>" name="mobile" required>
+                                    <div class="invalid-feedback">Please enter a valid 10-digit mobile number that does not start with 0.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editStreet-<%= i %>">Street</label>
+                                    <input type="text" class="form-control" id="editStreet-<%= i %>" placeholder="Enter street" value="<%= address[i].street %>" name="street" required>
+                                    <div class="invalid-feedback">Please enter a valid street.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editCity-<%= i %>">City</label>
+                                    <input type="text" class="form-control" id="editCity-<%= i %>" placeholder="Enter city" value="<%= address[i].city %>" name="city" required>
+                                    <div class="invalid-feedback">Please enter a valid city.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editState-<%= i %>">State</label>
+                                    <input type="text" class="form-control" id="editState-<%= i %>" placeholder="Enter state" value="<%= address[i].state %>" name="state" required>
+                                    <div class="invalid-feedback">Please enter a valid state.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editZip-<%= i %>">Zip Code</label>
+                                    <input type="text" class="form-control" id="editZip-<%= i %>" placeholder="Enter zip code" value="<%= address[i].zipcode %>" name="zipcode" required>
+                                    <div class="invalid-feedback">Please enter a valid numeric zip code.</div>
+                                </div>
+                                <div class="form-group">
+                                    <label for="editCountry-<%= i %>">Country</label>
+                                    <input type="text" class="form-control" id="editCountry-<%= i %>" placeholder="Enter country" value="<%= address[i].country %>" name="country" required>
+                                    <div class="invalid-feedback">Please enter a valid country.</div>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div class="modal-body">
-                <form id="editAddressForm" action="/editAddress?id=<%=address[i]._id%>" method="POST" novalidate>
-                    <div class="form-group">
-                        <label for="editName">Name</label>
-                        <input type="text" class="form-control" id="editName" placeholder="Enter name" value="<%=address[i].name%>" name="name" required>
-                        <div class="invalid-feedback">Please enter a valid name. Name cannot start with a space.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editMobile">Mobile</label>
-                        <input type="text" class="form-control" id="editMobile" placeholder="Enter mobile number" value="<%=address[i].mobile%>" name="mobile" required>
-                        <div class="invalid-feedback">Please enter a valid 10-digit mobile number that does not start with 0.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editStreet">Street</label>
-                        <input type="text" class="form-control" id="editStreet" placeholder="Enter street" value="<%=address[i].street%>" name="street" required>
-                        <div class="invalid-feedback">Please enter a valid street.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editCity">City</label>
-                        <input type="text" class="form-control" id="editCity" placeholder="Enter city" value="<%=address[i].city%>" name="city" required>
-                        <div class="invalid-feedback">Please enter a valid city.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editState">State</label>
-                        <input type="text" class="form-control" id="editState" placeholder="Enter state" value="<%=address[i].state%>" name="state" required>
-                        <div class="invalid-feedback">Please enter a valid state.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editZip">Zip Code</label>
-                        <input type="text" class="form-control" id="editZip" placeholder="Enter zip code" value="<%=address[i].zipcode%>" name="zipcode" required>
-                        <div class="invalid-feedback">Please enter a valid numeric zip code.</div>
-                    </div>
-                    <div class="form-group">
-                        <label for="editCountry">Country</label>
-                        <input type="text" class="form-control" id="editCountry" placeholder="Enter country" value="<%=address[i].country%>" name="country" required>
-                        <div class="invalid-feedback">Please enter a valid country.</div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Save Changes</button>
-                    </div>
-                </form>
-            </div>
-        </div>
-    </div>
-</div>
-
         <% } %>
+        
     </div>
 </div>
 
@@ -383,76 +383,80 @@
 </script>
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    const forms = ['addAddressForm', 'editAddressForm'];
-
-    forms.forEach(formId => {
-        const form = document.getElementById(formId);
-        if (form) {
-            form.addEventListener('submit', function(event) {
-                event.preventDefault();
-                let isValid = true;
-
-                const name = form.querySelector('#name') || form.querySelector('#editName');
-                const mobile = form.querySelector('#mobile') || form.querySelector('#editMobile');
-                const street = form.querySelector('#street') || form.querySelector('#editStreet');
-                const city = form.querySelector('#city') || form.querySelector('#editCity');
-                const state = form.querySelector('#state') || form.querySelector('#editState');
-                const zip = form.querySelector('#zip') || form.querySelector('#editZip');
-                const country = form.querySelector('#country') || form.querySelector('#editCountry');
-
-                // Reset validation messages
-                form.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
-                form.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
-
-                if (!name.value.trim() || name.value.startsWith(' ')) {
-                    name.classList.add('is-invalid');
-                    name.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-                if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
-                    mobile.classList.add('is-invalid');
-                    mobile.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-                if (!street.value.trim()) {
-                    street.classList.add('is-invalid');
-                    street.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-                if (!city.value.trim()) {
-                    city.classList.add('is-invalid');
-                    city.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-                if (!state.value.trim()) {
-                    state.classList.add('is-invalid');
-                    state.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-                if (!zip.value.trim() || !/^\d+$/.test(zip.value) || zip.value.length > 6) {
-                    zip.classList.add('is-invalid');
-                    zip.nextElementSibling.style.display = 'block';
-                    zip.nextElementSibling.textContent = 'Invalid ZIP code';
-                    isValid = false;
-                } else {
-                    zip.classList.remove('is-invalid');
-                    zip.nextElementSibling.style.display = 'none';
-                }
-                if (!country.value.trim()) {
-                    country.classList.add('is-invalid');
-                    country.nextElementSibling.style.display = 'block';
-                    isValid = false;
-                }
-
-                if (isValid) {
-                    form.submit();
-                }
-            });
-        }
+    document.addEventListener('DOMContentLoaded', function() {
+        const addForm = document.getElementById('addAddressForm');
+        const editForms = document.querySelectorAll('[id^="editAddressForm-"]');
+    
+        const forms = [addForm, ...editForms];
+    
+        forms.forEach(form => {
+            if (form) {
+                form.addEventListener('submit', function(event) {
+                    event.preventDefault();
+                    let isValid = true;
+    
+                    const formId = form.id;
+                    const index = formId.split('-')[1];  // Get the index from the form ID
+    
+                    const name = form.querySelector(`#name`) || form.querySelector(`#editName-${index}`);
+                    const mobile = form.querySelector(`#mobile`) || form.querySelector(`#editMobile-${index}`);
+                    const street = form.querySelector(`#street`) || form.querySelector(`#editStreet-${index}`);
+                    const city = form.querySelector(`#city`) || form.querySelector(`#editCity-${index}`);
+                    const state = form.querySelector(`#state`) || form.querySelector(`#editState-${index}`);
+                    const zip = form.querySelector(`#zip`) || form.querySelector(`#editZip-${index}`);
+                    const country = form.querySelector(`#country`) || form.querySelector(`#editCountry-${index}`);
+    
+                    // Reset validation messages
+                    form.querySelectorAll('.invalid-feedback').forEach(el => el.style.display = 'none');
+                    form.querySelectorAll('.form-control').forEach(el => el.classList.remove('is-invalid'));
+    
+                    if (!name.value.trim() || name.value.startsWith(' ')) {
+                        name.classList.add('is-invalid');
+                        name.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!mobile.value.trim() || !/^[1-9]\d{9}$/.test(mobile.value)) {
+                        mobile.classList.add('is-invalid');
+                        mobile.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!street.value.trim()) {
+                        street.classList.add('is-invalid');
+                        street.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!city.value.trim()) {
+                        city.classList.add('is-invalid');
+                        city.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!state.value.trim()) {
+                        state.classList.add('is-invalid');
+                        state.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+                    if (!zip.value.trim() || !/^\d+$/.test(zip.value) || zip.value.length > 6) {
+                        zip.classList.add('is-invalid');
+                        zip.nextElementSibling.style.display = 'block';
+                        zip.nextElementSibling.textContent = 'Invalid ZIP code';
+                        isValid = false;
+                    } else {
+                        zip.classList.remove('is-invalid');
+                        zip.nextElementSibling.style.display = 'none';
+                    }
+                    if (!country.value.trim()) {
+                        country.classList.add('is-invalid');
+                        country.nextElementSibling.style.display = 'block';
+                        isValid = false;
+                    }
+    
+                    if (isValid) {
+                        form.submit();
+                    }
+                });
+            }
+        });
     });
-});
-
-</script>
-
+    </script>
+    
 <%- include('./footer.ejs') %>

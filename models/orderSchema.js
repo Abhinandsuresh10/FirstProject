@@ -4,7 +4,7 @@ const orderSchema = new mongoose.Schema({
     user: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
-        required: true
+       
     },
     orderItems: [
         {
@@ -27,26 +27,14 @@ const orderSchema = new mongoose.Schema({
     shippingAddress: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Address', 
-        required: true
+        
     },
     paymentMethod: {
         type: String,
-        enum: ['Credit Card', 'PayPal', 'Bank Transfer'],
-        required: true
+        enum: ['Cash on delivery', 'PayPal'],
+        
     },
-    orderStatus: {
-        type: String,
-        enum: ['Pending', 'Processing', 'Shipped', 'Delivered', 'Cancelled'],
-        default: 'Pending'
-    },
-    totalAmount: {
-        type: Number,
-        required: true
-    },
-    orderDate: {
-        type: Date,
-        default: Date.now
-    }
+   
 }, { timestamps: true });
 
 const Order = mongoose.model('Order', orderSchema);
