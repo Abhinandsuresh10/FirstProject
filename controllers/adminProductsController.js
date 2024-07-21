@@ -2,6 +2,7 @@ const Category = require('../models/category');
 const prducts = require('../models/produntsModel');
 const brand = require('../models/brandsModel');
 
+
 const productsLoad = async(req,res)=>{
     try {
        

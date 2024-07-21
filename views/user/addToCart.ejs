@@ -95,6 +95,7 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <% if(cart) {%>
                             <% cart.products.forEach(item => { %>
                                 <tr class="text-center product-row" data-product-id="<%= item.productId._id %>" data-stock="<%= item.productId.stock %>">
                                     <td class="product-remove">
@@ -125,7 +126,7 @@
                                     <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
                                 </tr>
                                 <% }); %>
-                                
+                                <%}%>
                         </tbody>
                     </table>
                     

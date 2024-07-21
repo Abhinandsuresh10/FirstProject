@@ -282,9 +282,9 @@
                           <% cart.products.forEach(product => { %>
                               <li class="cart-item">
                                   <h6><%= product.productId.name %></h6>
-                                
-                                  <p>Price: ₹<%= product.productId.price.toFixed(2) %></p>
-                                  <p>Quantity: <%= product.quantity %> </p>
+                                  <input type="hidden" class="product-id" value="<%= product.productId._id %>">
+                                  <p class="product-price">Price: ₹<%= product.productId.price.toFixed(2) %></p>
+                                  <p class="product-quantity">Quantity: <%= product.quantity %> </p>
                               </li>
                           <% }); %>
                       </ul>
@@ -654,81 +654,93 @@ e
 
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-      const placeOrderBtn = document.getElementById('placeOrderBtn');
-  
-      function showSnackbar(message, backgroundColor) {
-          const snackbar = document.getElementById('snackbar');
-          snackbar.textContent = message;
-          snackbar.style.backgroundColor = backgroundColor;
-          snackbar.className = 'show';
-        
-          setTimeout(function() {
-              snackbar.className = snackbar.className.replace('show', '');
-          }, 3000);
-      }
-  
-      function validateForm() {
-          const addressChecked = document.querySelector('.address-checkbox:checked');
-          const paymentMethodInput = document.querySelector('input[name="optradio"]:checked');
-        
-          if (!addressChecked) {
-              showSnackbar('Select an address.', '#ff4444');
-              return false;
-          }
-  
-          if (!paymentMethodInput) {
-              showSnackbar('Select a payment method.', '#ff4444');
-              return false;
-          }
-  
-          const paymentMethod = paymentMethodInput.value; 
-          const validPaymentMethods = {
-              'Cash on delivery': 'Cash on delivery',
-              'Paypal': 'PayPal'
-          };
-  
-          if (!validPaymentMethods[paymentMethod]) {
-              showSnackbar('Invalid payment method selected.', '#ff4444');
-              return false;
-          }
-  
-          return {
-              addressId: addressChecked.value,
-              paymentMethod: validPaymentMethods[paymentMethod]
-          };
-      }
-  
-      placeOrderBtn.addEventListener('click', async function(event) {
-          event.preventDefault();
-          
-          const formData = validateForm();
-          console.log('Form Data:', formData); 
-  
-          if (formData) {
-              try {
-                  const response = await fetch('/placeOrder', {
-                      method: 'POST',
-                      headers: {
-                          'Content-Type': 'application/json'
-                      },
-                      body: JSON.stringify(formData)
-                  });
-  
-                  if (response.ok) {
-                      const result = await response.json();
-                      showSnackbar('Order placed successfully!', '#00C851');
-                      setTimeout(() => window.location.href = result.redirectUrl, 1500);
-                  } else {
-                      showSnackbar('Failed to place order. Please try again.', '#ff4444');
-                  }
-              } catch (error) {
-                  console.error('Fetch error:', error); 
-                  showSnackbar('An error occurred. Please try again.', '#ff4444');
-              }
-          }
-      });
-  });
+ document.addEventListener('DOMContentLoaded', function() {
+    const placeOrderBtn = document.getElementById('placeOrderBtn');
+
+    function showSnackbar(message, backgroundColor) {
+        const snackbar = document.getElementById('snackbar');
+        snackbar.textContent = message;
+        snackbar.style.backgroundColor = backgroundColor;
+        snackbar.className = 'show';
+
+        setTimeout(function() {
+            snackbar.className = snackbar.className.replace('show', '');
+        }, 3000);
+    }
+
+    function validateForm() {
+        const addressChecked = document.querySelector('.address-checkbox:checked');
+        const paymentMethodInput = document.querySelector('input[name="optradio"]:checked');
+        const cartItems = document.querySelectorAll('.cart-item');
+
+        if (!addressChecked) {
+            showSnackbar('Select an address.', '#ff4444');
+            return false;
+        }
+
+        if (!paymentMethodInput) {
+            showSnackbar('Select a payment method.', '#ff4444');
+            return false;
+        }
+
+        const paymentMethod = paymentMethodInput.value; 
+        const validPaymentMethods = {
+            'Cash on delivery': 'Cash on delivery',
+            'PayPal': 'PayPal'
+        };
+
+        if (!validPaymentMethods[paymentMethod]) {
+            showSnackbar('Invalid payment method selected.', '#ff4444');
+            return false;
+        }
+
+        const orderItems = Array.from(cartItems).map(item => {
+            return {
+                productId: item.querySelector('.product-id').value,
+                quantity: parseInt(item.querySelector('.product-quantity').textContent.replace('Quantity: ', ''), 10),
+                price: parseFloat(item.querySelector('.product-price').textContent.replace('Price: ₹', ''))
+            };
+        });
+
+        console.log('Order Items:', orderItems);
+
+        return {
+            addressId: addressChecked.value,
+            paymentMethod: validPaymentMethods[paymentMethod],
+            orderItems: orderItems
+        };
+    }
+
+    placeOrderBtn.addEventListener('click', async function(event) {
+        event.preventDefault();
+
+        const formData = validateForm();
+        console.log('Form Data:', formData);
+
+        if (formData) {
+            try {
+                const response = await fetch('/placeOrder', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    showSnackbar('Order placed successfully!', '#00C851');
+                    setTimeout(() => window.location.href = result.redirectUrl, 1500);
+                } else {
+                    showSnackbar('Failed to place order. Please try again.', '#ff4444');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error); 
+                showSnackbar('An error occurred. Please try again.', '#ff4444');
+            }
+        }
+    });
+});
   </script>
   
   

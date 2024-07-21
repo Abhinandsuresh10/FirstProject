@@ -103,6 +103,10 @@ userRoute.post('/updateCartQuantity',cartController.quantityAdd)
 userRoute.get('/checkout',checkoutController.loadCheckout);
 userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress);
 userRoute.get('/userOrderDetails',checkoutController.loadUserOrderDetails);
-userRoute.post('/placeOrder',checkoutController.insertPlaceOrder)
+userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
+
+
+//orders..
+userRoute.get('/orderShow',checkoutController.loadOrdersShow)
 
 module.exports = userRoute;

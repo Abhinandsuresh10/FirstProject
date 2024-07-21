@@ -65,60 +65,154 @@
           <small class="form-text text-danger" id="errorDescription"></small>
         </div>
 
-        <h4>Images</h4>
-        <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
-          <% product.image.forEach((item, index) => { %>
-          <div style="position: relative; display: inline-block; margin: 10px;">
-            <img src="/static/productImages/<%= item %>" style="width: 100px; height: 100px; background-color: aliceblue;">
-            <span onclick="removeExistingImage(<%= index %>)" style="position: absolute; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.5); color: white; border-radius: 50%; padding: 5px; cursor: pointer;">&times;</span>
-            <input type="hidden" name="existingImages[]" value="<%= item %>">
-          </div>
-          <% }) %>
-        </div>
-
         <div style="height: 100px; width: 30%;">
           <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
-          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple accept="image/*" onchange="previewImages()">
-        </div>
+          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple accept="image/*"
+              onchange="previewImages()">
+          <small id="imageError" class="form-text text-danger"></small>
+      </div>
+      <h4>Existing Images</h4>
+      <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
+          <% if (product.image && product.image.length > 0) { %>
+              <% product.image.forEach(image => { %>
+                  <div class="image-container" style="position: relative; margin: 5px;">
+                      <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 150px; height: 150px; object-fit: cover;"/>
+                      <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this)">X</button>
+                  </div>
+              <% }) %>
+          <% } else { %>
+              <p>No images available.</p>
+          <% } %>
+      </div><br>
+      <h4>Added images</h4>
+      <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
 
-        <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+      <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
 
-        <div id="croppedImagesContainer"></div>
+      <div id="croppedImagesContainer"></div>
 
-        <button type="submit" class="btn btn-primary me-2">Submit</button>
-        <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+      <button type="submit" class="btn btn-primary me-2">Submit</button>
+      <a href="/admin/products" class="btn btn-dark" style="text-decoration: none; color: white;">Cancel</a>
       </form>
     </div>
   </div>
 </div>
 
 <!-- Cropping Modal -->
-<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
-  <div class="modal-dialog modal-lg" role="document">
-    <div class="modal-content">
-      <div class="modal-header">
-        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
-        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-          <span aria-hidden="true">&times;</span>
-        </button>
-      </div>
-      <div class="modal-body">
-        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
-      </div>
-      <div class="modal-footer">
-        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
-      </div>
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel"
+    aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+            </div>
+        </div>
     </div>
-  </div>
 </div>
+
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
 <script>
+  function removeImage(button) {
+      const imageContainer = button.parentElement;
+      imageContainer.remove();
+  }
+</script>
+
+<script>
   let croppers = [];
+  let cropperElements = [];
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      cropperElements = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+          });
+
+          croppers.push(cropper);
+          cropperElements.push(img);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('imagePreview');
+    croppedImagesContainer.innerHTML = '';
+
+    croppers.forEach((cropper, index) => {
+      const canvas = cropper.getCroppedCanvas();
+      const src = canvas.toDataURL();
+
+      const imgContainer = document.createElement('div');
+      imgContainer.style.position = 'relative';
+      imgContainer.style.margin = '10px';
+
+      const img = document.createElement('img');
+      img.src = src;
+      img.style.maxWidth = '100px';
+
+      const closeButton = document.createElement('span');
+      closeButton.innerHTML = '&times;';
+      closeButton.style.position = 'absolute';
+      closeButton.style.top = '5px';
+      closeButton.style.right = '5px';
+      closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+      closeButton.style.color = 'white';
+      closeButton.style.borderRadius = '50%';
+      closeButton.style.padding = '5px';
+      closeButton.style.cursor = 'pointer';
+      closeButton.addEventListener('click', () => {
+        croppers.splice(index, 1);
+        cropperElements.splice(index, 1);
+        imgContainer.remove();
+      });
+
+      imgContainer.appendChild(img);
+      imgContainer.appendChild(closeButton);
+      croppedImagesContainer.appendChild(imgContainer);
+    });
+
+    $('#cropModal').modal('hide');
+  }
 
   function previewImages() {
     const preview = document.getElementById('imagePreview');
@@ -161,80 +255,46 @@
     }
   }
 
-  function removeExistingImage(index) {
-    const existingImages = document.getElementsByName('existingImages[]');
-    if (existingImages[index]) {
-      existingImages[index].value = '';
-      const imgContainer = existingImages[index].parentElement;
-      imgContainer.style.display = 'none';
-    }
-  }
+  document.getElementById('productForm').addEventListener('submit', function (event) {
+  if (!validateForm()) {
+    event.preventDefault(); 
+  } else {
+    event.preventDefault(); 
 
-  function openCropModal() {
-    const cropperContainer = document.getElementById('cropperContainer');
-    cropperContainer.innerHTML = '';
-    const files = document.getElementById('ocs-productImage').files;
+    const form = event.target;
+    const formData = new FormData(form);
 
-    if (files) {
-      croppers = [];
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const reader = new FileReader();
+    formData.delete('image');
 
-        reader.onload = (e) => {
-          const img = document.createElement('img');
-          img.src = e.target.result;
-          img.style.maxWidth = '200px';
-          img.style.margin = '10px';
-          img.setAttribute('data-index', i);
-
-          cropperContainer.appendChild(img);
-
-          const cropper = new Cropper(img, {
-            aspectRatio: 1,
-            viewMode: 1,
-            autoCropArea: 1,
-            responsive: true
-          });
-
-          croppers.push(cropper);
-        };
-
-        reader.readAsDataURL(file);
-      }
-    }
-
-    $('#cropModal').modal('show');
-  }
-
-  function cropAllImages() {
-    const croppedImagesContainer = document.getElementById('croppedImagesContainer');
-    croppedImagesContainer.innerHTML = '';
-
-    const promises = [];
     croppers.forEach((cropper, index) => {
-      promises.push(new Promise((resolve, reject) => {
-        cropper.getCroppedCanvas().toBlob((blob) => {
-          const croppedImg = new Image();
-          croppedImg.src = URL.createObjectURL(blob);
-          croppedImg.style.maxWidth = '100px';
-          croppedImg.style.margin = '10px';
-          croppedImagesContainer.appendChild(croppedImg);
-          resolve({ index, blob });
-        });
-      }));
-    });
-
-    Promise.all(promises).then((results) => {
-      results.forEach(({ index, blob }) => {
-        const file = document.getElementById('ocs-productImage').files[index];
-        const formData = new FormData();
-        formData.append('croppedImages[]', blob, file.name);
+      const canvas = cropper.getCroppedCanvas();
+      canvas.toBlob(blob => {
+        formData.append('image', blob, `croppedImage${index}.png`);
       });
-
-      $('#cropModal').modal('hide');
     });
+
+    setTimeout(() => {
+      fetch(form.action, {
+          method: form.method,
+          body: formData
+        })
+        .then(response => {
+          if (response.ok) {
+            window.location.href = '/admin/products';
+          } else {
+            alert('An error occurred while submitting the form');
+          }
+        })
+        .catch(error => {
+          console.error(error);
+          alert('An error occurred while submitting the form');
+        });
+    }, 500); 
   }
+});
+</script>
+
+<script>
 
   function clearValidationMessages() {
     const validationMessages = document.querySelectorAll('.validation-message');

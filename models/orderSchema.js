@@ -34,6 +34,10 @@ const orderSchema = new mongoose.Schema({
         enum: ['Cash on delivery', 'PayPal'],
         
     },
+    paymentStatus:{
+        type: String,
+        default: 'pending'
+    }
    
 }, { timestamps: true });
 

@@ -108,36 +108,33 @@
 
 <br>
 <div class="tob-container">
-    <header class="tob-header">
-        <h1 class="tob-title">Thank You for Your Order!</h1><br>
-        <div class="tob-tick-container">
-            <i class="fas fa-check-circle tob-tick-icon"></i>
-        </div>
-    </header>
-    <main class="tob-main">
-        <section class="tob-order-summary">
-            <h2 class="tob-subtitle">Order Summary</h2>
-            <div class="tob-order-details">
-                <p class="tob-order-text"><strong>Date:</strong> July 19, 2024</p>
-                <p class="tob-order-text"><strong>Total:</strong> $123.45</p>
-            </div>
-            <h3 class="tob-subtitle">Shipping Information</h3>
-            <div class="tob-shipping-details">
-              <% if (Address) { %>
-                <p class="tob-order-text"><strong>Recipient:</strong> <%= Address.name%>,</p>
-                <p class="tob-order-text"><strong>Address:</strong> <%= Address.mobile%>,<%= Address.city%>, <%= Address.state%>, <%= Address.zipcode%></p>
-                <% } else { %>
+  <header class="tob-header">
+      <h1 class="tob-title">Thank You for Your Order!</h1><br>
+      <div class="tob-tick-container">
+          <i class="fas fa-check-circle tob-tick-icon"></i>
+      </div>
+  </header>
+  <main class="tob-main">
+      <section class="tob-order-summary">
+          
+          <h3 class="tob-subtitle">Shipping Information</h3>
+          <div class="tob-shipping-details">
+              <% if (orders.shippingAddress) { %>
+                  <p class="tob-order-text"><strong>Date:</strong> <%= new Date(orders.createdAt).toLocaleDateString() %></p>
+                  <p class="tob-order-text"><strong>Recipient:</strong> <%= orders.shippingAddress.name %>,</p>
+                  <p class="tob-order-text"><strong>Details:</strong> <%= orders.shippingAddress.mobile %>, <%= orders.shippingAddress.city %>, <%= orders.shippingAddress.state %>, <%= orders.shippingAddress.zipcode %></p>
+              <% } else { %>
                   <p class="tob-order-text">Address information not available</p>
               <% } %>
-              </div>
-        </section>
-        <section class="tob-next-steps">
-           
-            <a href="#" class="tob-btn tob-btn-primary">Track Your Order</a>
-            <a href="#" class="tob-btn tob-btn-secondary">Return to Shop</a>
-        </section>
-    </main>
+          </div>
+      </section>
+      <section class="tob-next-steps">
+          <!-- <a href="#" class="btn tob-btn-primary">Track Your Order</a> -->
+          <a href="/productShop" class="btn tob-btn-secondary">Return to Shop</a>
+      </section>
+  </main>
 </div>
+
 
 <br>
 

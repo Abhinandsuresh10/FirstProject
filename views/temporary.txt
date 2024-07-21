@@ -4196,7 +4196,7 @@ checkout page
             <div class="card card-shadow d-none">
                 <div class="underline">
                     <label for="checkbox-<%= index %>"></label>
-                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox">
+                    <input type="checkbox" id="checkbox-<%= index %>" class="address-checkbox" value="<%= address._id %>">
                 </div>
                 <div class="card-body">
                     <div class="form-group row">
@@ -4340,7 +4340,7 @@ checkout page
                           <% cart.products.forEach(product => { %>
                               <li class="cart-item">
                                   <h6><%= product.productId.name %></h6>
-                                
+                                  
                                   <p>Price: ₹<%= product.productId.price.toFixed(2) %></p>
                                   <p>Quantity: <%= product.quantity %> </p>
                               </li>
@@ -4386,14 +4386,14 @@ checkout page
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Cash on delivery</label>
+                                             <label><input type="radio" name="optradio" class="mr-2" value="Cash on delivery"> Cash on delivery</label>
                                           </div>
                                       </div>
                                   </div>
                                   <div class="form-group">
                                       <div class="col-md-12">
                                           <div class="radio">
-                                             <label><input type="radio" name="optradio" class="mr-2"> Paypal</label>
+                                             <label><input type="radio" name="optradio" class="mr-2" value="PayPal"> Paypal</label>
                                           </div>
                                       </div>
                                   </div>
@@ -4402,7 +4402,7 @@ checkout page
                                          
                                       </div>
                                   </div>
-                                  <p><a href="/userOrderDetails"class="btn btn-primary py-3 px-4">Place an order</a></p>
+                                  <p><a href="#" id="placeOrderBtn" class="btn btn-primary py-3 px-4">Place an order</a></p>
                               </div>
                 </div>
             </div>
@@ -4712,50 +4712,84 @@ e
 
 
 <script>
-document.addEventListener('DOMContentLoaded', function() {
-    
-    function showSnackbar(message, backgroundColor) {
-        const snackbar = document.getElementById('snackbar');
-        snackbar.textContent = message;
-        snackbar.style.backgroundColor = backgroundColor;
-        snackbar.className = 'show';
+  document.addEventListener('DOMContentLoaded', function() {
+      const placeOrderBtn = document.getElementById('placeOrderBtn');
+  
+      function showSnackbar(message, backgroundColor) {
+          const snackbar = document.getElementById('snackbar');
+          snackbar.textContent = message;
+          snackbar.style.backgroundColor = backgroundColor;
+          snackbar.className = 'show';
         
-       
-        setTimeout(function() {
-            snackbar.className = snackbar.className.replace('show', '');
-        }, 3000);
-    }
-    
-    function validateForm() {
-        const addressChecked = document.querySelector('.address-checkbox:checked');
-        const paymentChecked = document.querySelector('input[name="optradio"]:checked');
+          setTimeout(function() {
+              snackbar.className = snackbar.className.replace('show', '');
+          }, 3000);
+      }
+  
+      function validateForm() {
+          const addressChecked = document.querySelector('.address-checkbox:checked');
+          const paymentMethodInput = document.querySelector('input[name="optradio"]:checked');
         
-        if (!addressChecked) {
-            showSnackbar('Select an address.', '#ff4444');
-            return false;
-        }
-
-        if (!paymentChecked) {
-            showSnackbar('Select a payment method.', '#ff4444');
-            return false;
-        }
-
-        return true;
-    }
-
-    const placeOrderBtn = document.querySelector('a.btn.btn-primary.py-3.px-4');
-    
-    if (placeOrderBtn) {
-        placeOrderBtn.addEventListener('click', function(event) {
-            if (!validateForm()) {
-                event.preventDefault(); 
-            }
-        });
-    }
-});
-
-</script>
-
+          if (!addressChecked) {
+              showSnackbar('Select an address.', '#ff4444');
+              return false;
+          }
+  
+          if (!paymentMethodInput) {
+              showSnackbar('Select a payment method.', '#ff4444');
+              return false;
+          }
+  
+          const paymentMethod = paymentMethodInput.value; 
+          const validPaymentMethods = {
+              'Cash on delivery': 'Cash on delivery',
+              'Paypal': 'PayPal'
+          };
+  
+          if (!validPaymentMethods[paymentMethod]) {
+              showSnackbar('Invalid payment method selected.', '#ff4444');
+              return false;
+          }
+  
+          return {
+              addressId: addressChecked.value,
+              paymentMethod: validPaymentMethods[paymentMethod]
+          };
+      }
+  
+      placeOrderBtn.addEventListener('click', async function(event) {
+          event.preventDefault();
+          
+          const formData = validateForm();
+          console.log('Form Data:', formData); 
+  
+          if (formData) {
+              try {
+                  const response = await fetch('/placeOrder', {
+                      method: 'POST',
+                      headers: {
+                          'Content-Type': 'application/json'
+                      },
+                      body: JSON.stringify(formData)
+                  });
+  
+                  if (response.ok) {
+                      const result = await response.json();
+                      showSnackbar('Order placed successfully!', '#00C851');
+                      setTimeout(() => window.location.href = result.redirectUrl, 1500);
+                  } else {
+                      showSnackbar('Failed to place order. Please try again.', '#ff4444');
+                  }
+              } catch (error) {
+                  console.error('Fetch error:', error); 
+                  showSnackbar('An error occurred. Please try again.', '#ff4444');
+              }
+          }
+      });
+  });
+  </script>
+  
+  
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
@@ -4776,3 +4810,342 @@ document.addEventListener('DOMContentLoaded', function() {
   
 
 <%-include ('./footer.ejs') %>
+
+
+
+editProducts page 
+
+
+<%- include('./adminHeader.ejs') %>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
+
+<div class="col-12 grid-margin stretch-card">
+  <div class="card">
+    <div class="card-body">
+      <h4 class="card-title">Basic form elements</h4>
+      <p class="card-description">Basic form elements</p>
+      <form id="productForm" class="forms-sample" method="post" action="/admin/insertEditProducts?pid=<%= product._id %>" enctype="multipart/form-data">
+
+        <div class="form-group">
+          <label for="exampleInputName1">Name</label>
+          <input type="text" class="form-control" id="exampleInputName1" style="color: rgb(252, 252, 252);width: 85%;" name="name" value="<%= product.name %>" >
+          <small class="form-text text-danger" id="errorName"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectCategory">Category</label>
+          <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" >
+            <option><%= product.category %></option>
+            <% for(let i=0;i<categories.length;i++){ %>
+            <option><%=categories[i].name%></option>
+            <% } %>
+          </select>
+          <small class="form-text text-danger" id="errorCategory"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleSelectBrand">Brand</label>
+          <select class="form-control" id="exampleSelectBrand" style="color: rgb(252, 252, 252);width: 85%;" name="brand" >
+            <option><%= product.brand %></option>
+            <% for(let i=0;i<brands.length;i++){ %>
+            <option><%=brands[i].name%></option>
+            <% } %>
+          </select>
+          <small class="form-text text-danger" id="errorBrand"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputModel">Model</label>
+          <input type="text" class="form-control" id="exampleInputModel" style="color: rgb(252, 252, 252);width: 85%;" name="model" value="<%= product.model %>" >
+          <small class="form-text text-danger" id="errorModel"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputMaterial">Material</label>
+          <input type="text" class="form-control" id="exampleInputMaterial" style="color: rgb(252, 252, 252);width: 85%;" name="material" value="<%= product.material %>" >
+          <small class="form-text text-danger" id="errorMaterial"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputPrice">Price</label>
+          <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;" name="price" value="<%= product.price %>" >
+          <small class="form-text text-danger" id="errorPrice"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDiscount">Discount</label>
+          <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" >
+          <small class="form-text text-danger" id="errorDiscount"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputStock">Stock</label>
+          <input type="number" class="form-control" id="exampleInputStock" style="color: rgb(252, 252, 252);width: 15%;" name="stock" value="<%= product.stock %>" >
+          <small class="form-text text-danger" id="errorStock"></small>
+        </div>
+        <div class="form-group">
+          <label for="exampleInputDescription">Description</label>
+          <textarea class="form-control" id="exampleInputDescription" name="discription" style="color: rgb(252, 252, 252);width: 85%; height: 80px;" ><%= product.discription %></textarea>
+          <small class="form-text text-danger" id="errorDescription"></small>
+        </div>
+
+        <h4>Images</h4>
+        <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
+          <% product.image.forEach((item, index) => { %>
+          <div style="position: relative; display: inline-block; margin: 10px;">
+            <img src="/static/productImages/<%= item %>" style="width: 100px; height: 100px; background-color: aliceblue;">
+            <span onclick="removeExistingImage(<%= index %>)" style="position: absolute; top: 5px; right: 5px; background: rgba(0, 0, 0, 0.5); color: white; border-radius: 50%; padding: 5px; cursor: pointer;">&times;</span>
+            <input type="hidden" name="existingImages[]" value="<%= item %>">
+          </div>
+          <% }) %>
+        </div>
+
+        <div style="height: 100px; width: 30%;">
+          <label for="ocs-productImage" class="ocs-product-label">Upload Image</label>
+          <input type="file" id="ocs-productImage" name="image" class="form-control" multiple accept="image/*" onchange="previewImages()">
+        </div>
+
+        <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
+
+        <div id="croppedImagesContainer"></div>
+
+        <button type="submit" class="btn btn-primary me-2">Submit</button>
+        <button class="btn btn-dark"><a href="/admin/products" style="text-decoration: none;color: rgb(252, 252, 252);">Cancel</a></button>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Cropping Modal -->
+<div class="modal fade" id="cropModal" tabindex="-1" role="dialog" aria-labelledby="cropModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body">
+        <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+<script>
+  let croppers = [];
+
+  function previewImages() {
+    const preview = document.getElementById('imagePreview');
+    preview.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const imgContainer = document.createElement('div');
+          imgContainer.style.position = 'relative';
+          imgContainer.style.margin = '10px';
+
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '100px';
+
+          const closeButton = document.createElement('span');
+          closeButton.innerHTML = '&times;';
+          closeButton.style.position = 'absolute';
+          closeButton.style.top = '5px';
+          closeButton.style.right = '5px';
+          closeButton.style.background = 'rgba(0, 0, 0, 0.5)';
+          closeButton.style.color = 'white';
+          closeButton.style.borderRadius = '50%';
+          closeButton.style.padding = '5px';
+          closeButton.style.cursor = 'pointer';
+          closeButton.addEventListener('click', () => imgContainer.remove());
+
+          imgContainer.appendChild(img);
+          imgContainer.appendChild(closeButton);
+          preview.appendChild(imgContainer);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+  }
+
+  function removeExistingImage(index) {
+    const existingImages = document.getElementsByName('existingImages[]');
+    if (existingImages[index]) {
+      existingImages[index].value = '';
+      const imgContainer = existingImages[index].parentElement;
+      imgContainer.style.display = 'none';
+    }
+  }
+
+  function openCropModal() {
+    const cropperContainer = document.getElementById('cropperContainer');
+    cropperContainer.innerHTML = '';
+    const files = document.getElementById('ocs-productImage').files;
+
+    if (files) {
+      croppers = [];
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        const reader = new FileReader();
+
+        reader.onload = (e) => {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          img.style.maxWidth = '200px';
+          img.style.margin = '10px';
+          img.setAttribute('data-index', i);
+
+          cropperContainer.appendChild(img);
+
+          const cropper = new Cropper(img, {
+            aspectRatio: 1,
+            viewMode: 1,
+            autoCropArea: 1,
+            responsive: true
+          });
+
+          croppers.push(cropper);
+        };
+
+        reader.readAsDataURL(file);
+      }
+    }
+
+    $('#cropModal').modal('show');
+  }
+
+  function cropAllImages() {
+    const croppedImagesContainer = document.getElementById('croppedImagesContainer');
+    croppedImagesContainer.innerHTML = '';
+
+    const promises = [];
+    croppers.forEach((cropper, index) => {
+      promises.push(new Promise((resolve, reject) => {
+        cropper.getCroppedCanvas().toBlob((blob) => {
+          const croppedImg = new Image();
+          croppedImg.src = URL.createObjectURL(blob);
+          croppedImg.style.maxWidth = '100px';
+          croppedImg.style.margin = '10px';
+          croppedImagesContainer.appendChild(croppedImg);
+          resolve({ index, blob });
+        });
+      }));
+    });
+
+    Promise.all(promises).then((results) => {
+      results.forEach(({ index, blob }) => {
+        const file = document.getElementById('ocs-productImage').files[index];
+        const formData = new FormData();
+        formData.append('croppedImages[]', blob, file.name);
+      });
+
+      $('#cropModal').modal('hide');
+    });
+  }
+
+  function clearValidationMessages() {
+    const validationMessages = document.querySelectorAll('.validation-message');
+    validationMessages.forEach((message) => message.innerText = '');
+  }
+
+  document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach((input) => {
+    input.addEventListener('input', clearValidationMessages);
+  });
+
+  function validateForm() {
+    let isValid = true;
+
+    const name = document.getElementById('exampleInputName1').value.trim();
+    const category = document.getElementById('exampleSelectCategory').value.trim();
+    const brand = document.getElementById('exampleSelectBrand').value.trim();
+    const model = document.getElementById('exampleInputModel').value.trim();
+    const material = document.getElementById('exampleInputMaterial').value.trim();
+    const price = document.getElementById('exampleInputPrice').value.trim();
+    const discount = document.getElementById('exampleInputDiscount').value.trim();
+    const stock = document.getElementById('exampleInputStock').value.trim();
+    const description = document.getElementById('exampleInputDescription').value.trim();
+
+    if (!name) {
+      document.getElementById('errorName').innerText = 'Name is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorName').innerText = '';
+    }
+
+    if (!category) {
+      document.getElementById('errorCategory').innerText = 'Category is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorCategory').innerText = '';
+    }
+
+    if (!brand) {
+      document.getElementById('errorBrand').innerText = 'Brand is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorBrand').innerText = '';
+    }
+
+    if (!model) {
+      document.getElementById('errorModel').innerText = 'Model is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorModel').innerText = '';
+    }
+
+    if (!material) {
+      document.getElementById('errorMaterial').innerText = 'Material is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorMaterial').innerText = '';
+    }
+
+    if (!price) {
+      document.getElementById('errorPrice').innerText = 'Price is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorPrice').innerText = '';
+    }
+
+    if (!discount || discount < 100 || discount > 1000) {
+      document.getElementById('errorDiscount').innerText = 'Discount is required and discount should be in 100 to 1000';
+      isValid = false;
+    } else {
+      document.getElementById('errorDiscount').innerText = '';
+    }
+
+    if (!stock || stock < 0) {
+      document.getElementById('errorStock').innerText = 'Stock is required and stock cannot be negative';
+      isValid = false;
+    } else {
+      document.getElementById('errorStock').innerText = '';
+    }
+
+    if (!description) {
+      document.getElementById('errorDescription').innerText = 'Description is required';
+      isValid = false;
+    } else {
+      document.getElementById('errorDescription').innerText = '';
+    }
+
+    return isValid;
+  }
+
+  document.getElementById('productForm').addEventListener('submit', function (e) {
+    if (!validateForm()) {
+      e.preventDefault();
+    }
+  });
+</script>
+
+<%- include('./adminFooter.ejs') %>
