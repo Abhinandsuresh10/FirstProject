@@ -19,7 +19,9 @@
           <select class="form-control" id="exampleSelectCategory" style="color: rgb(252, 252, 252);width: 85%;" name="category" >
             <option><%= product.category %></option>
             <% for(let i=0;i<categories.length;i++){ %>
+              <% if(categories[i].name !== product.category ) {%>
             <option><%=categories[i].name%></option>
+               <%}%>
             <% } %>
           </select>
           <small class="form-text text-danger" id="errorCategory"></small>
@@ -72,20 +74,21 @@
           <small id="imageError" class="form-text text-danger"></small>
       </div>
       <h4>Existing Images</h4>
-      <div id="imagePreview" style="display: flex; flex-wrap: wrap;">
-          <% if (product.image && product.image.length > 0) { %>
-              <% product.image.forEach(image => { %>
-                  <div class="image-container" style="position: relative; margin: 5px;">
-                      <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 150px; height: 150px; object-fit: cover;"/>
-                      <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this)">X</button>
-                  </div>
-              <% }) %>
-          <% } else { %>
-              <p>No images available.</p>
-          <% } %>
-      </div><br>
-      <h4>Added images</h4>
-      <div id="imagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
+      <div id="existingImagePreview" style="display: flex; flex-wrap: wrap;">
+        <% if (product.image && product.image.length > 0) { %>
+          <% product.image.forEach(image => { %>
+            <div class="image-container" style="position: relative; margin: 5px;">
+              <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 100px; height: 150px; object-fit: cover;"/>
+              <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this)">X</button>
+            </div>
+          <% }) %>
+        <% } else { %>
+          <p>No images available.</p>
+        <% } %>
+      </div>
+
+      <h4>Added Images</h4>
+      <div id="addedImagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
 
       <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
 
@@ -93,7 +96,7 @@
 
       <button type="submit" class="btn btn-primary me-2">Submit</button>
       <a href="/admin/products" class="btn btn-dark" style="text-decoration: none; color: white;">Cancel</a>
-      </form>
+    </form>
     </div>
   </div>
 </div>
@@ -124,14 +127,6 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-<script>
-  function removeImage(button) {
-      const imageContainer = button.parentElement;
-      imageContainer.remove();
-  }
-</script>
-
 <script>
   let croppers = [];
   let cropperElements = [];
@@ -175,7 +170,7 @@
   }
 
   function cropAllImages() {
-    const croppedImagesContainer = document.getElementById('imagePreview');
+    const croppedImagesContainer = document.getElementById('croppedImagesContainer');
     croppedImagesContainer.innerHTML = '';
 
     croppers.forEach((cropper, index) => {
@@ -215,7 +210,7 @@
   }
 
   function previewImages() {
-    const preview = document.getElementById('imagePreview');
+    const preview = document.getElementById('addedImagePreview');
     preview.innerHTML = '';
     const files = document.getElementById('ocs-productImage').files;
 
@@ -255,55 +250,10 @@
     }
   }
 
-  document.getElementById('productForm').addEventListener('submit', function (event) {
-  if (!validateForm()) {
-    event.preventDefault(); 
-  } else {
-    event.preventDefault(); 
-
-    const form = event.target;
-    const formData = new FormData(form);
-
-    formData.delete('image');
-
-    croppers.forEach((cropper, index) => {
-      const canvas = cropper.getCroppedCanvas();
-      canvas.toBlob(blob => {
-        formData.append('image', blob, `croppedImage${index}.png`);
-      });
-    });
-
-    setTimeout(() => {
-      fetch(form.action, {
-          method: form.method,
-          body: formData
-        })
-        .then(response => {
-          if (response.ok) {
-            window.location.href = '/admin/products';
-          } else {
-            alert('An error occurred while submitting the form');
-          }
-        })
-        .catch(error => {
-          console.error(error);
-          alert('An error occurred while submitting the form');
-        });
-    }, 500); 
+  function removeImage(button) {
+    const imageContainer = button.parentElement;
+    imageContainer.remove();
   }
-});
-</script>
-
-<script>
-
-  function clearValidationMessages() {
-    const validationMessages = document.querySelectorAll('.validation-message');
-    validationMessages.forEach((message) => message.innerText = '');
-  }
-
-  document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach((input) => {
-    input.addEventListener('input', clearValidationMessages);
-  });
 
   function validateForm() {
     let isValid = true;
@@ -384,11 +334,63 @@
     return isValid;
   }
 
-  document.getElementById('productForm').addEventListener('submit', function (e) {
-    if (!validateForm()) {
-      e.preventDefault();
-    }
+  function clearValidationMessages() {
+    const validationMessages = document.querySelectorAll('.validation-message');
+    validationMessages.forEach((message) => message.innerText = '');
+  }
+
+  document.querySelectorAll('#productForm input, #productForm select, #productForm textarea').forEach((input) => {
+    input.addEventListener('input', clearValidationMessages);
   });
+
+  document.getElementById('productForm').addEventListener('submit', function (event) {
+    if (!validateForm()) {
+        event.preventDefault();
+    } else {
+        event.preventDefault(); 
+
+        const form = event.target;
+        const formData = new FormData(form);
+
+        const oldImages = document.querySelectorAll('#addedImagePreview img');
+        oldImages.forEach((img, index) => {
+            const imgSrc = img.src;
+            formData.append('existingImages', imgSrc);
+        });
+
+        formData.delete('image');
+
+        croppers.forEach((cropper, index) => {
+            const canvas = cropper.getCroppedCanvas();
+            canvas.toBlob(blob => {
+                formData.append('image', blob, `croppedImage${index}.png`);
+            });
+        });
+
+        
+
+        setTimeout(() => {
+            fetch(form.action, {
+                method: form.method,
+                body: formData
+            })
+            .then(response => {
+                if (response.ok) {
+                    window.location.href = '/admin/products';
+                } else {
+                    alert('An error occurred while submitting the form');
+                }
+            })
+            .catch(error => {
+                console.error(error);
+                alert('An error occurred while submitting the form');
+            });
+        }, 500);
+    }
+});
+
 </script>
+
+
 
 <%- include('./adminFooter.ejs') %>

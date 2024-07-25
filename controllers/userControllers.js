@@ -75,7 +75,7 @@ const insertUser = async (req, res) => {
         req.session.otp = otp;
         sendOtpEmail(email, otp);
 
-        req.session.userData = {
+        req.session.user = {
             name,
             email,
             mobile,
@@ -111,7 +111,7 @@ const verifyOtp = async (req, res) => {
         const { otp } = req.body;
         if (otp == req.session.otp) {
         
-            const userData = new User(req.session.userData);
+            const userData = new User(req.session.user);
             const savedUser = await userData.save();
 
             if (savedUser) {

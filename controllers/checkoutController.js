@@ -5,19 +5,69 @@ const order = require('../models/orderSchema');
 const User = require('../models/userModel')
 
 
-const loadCheckout = async(req,res)=>{
-    try {
-        const id = req.session.userData._id;
-        const addresses = await address.find({userId : id});
-        const cart = await Cart.findOne({ userId: id }).populate(
-            'products.productId'
-        );
+// const loadCheckout = async(req,res)=>{
+//     try {
+//         const id = req.session.userData._id;
+//         const addresses = await address.find({userId : id});
+//         const cart = await Cart.findOne({ userId: id }).populate(
+//             'products.productId'
+//         );
         
-        res.render('checkout',{isLoggedIn : req.session.userData,address:addresses,cart:cart})
+//         if(!cart || cart.products.length === 0){
+//             res.redirect('/cart')
+//         }else{
+//             res.render('checkout',{isLoggedIn : req.session.userData,address:addresses,cart:cart})
+//         }
+
+//     } catch (error) {
+//         console.log(error.message)
+//     }
+// }
+
+const loadCheckout = async (req, res) => {
+    try {
+        const userId = req.session.userData._id;
+        const addresses = await address.find({ userId });
+        const cart = await Cart.findOne({ userId }).populate('products.productId');
+
+        if (!cart || cart.products.length === 0) {
+            return res.redirect('/cart');
+        }
+
+        let insufficientStock = false;
+        let updatedProducts = [];
+
+        for (const cartProduct of cart.products) {
+            const product = cartProduct.productId;
+            const requestedQuantity = cartProduct.quantity;
+
+            if (requestedQuantity > product.stock) {
+                insufficientStock = true;
+                cartProduct.quantity = product.stock;
+                await cart.save();
+
+                updatedProducts.push({
+                    product: product.name,
+                    requestedQuantity,
+                    availableStock: product.stock
+                });
+            }
+        }
+
+        res.render('checkout', {
+            isLoggedIn: req.session.userData,
+            addresses,
+            cart,
+            insufficientStock,
+            updatedProducts
+        });
+
     } catch (error) {
-        console.log(error.message)
+        console.error(error.message);
+        res.status(500).send('Internal Server Error');
     }
-}
+};
+
 
 
 
@@ -107,17 +157,28 @@ const insertPlaceOrder = async(req,res)=>{
 
         await newOrder.save();
         await Cart.findOneAndDelete({userId:userId})
-      res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?orderId=${newOrder._id}`  });
+      res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?orderId=${newOrder._id}`});
 
     } catch (error) {
         console.log(error.message)
     }
 }
 
+
+
 const loadOrdersShow = async (req, res) => {
     try {
-      
-        const orders = await order.find({ user: req.session.userData._id });
+       
+        const page = parseInt(req.query.page) || 1;
+        const limit = parseInt(req.query.limit) || 6;
+        const skip = (page - 1) * limit;
+
+        const orders = await order.find({ user: req.session.userData._id })
+                                  .skip(skip)
+                                  .limit(limit);
+
+        const totalOrders = await order.countDocuments({ user: req.session.userData._id });
+        const totalPages = Math.ceil(totalOrders / limit);
 
         const detailedOrders = await Promise.all(orders.map(async order => {
             const userDetails = await User.findById(order.user);
@@ -146,16 +207,18 @@ const loadOrdersShow = async (req, res) => {
                 orderItems: productDetails
             };
         }));
+
         res.render('ordersShowPage', {
             isLoggedIn: req.session.userData,
-            orders: detailedOrders
+            orders: detailedOrders,
+            currentPage: page,
+            totalPages: totalPages
         });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Server Error');
     }
 };
-
 
 
 module.exports = {

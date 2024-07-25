@@ -1,0 +1,83 @@
+<%- include('./adminHeader.ejs') %>
+
+
+<div class="container">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Order Details</h4>
+            <div class="order-info">
+                <p><strong>Order ID:</strong> <%= order._id %></p>
+                <p><strong>User:</strong> <%= order.user ? order.user.name : 'N/A' %></p>
+                <p><strong>Ordered Date:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
+                <p><strong>Shipping Address:</strong> 
+                    <%= order.shippingAddress ? `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.zipcode}, ${order.shippingAddress.country}` : 'N/A' %>
+                </p>
+                <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                <form action="/admin/updateOrderStatus" method="POST">
+                    <p><strong>Payment Status:</strong>
+                        <select name="paymentStatus" class="form-control" style="width: 150px;color: aliceblue;" required>
+                            <option value="pending" style="color: aliceblue;" <%= order.paymentStatus === 'pending' ? 'selected' : '' %>>Pending</option>
+                            <option value="shipped" style="color: aliceblue;" <%= order.paymentStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
+                            <option value="delivered" style="color: aliceblue;" <%= order.paymentStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                        </select>
+                    </p>
+                    <input type="hidden" name="orderId" value="<%= order._id %>">
+                    <button type="submit" class="btn btn-primary">Update Status</button>
+                   
+                </form>
+            </div>
+            <br>
+            <h5>Order Items:</h5>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Product</th>
+                            <th>Image</th>
+                            <th>Quantity</th>
+                            <th>Price</th>
+                            <th>Discount</th>
+                            <th>Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% 
+                        let totalOrderCost = 0;
+                        order.orderItems.forEach((item, index) => { 
+                            totalOrderCost += parseFloat(item.totalAmount);
+                        %>
+                        <tr>
+                            <td style="color: aliceblue;"><%= index + 1 %></td>
+                            <td style="color: aliceblue;"><%= item.productDetails ? item.productDetails.name : 'N/A' %></td>
+                            <td>
+                                <% if (item.productDetails && item.productDetails.image) { %>
+                                    <img src="/static/productImages/<%= item.productDetails.image[0] %>" alt="Product Image" style="width: 80px; height: 100px; border-radius: 0%;">
+                                <% } else { %>
+                                    N/A
+                                <% } %>
+                            </td>
+                            <td style="color: aliceblue;"><%= item.quantity %></td>
+                            <td style="color: aliceblue;">₹<%= item.price.toFixed(2) %></td>
+                            <td style="color: aliceblue;">₹<%= item.discountPrice %></td>
+                            <td style="color: aliceblue;">₹<%= item.totalAmount %></td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                    <tfoot>
+                        <tr>
+                            <th colspan="6" style="text-align:right">Total Order Cost:</th>
+                            <th>₹<%= totalOrderCost.toFixed(2) %></th>
+                        </tr>
+                    </tfoot>
+                </table>
+            </div><br>
+            <a href="/admin/orders" class="btn btn-primary">Back to Orders</a>
+        </div>
+    </div>
+</div>
+
+
+
+
+<%- include('./adminFooter.ejs') %>

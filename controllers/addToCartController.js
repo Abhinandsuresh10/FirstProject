@@ -1,16 +1,46 @@
 const cart = require('../models/cartModal')
 
 
-const cartLoad = async(req,res)=>{
+// const cartLoad = async(req,res)=>{
+//     try {
+//         const userId = req.session.userData._id;
+//         const cartData = await cart.findOne({userId:userId}).populate("products.productId");
+     
+//        res.render('addToCart',{isLoggedIn : req.session.userData,cart:cartData}) 
+//     } catch (error) {
+//         console.log(error.message);
+//     }
+// }
+
+const cartLoad = async (req, res) => {
     try {
         const userId = req.session.userData._id;
-        const cartData = await cart.findOne({userId:userId}).populate("products.productId");
-     
-       res.render('addToCart',{isLoggedIn : req.session.userData,cart:cartData}) 
+        const cartData = await cart.findOne({ userId }).populate('products.productId');
+
+        let insufficientStock = false;
+        let updatedProducts = [];
+
+        if (req.session.insufficientStock) {
+            insufficientStock = req.session.insufficientStock;
+            updatedProducts = req.session.updatedProducts;
+
+            req.session.insufficientStock = null;
+            req.session.updatedProducts = null;
+        }
+
+        res.render('addToCart', {
+            isLoggedIn: req.session.userData,
+            cart:cartData,
+            insufficientStock,
+            updatedProducts
+        });
+
     } catch (error) {
-        console.log(error.message);
+        console.error(error.message);
+        res.status(500).send('Internal Server Error');
     }
-}
+};
+
 
 const insertCart = async (req, res) => {
     try {

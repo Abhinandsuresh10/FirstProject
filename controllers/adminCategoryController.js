@@ -2,6 +2,7 @@
 const User = require('../models/userModel');
 const Category = require('../models/category');
 const Brands = require('../models/brandsModel');
+const product = require('../models/produntsModel')
 
 
 
@@ -66,7 +67,10 @@ const editCategory = async (req, res) => {
 const deleteCategory = async(req,res)=>{
     try {
         const id = req.query.id;
-        await Category.findByIdAndUpdate({_id:id},{$set:{is_delete:true}});
+        const cat = await Category.findByIdAndUpdate({_id:id},{$set:{is_delete:true}});
+        
+        await product.updateMany({ category: cat.name }, { $set: { is_delete: true } });
+
         res.redirect('/admin/category');
     } catch (error) {
         console.log(error.message);

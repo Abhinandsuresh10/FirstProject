@@ -100,7 +100,13 @@ const editProduct = async (req, res) => {
         const imagePaths = req.files.map(file => file.filename);
         const { name, category, brand, model, material, price, discount, stock, discription } = req.body;
         const id = req.query.pid;
-        let updateData = {
+
+        const existingProduct = await prducts.findById(id);
+        const existingImages = existingProduct.image || [];
+
+        const updatedImages = [...existingImages, ...imagePaths];
+
+        const updateData = {
             name,
             category,
             brand,
@@ -109,19 +115,20 @@ const editProduct = async (req, res) => {
             price,
             discount,
             stock,
-            discription
+            discription,
+            image: updatedImages
         };
-        if (imagePaths.length > 0) {
-            updateData.image = imagePaths;
-        }
 
+        
         await prducts.updateOne({ _id: id }, { $set: updateData });
+
         const isProducts = await prducts.find({ is_delete: false });
         res.render('products', { product: isProducts });
     } catch (error) {
         console.log(error.message);
     }
 }
+
 
 
 

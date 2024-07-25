@@ -64,10 +64,41 @@
             margin: 0 0 10px;
             font-size: 14px;
         }
+
+        .pagination {
+        display: flex;
+        justify-content: center;
+        margin-top: 20px;
+    }
+    .pagination a {
+        padding: 10px 15px;
+        margin: 0 5px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        color: #000000;
+        text-decoration: none;
+    }
+    .pagination a.active {
+        background-color: #000000;
+        color: white;
+    }
+    .pagination a.disabled {
+        color: #ccc;
+        cursor: not-allowed;
+    }
     </style>
 </style>
+<div class="breadcrumbs" style="background-color: #ffffff;">
+    <div class="container">
+        <div class="row">
+            <div class="col">
+                <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">home</a></span> / <span><a href="/userProfile" style="color: rgb(142, 142, 142);text-decoration: none;">profile</a></span> / <span style="color: rgb(142, 142, 142);">orders</span></p>
+            </div>
+        </div>
+     </div>
+  </div>
 
-<% if (isLoggedIn) { %>
+  <% if (isLoggedIn) { %>
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-12">
@@ -82,6 +113,7 @@
                                 <thead class="thead-light">
                                     <tr class="text-center">
                                         <th>Product</th>
+                                        <th>Image</th>
                                         <th>Price</th>
                                         <th>Quantity</th>
                                         <th>Total</th>
@@ -94,27 +126,53 @@
                                                 <h3><%= item.productDetails.name %></h3>
                                                 <p><%= item.productDetails.description %></p>
                                             </td>
-                                            <td>$<%= item.price.toFixed(2) %></td>
+                                            <td>
+                                                <% if (item.productDetails && item.productDetails.image) { %>
+                                                    <img src="/static/productImages/<%= item.productDetails.image[0] %>" alt="Product Image" style="width: 80px; height: 100px;">
+                                                <% } else { %>
+                                                    N/A
+                                                <% } %>
+                                            </td>
+                                            <td>₹<%= item.price.toFixed(2) %></td>
                                             <td><%= item.quantity %></td>
-                                            <td>$<%= item.totalAmount %></td>
+                                            <td>₹<%= item.totalAmount %></td>
                                         </tr>
                                     <% }) %>
                                     <tr class="total-row">
-                                        <td colspan="3" class="text-right">Order Total</td>
+                                        <td colspan="4" class="text-right">Order Total</td>
                                         <td class="text-center">
-                                            $<%= order.orderItems.reduce((total, item) => total + parseFloat(item.totalAmount), 0).toFixed(2) %>
+                                            ₹<%= order.orderItems.reduce((total, item) => total + parseFloat(item.totalAmount), 0).toFixed(2) %>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
                             <div class="order-details">
-                                
                                 <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                 <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
                             </div>
                         </div>
                     <% }) %>
+                    
+                    <!-- Pagination Controls -->
+                    <div class="pagination">
+                        <% if (currentPage > 1) { %>
+                            <a href="/orderShow?page=<%= currentPage - 1 %>"> < </a>
+                        <% } else { %>
+                            <a href="#" class="disabled"> < </a>
+                        <% } %>
+                        
+                        <% for (let i = 1; i <= totalPages; i++) { %>
+                            <a href="/orderShow?page=<%= i %>" class="<%= i === currentPage ? 'active' : '' %>"><%= i %></a>
+                        <% } %>
+                        
+                        <% if (currentPage < totalPages) { %>
+                            <a href="/orderShow?page=<%= currentPage + 1 %>"> > </a>
+                        <% } else { %>
+                            <a href="#" class="disabled"> > </a>
+                        <% } %>
+                    </div>
+                    <br><br><br>
                 <% } else { %>
                     <p class="text-center">No orders found.</p>
                 <% } %>
@@ -124,6 +182,11 @@
 <% } else { %>
     <p>Please log in to view your orders.</p>
 <% } %>
+
+
+
+             
+
 
 <footer class="ftco-footer bg-light ftco-section">
     <div class="container">

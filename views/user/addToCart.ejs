@@ -66,15 +66,11 @@
 </style>
 
 <!-- breadcrumbs -->
-<div class="breadcrumbs" >
-    <div class="container">
-        <div class="row">
-            <div class="col">
+
+            <div class="col" style="height: 10px; margin-left: 5%;">
                 <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">Home</a></span> / <span><a href="/productShop" style="color: rgb(142, 142, 142);text-decoration: none;">shop</a></span> / <span style="color: rgb(142, 142, 142);">Cart</span></p>
             </div>
-        </div>
-     </div>
-  </div>
+      
 
 <section class="ftco-section ftco-cart">
     <div class="container">
@@ -155,7 +151,16 @@
                         <span id="cart-total">$0.00</span>
                     </p>
                 </div>
-                <p class="text-center"><a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a></p>
+                <% if (cart && cart.products.length > 0) { %>
+                    <p class="text-center">
+                        <a href="/checkout" class="btn btn-primary py-3 px-4">Proceed to Checkout</a>
+                    </p>
+                    <% } else{ %>
+                        
+                        <p class="text-center">
+                        <a href="/productShop" class="btn btn-primary py-3 px-4">Empty cart Continue Shopping</a>
+                    </p>
+                        <% } %>
             </div>
         </div>
     </div>
@@ -241,6 +246,10 @@
 <!-- loader -->
 <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 <div id="snackbar"></div>
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 

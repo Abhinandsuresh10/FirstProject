@@ -4,6 +4,7 @@ const adminController = require('../controllers/adminControllers');
 const adminUserController = require('../controllers/adminUserController');
 const adminCategoryController = require('../controllers/adminCategoryController');
 const adminProductsController = require('../controllers/adminProductsController');
+const adminOrderController = require('../controllers/adminOrderController')
 const adminAuth = require('../middilewares/adminAuth') 
 const session = require('express-session');
 const config = require('../config/config');
@@ -81,6 +82,11 @@ adminRoute.post('/editBrand', adminAuth.isAdminLogin, adminCategoryController.ed
 adminRoute.post('/delete-brand', adminAuth.isAdminLogin, adminCategoryController.deleteBrand);
 adminRoute.get('/deletedBrand', adminAuth.isAdminLogin, adminCategoryController.deletedBrand);
 adminRoute.get('/brandrecover', adminAuth.isAdminLogin, adminCategoryController.recoverBrands);
+
+//orders
+
+adminRoute.get('/orders', adminAuth.isAdminLogin, adminOrderController.loadorders);
+adminRoute.get('/adminOrderView',adminOrderController.LoadOrderView)
 
 //logout
 

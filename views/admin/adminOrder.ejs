@@ -1,0 +1,98 @@
+<%- include('./adminHeader.ejs') %>
+<style>
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+    }
+    .pagination-link {
+        margin: 0 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .pagination-link:hover {
+        background-color: #000000;
+        color: #ffffff;
+    }
+    .pagination-link.active {
+        font-weight: bold;
+        background-color: #000000;
+        color: #fff;
+    }
+</style>
+
+<div class="col-lg-12 grid-margin stretch-card" style="width: 80%;">
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">Order Details</h4>
+            <br>
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Order ID</th>
+                            <th>User</th>
+                            <th>Ordered Date</th>
+                            <th>Total Cost</th>
+                            <th>Payment Method</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% ordersess.forEach((order, index) => { %>
+                        <tr>
+                            <td style="color: aliceblue;"><%= index + 1 %></td>
+                            <td style="color: aliceblue;"><%= order._id %></td>
+                            <td style="color: aliceblue;"><%= order.user ? order.user.name : 'N/A' %></td>
+                            <td style="color: aliceblue;"><%= new Date(order.createdAt).toLocaleDateString() %></td>
+                            <td style="color: aliceblue;">
+                                <% 
+                                    let totalCost = 0;
+                                    order.orderItems.forEach(item => {
+                                        totalCost += parseFloat(item.totalAmount);
+                                    });
+                                    %>
+                                ₹<%= totalCost.toFixed(2) %>
+                            </td>
+                            <td style="color: aliceblue;"><%= order.paymentMethod %></td>
+                            <td style="color: aliceblue;">
+                              <a href="/admin/adminOrderView?orderId=<%= order._id %>"><button class="btn btn-primary">View</button></a>  
+                            </td>
+                        </tr>
+                        <% }) %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                <a href="?page=<%= currentPage - 1 %>" class="pagination-link"> < </a>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                <a href="?page=<%= i %>" class="pagination-link <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                <a href="?page=<%= currentPage + 1 %>" class="pagination-link"> > </a>
+                <% } %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<%- include('./adminFooter.ejs') %>
+
+<script>
+    function viewOrder(orderId) {
+       
+        window.location.href = `/admin/order/${orderId}`;
+    }
+</script>
+
+
+
+
+

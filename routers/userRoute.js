@@ -67,20 +67,20 @@ userRoute.post('/register', upload.single('image'), userController.insertUser);
 userRoute.post('/verify-otp', userController.verifyOtp);
 userRoute.post('/resend-otp', userController.resendOtp);
 userRoute.post('/login',userController.verifyLogin);
-userRoute.get('/home',userAuth.isLogout,userController.loginHome);
-userRoute.get('/registerOTP', userController.otpLoad);
+userRoute.get('/home',userAuth.isLogin,userController.loginHome);
+userRoute.get('/registerOTP',userAuth.isLogout, userController.otpLoad);
 
 userRoute.get('/logout',userController.userLogout);
 
 //shop controls
 
-userRoute.get('/productShop',userShopControllers.shopLoad);
-userRoute.get('/productDetails',userShopControllers.loadProductDetails);
+userRoute.get('/productShop',userAuth.isLogin,userShopControllers.shopLoad);
+userRoute.get('/productDetails',userAuth.isLogin,userShopControllers.loadProductDetails);
 
 //profile..
 
-userRoute.get('/userProfile',userProfileController.loadProfile);
-userRoute.get('/address',userProfileController.loadAddress);
+userRoute.get('/userProfile',userAuth.isLogin,userProfileController.loadProfile);
+userRoute.get('/address',userAuth.isLogin,userProfileController.loadAddress);
 userRoute.post('/userUpdate', upload.single('image'),userProfileController.userUpdates);
 userRoute.post('/change-password',userProfileController.changePassword)
 
@@ -93,20 +93,20 @@ userRoute.post('/editAddress',userProfileController.editAddress);
 
 //cart..
 
-userRoute.get('/cart',cartController.cartLoad);
+userRoute.get('/cart',userAuth.isLogin,cartController.cartLoad);
 userRoute.post('/addToCart',cartController.insertCart);
 userRoute.post('/removeFromCart/:productId',cartController.deleteCart);
 userRoute.post('/updateCartQuantity',cartController.quantityAdd)
 
 //checkout..
 
-userRoute.get('/checkout',checkoutController.loadCheckout);
+userRoute.get('/checkout',userAuth.isLogin,checkoutController.loadCheckout);
 userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress);
-userRoute.get('/userOrderDetails',checkoutController.loadUserOrderDetails);
+userRoute.get('/userOrderDetails',userAuth.isLogin,checkoutController.loadUserOrderDetails);
 userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
 
 
 //orders..
-userRoute.get('/orderShow',checkoutController.loadOrdersShow)
+userRoute.get('/orderShow',userAuth.isLogin,checkoutController.loadOrdersShow)
 
 module.exports = userRoute;

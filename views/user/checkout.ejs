@@ -114,6 +114,51 @@
 }
 
 </style>
+<style>
+  /* Unique snackbar styling */
+  .custom-snackbar {
+    visibility: hidden;
+    min-width: 250px;
+    margin-left: -125px;
+    background-color: #333;
+    color: #fff;
+    text-align: center;
+    border-radius: 2px;
+    position: fixed;
+    z-index: 1;
+    bottom: 30px;
+    left: 50%;
+    font-size: 17px;
+    white-space: nowrap;
+    padding: 16px;
+  }
+
+  .custom-snackbar.show {
+    visibility: visible;
+    -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s;
+    animation: fadein 0.5s, fadeout 0.5s 2.5s;
+  }
+
+  @-webkit-keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+
+  @keyframes fadein {
+    from { bottom: 0; opacity: 0; }
+    to { bottom: 30px; opacity: 1; }
+  }
+
+  @-webkit-keyframes fadeout {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+
+  @keyframes fadeout {
+    from { opacity: 1; }
+    to { opacity: 0; }
+  }
+</style>
 
 
 <div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
@@ -134,7 +179,7 @@
         <div class="col-md-12">
             <h3 class="mb-4">Address Details</h3>
 
-            <% address.forEach(function(address, index) { %>
+            <% addresses.forEach(function(address, index) { %>
             <div class="card card-shadow d-none">
                 <div class="underline">
                     <label for="checkbox-<%= index %>"></label>
@@ -492,6 +537,32 @@
   </div>
 </div>
 <div id="snackbar"></div>
+
+
+<% if (insufficientStock) { %>
+  <div class="custom-snackbar show">
+      <ul>
+          <% updatedProducts.forEach(product => { %>
+              <p>
+                 <br> <%= product.product %> <br> Requested: <%= product.requestedQuantity %> <br> Available: <%= product.availableStock %>
+              </p>
+          <% }); %>
+      </ul>
+  </div>
+<% } %>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function () {
+      const snackbar = document.querySelector('.custom-snackbar');
+      if (snackbar) {
+          setTimeout(function () {
+              snackbar.classList.remove('show');
+          }, 5000);
+      }
+  });
+</script>
+
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
