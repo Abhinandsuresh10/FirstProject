@@ -60,14 +60,14 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden; /* Ensure content doesn't overflow */
+    overflow: hidden; 
     margin-bottom: 20px;
 }
 
 .profile-image {
     max-width: 100%;
     max-height: 100%;
-    display: block; /* Ensure image respects its dimensions */
+    display: block; 
 }
   .loki-profile-details {
       margin-bottom: 20px;
@@ -123,9 +123,6 @@
   /* modal area */
 
   .modal {
-      /* display: none;
-      position: fixed;
-      z-index: 1; */
       left: 0;
       top: 0;
       width: 100%;
@@ -166,26 +163,61 @@
       padding: 8px;
       box-sizing: border-box;
   }
+
+  .loki-sidebar {
+    width: 200px; 
+    padding: 10px;
+}
+
+.loki-sidebar ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.loki-sidebar li {
+    background-color: #f0f0f0; 
+    margin-bottom: 10px; 
+    padding: 10px;
+    border-radius: 8px; 
+    display: flex;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); 
+}
+
+.loki-sidebar li img {
+    margin-right: 10px;
+}
+
+.loki-sidebar a {
+    text-decoration: none;
+    color: #333;
+    font-weight: bold; 
+    display: flex;
+    align-items: center;
+}
+
+.loki-sidebar a:hover {
+    color: #007bff;
+}
+
 </style>
 
 <div style="margin-left: 20px;">
     <p class="bread"><span><a href="/" style="color: rgb(142, 142, 142);text-decoration: none;">home</a></span> / <span style="color: rgb(142, 142, 142);">profile</span></p>
 </div>
 <section class="ftco-section" style="background-color: rgb(234, 247, 244);"!important>
-           
-  
   <div class="loki-container">
     <div class="loki-box">
         <div class="loki-sidebar">
             <ul>
-                
-               <br><br> <li><a href="#"><img src="/static/user/images/wishlist.png" alt="Wishlist" style="width:20px;"> Wishlist</a></li>
+                <li><a href="#"><img src="/static/user/images/wishlist.png" alt="Wishlist" style="width:20px;"> Wishlist</a></li>
                 <li><a href="/orderShow"><img src="/static/user/images/realOrderLogo.png" alt="Orders" style="width:20px;"> Orders</a></li>
                 <li><a href="/address"><img src="/static/user/images/addressLogo.png" alt="Address" style="width:20px;"> Address</a></li>
                 <li><a href="#"><img src="/static/user/images/walletLogo.jpg" alt="Wallet" style="width:20px;"> Wallet</a></li>
                 <li><a href="/logout"><img src="/static/user/images/logoutLogo.jpg" alt="Logout" style="width:20px;"> Logout</a></li>
             </ul>
         </div>
+        
         <div class="loki-content">
             <h3>Personal details</h3>
             <% if(users.image){%>

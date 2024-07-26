@@ -2,6 +2,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const nodemailer = require('nodemailer');
 const prducts = require('../models/produntsModel');
+const Cart = require('../models/cartModal')
 require('dotenv').config();
 
 
@@ -198,7 +199,8 @@ const resendOtp = async (req, res) => {
 
 const loginHome = async(req,res)=>{
     try {
-        res.render('home',{ isLoggedIn : req.session.userData })
+       
+        res.render('home',{ isLoggedIn : req.session.userData})
     } catch (error) {
         console.log(error.message)  
     }

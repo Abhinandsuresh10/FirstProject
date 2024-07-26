@@ -5,25 +5,6 @@ const order = require('../models/orderSchema');
 const User = require('../models/userModel')
 
 
-// const loadCheckout = async(req,res)=>{
-//     try {
-//         const id = req.session.userData._id;
-//         const addresses = await address.find({userId : id});
-//         const cart = await Cart.findOne({ userId: id }).populate(
-//             'products.productId'
-//         );
-        
-//         if(!cart || cart.products.length === 0){
-//             res.redirect('/cart')
-//         }else{
-//             res.render('checkout',{isLoggedIn : req.session.userData,address:addresses,cart:cart})
-//         }
-
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
-
 const loadCheckout = async (req, res) => {
     try {
         const userId = req.session.userData._id;
@@ -220,11 +201,33 @@ const loadOrdersShow = async (req, res) => {
     }
 };
 
+const CancelOrder = async (req, res) => {
+    const { orderId } = req.params;
+    try {
+        const updatedOrder = await order.findByIdAndUpdate(
+            orderId, 
+            { paymentStatus: 'Canceled' }, 
+            { new: true, runValidators: true } 
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        res.json({ success: true, message: 'Order cancellation requested successfully', updatedOrder });
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
+
 
 module.exports = {
     loadCheckout,
     insertCheckoutAddress,
     loadUserOrderDetails,
     insertPlaceOrder,
-    loadOrdersShow
+    loadOrdersShow,
+    CancelOrder
 }

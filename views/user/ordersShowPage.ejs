@@ -1,4 +1,6 @@
 <%- include('./header.ejs') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
 <style>
       .input-group-prepend,
     .input-group-append {
@@ -86,8 +88,57 @@
         color: #ccc;
         cursor: not-allowed;
     }
+
+    .pending-status {
+    color: orange;
+}
+
+.shipped-status {
+    color: blue;
+}
+
+.delivered-status {
+    color: green;
+}
+.canceled-status {
+    color: red;
+}
+.button-container {
+    display: flex;
+    justify-content: space-between;
+    padding: 20px;
+    margin-top: 10px;
+}
+
+.button-container button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
+}
+
+.cancel-button {
+    background-color: #ff4c4c;
+    color: white;
+}
+
+.cancel-button:hover {
+    background-color: #ff1a1a;
+}
+
+.return-button {
+    background-color: #4caf50;
+    color: white;
+}
+
+.return-button:hover {
+    background-color: #45a049;
+}
+
     </style>
-</style>
+
 <div class="breadcrumbs" style="background-color: #ffffff;">
     <div class="container">
         <div class="row">
@@ -149,8 +200,21 @@
                             <div class="order-details">
                                 <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
-                                <p><strong>Payment Status:</strong> <%= order.paymentStatus %></p>
+                                    <p><strong>Status:</strong> 
+                                        <span class="<%= order.paymentStatus === 'pending' ? 'pending-status' : order.paymentStatus === 'shipped' ? 'shipped-status' : order.paymentStatus === 'delivered' ? 'delivered-status' : 'canceled-status' %>">
+                                            <%= order.paymentStatus %>
+                                        </span>
+                                    </p>
                             </div>
+                            <% if(order.paymentStatus !== "Canceled") { %>
+                                <div class="button-container">
+                                    <% if(order.paymentStatus !== "delivered") { %>
+                                        <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
+                                    <% } %>
+                                    <button class="return-button">Return Order</button>
+                                </div>
+                                <% } %>
+                            
                         </div>
                     <% }) %>
                     
@@ -269,6 +333,61 @@
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+  <script>
+    document.querySelectorAll('.cancel-button').forEach(button => {
+        button.addEventListener('click', function() {
+            const orderId = this.getAttribute('data-order-id');
+
+            Swal.fire({
+                title: 'Are you sure?',
+                text: "Do you want cancel the order!",
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonColor: '#3085d6',
+                cancelButtonColor: '#d33',
+                confirmButtonText: 'Yes, cancel it!'
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    fetch(`/cancelOrders/${orderId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({paymentStatus: 'Canceled' })
+                    })
+                    .then(response => response.json())
+                    .then(data => {
+                        if (data.success) {
+                            Swal.fire(
+                                'Cancelled!',
+                                'Your order has been cancelled.',
+                                'success'
+                            ).then(() => {
+                                location.reload(); 
+                            });
+                        } else {
+                            Swal.fire(
+                                'Error!',
+                                'Failed to request order cancellation.',
+                                'error'
+                            );
+                        }
+                    })
+                    .catch(error => {
+                        console.error('Error:', error);
+                        Swal.fire(
+                            'Error!',
+                            'An error occurred while processing your request.',
+                            'error'
+                        );
+                    });
+                }
+            });
+        });
+    });
+</script>
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>

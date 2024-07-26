@@ -102,8 +102,21 @@ const LoadOrderView = async(req,res)=>{
   
 }
 
+const ChangeStatus = async(req,res)=>{
+    const { orderId, paymentStatus } = req.body;
+
+    try {
+        await Order.findByIdAndUpdate(orderId, { paymentStatus });
+        res.redirect(`/admin/orders`);
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 
 module.exports = {
     loadorders,
-    LoadOrderView
+    LoadOrderView,
+    ChangeStatus
 }

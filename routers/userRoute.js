@@ -107,6 +107,7 @@ userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
 
 
 //orders..
-userRoute.get('/orderShow',userAuth.isLogin,checkoutController.loadOrdersShow)
+userRoute.get('/orderShow',userAuth.isLogin,checkoutController.loadOrdersShow);
+userRoute.patch('/cancelOrders/:orderId',checkoutController.CancelOrder)
 
 module.exports = userRoute;

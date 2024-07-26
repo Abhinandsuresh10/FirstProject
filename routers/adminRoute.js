@@ -86,7 +86,8 @@ adminRoute.get('/brandrecover', adminAuth.isAdminLogin, adminCategoryController.
 //orders
 
 adminRoute.get('/orders', adminAuth.isAdminLogin, adminOrderController.loadorders);
-adminRoute.get('/adminOrderView',adminOrderController.LoadOrderView)
+adminRoute.get('/adminOrderView',adminOrderController.LoadOrderView);
+adminRoute.post('/updateOrderStatus',adminOrderController.ChangeStatus)
 
 //logout
 
