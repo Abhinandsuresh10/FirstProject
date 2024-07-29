@@ -103,6 +103,9 @@
 .canceled-status {
     color: red;
 }
+.returned-status {
+    color: rgb(94, 8, 85);
+}
 .button-container {
     display: flex;
     justify-content: space-between;
@@ -201,17 +204,30 @@
                                 <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                     <p><strong>Status:</strong> 
-                                        <span class="<%= order.paymentStatus === 'pending' ? 'pending-status' : order.paymentStatus === 'shipped' ? 'shipped-status' : order.paymentStatus === 'delivered' ? 'delivered-status' : 'canceled-status' %>">
-                                            <%= order.paymentStatus %>
+                                        <span class="<%= order.paymentStatus === 'pending' ? 'pending-status' : 
+                                        order.paymentStatus === 'shipped' ? 'shipped-status' : 
+                                        order.paymentStatus === 'delivered' ? 'delivered-status' : 
+                                        order.paymentStatus === 'Canceled' ? 'canceled-status' : 
+                                        order.paymentStatus === 'order returned' ? 'returned-status' : 
+                                        '' %>">
+                                                                     <%= order.paymentStatus %>
                                         </span>
                                     </p>
                             </div>
                             <% if(order.paymentStatus !== "Canceled") { %>
                                 <div class="button-container">
                                     <% if(order.paymentStatus !== "delivered") { %>
+                                        <% if(order.paymentStatus !== "order returned"){ %>
                                         <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
-                                    <% } %>
-                                    <button class="return-button">Return Order</button>
+                                        <%}%>
+                                    <% }else{ %>
+                                        <% if(order.returnStatus === "not requested") {%>
+                                        <button class="return-button" data-order-id="<%= order._id %>">Return Order</button>
+                                        <%}%>
+                                        <%if(order.returnStatus === "requested") {%>
+                                            <p style="color: red;">return requested</p>
+                                            <%}%>
+                                    <%}%>
                                 </div>
                                 <% } %>
                             
@@ -248,7 +264,29 @@
 <% } %>
 
 
-
+ <!-- Return Reason Modal -->
+ <div class="modal fade" id="returnReasonModal" tabindex="-1" role="dialog" aria-labelledby="returnReasonModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="returnReasonModalLabel">Return Order</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="returnReason">Reason for Return</label>
+                    <textarea class="form-control" id="returnReason" rows="3"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="submitReturnReason">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
              
 
 
@@ -388,6 +426,66 @@
         });
     });
 </script>
+
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+    let selectedOrderId = null;
+
+    document.querySelectorAll('.return-button').forEach(button => {
+        button.addEventListener('click', () => {
+            selectedOrderId = button.getAttribute('data-order-id');
+            $('#returnReasonModal').modal('show');
+        });
+    });
+
+    document.getElementById('submitReturnReason').addEventListener('click', async () => {
+        const reason = document.getElementById('returnReason').value;
+
+        if (reason) {
+            try {
+                const response = await fetch(`/returnOrders/${selectedOrderId}`, {
+                    method: 'PATCH',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ returnStatus: 'requested', reason })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    Swal.fire(
+                        'requested!',
+                        'Your return request is in process.',
+                        'success'
+                    ).then(() => {
+                        location.reload(); 
+                    });
+                } else {
+                    Swal.fire(
+                        'Error!',
+                        'Failed to request order return.',
+                        'error'
+                    );
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                Swal.fire(
+                    'Error!',
+                    'An error occurred while processing your request.',
+                    'error'
+                );
+            } finally {
+                $('#returnReasonModal').modal('hide');
+            }
+        } else {
+            alert('Please provide a reason for return.');
+        }
+    });
+});
+
+</script>
+
+
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>

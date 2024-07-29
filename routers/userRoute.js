@@ -70,6 +70,15 @@ userRoute.post('/login',userController.verifyLogin);
 userRoute.get('/home',userAuth.isLogin,userController.loginHome);
 userRoute.get('/registerOTP',userAuth.isLogout, userController.otpLoad);
 
+//forgot password
+
+userRoute.get('/forgot',userAuth.isLogout, userController.ForgotPage);
+userRoute.post('/sendEmail',userController.ForgotEmailSent);
+userRoute.get('/reset/:token',userController.forgotPassword);
+userRoute.post('/resetPassword',userAuth.isLogout,userController.insertNewPawword)
+
+//logout
+
 userRoute.get('/logout',userController.userLogout);
 
 //shop controls
@@ -108,6 +117,13 @@ userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
 
 //orders..
 userRoute.get('/orderShow',userAuth.isLogin,checkoutController.loadOrdersShow);
-userRoute.patch('/cancelOrders/:orderId',checkoutController.CancelOrder)
+userRoute.patch('/cancelOrders/:orderId',checkoutController.CancelOrder);
+userRoute.patch('/returnOrders/:orderId',checkoutController.ReturnRequest);
+
+//wishlist 
+
+userRoute.get('/wishlist',userAuth.isLogin,cartController.loadWishlist);
+userRoute.post('/insertWishlist',userAuth.isLogin,cartController.InsertWishlist);
+userRoute.delete('/removeFromWishlist/:productId',cartController.RemoveFromWishlist);
 
 module.exports = userRoute;

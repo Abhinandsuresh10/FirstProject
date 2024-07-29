@@ -1,5 +1,6 @@
   <%- include('./header.ejs') %>
 
+  <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.css">
 
   <style>
   .price-range {
@@ -120,8 +121,13 @@
                   <img class="img-fluid" src="/static/productImages/<%= product[i].image[0] %>" alt="Colorlib Template">
                   <div class="overlay"></div>
                 </a>
+               
                 <div class="text py-3 px-3">
-                  <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name %></a></h3>
+                  <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name %></a>
+                    <p class="bottom-area d-flex px-3">
+                      <a href="#" id="wishlist-button-<%= product[i]._id %>" data-product-id="<%= product[i]._id %>" class="buy-now text-center py-2" style="width: 50%; text-decoration: none;">wishlist<span><i class="ion-ios-heart ml-1"></i></span></a>
+                    </p>
+                </h3>
                   <div class="d-flex">
                     <div class="pricing">
                       <p class="price">
@@ -133,6 +139,7 @@
                   <div class="pricing" style="width: 100%;">
                     <h6 class="price" style="color: rgb(76, 75, 75);"><span class="price-sale"><%= product[i].discription %></span></h6>
                   </div>
+                
                 </div>
               </div>
             </div>
@@ -170,10 +177,10 @@
           <div class="sidebar-box-2">
             <h2 class="heading mb-4"><a href="#" style="text-decoration: none !important;">Category</a></h2>
             <ul id="categoryFilter">
-                <li><input type="checkbox" class="category-checkbox" value="TOTEBAGS" id="categoryToteBag"> <label for="categoryToteBag">TOTEBAGS</label></li>
-                <li><input type="checkbox" class="category-checkbox" value="SLINGBAGS" id="categorySlingBags"> <label for="categorySlingBags">SLINGBAGS</label></li>
-                <li><input type="checkbox" class="category-checkbox" value="SHOULDER BAGS" id="categoryShoulderBags"> <label for="categoryShoulderBags">SHOULDER BAGS</label></li>
-                <li><input type="checkbox" class="category-checkbox" value="CLUTCH PURSE" id="categoryPurses"> <label for="categoryPurses">CLUTCH PURSE</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="ToteBags" id="categoryToteBag"> <label for="categoryToteBag">TOTEBAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="SlingBags" id="categorySlingBags"> <label for="categorySlingBags">SLINGBAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="ShoulderBags" id="categoryShoulderBags"> <label for="categoryShoulderBags">SHOULDER BAGS</label></li>
+                <li><input type="checkbox" class="category-checkbox" value="ClutchPurse" id="categoryPurses"> <label for="categoryPurses">CLUTCH PURSE</label></li>
             </ul>
         </div>
           <div class="sidebar-box-2">
@@ -278,8 +285,47 @@
 
   <!-- loader -->
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
-
-
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+  <script>
+     function showSnackbar(message, type) {
+    Toastify({
+      text: message,
+      duration: 3000, 
+      gravity: "bottom", 
+      position: "right", 
+      backgroundColor: type === 'success' ? "green" : "red",
+      stopOnFocus: true 
+    }).showToast();
+  }
+    document.addEventListener('DOMContentLoaded', function() {
+      document.querySelectorAll('[id^="wishlist-button-"]').forEach(button => {
+        button.addEventListener('click', function(event) {
+          event.preventDefault();
+  
+          const productId = this.getAttribute('data-product-id');
+          fetch('/insertWishlist', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ productId })
+          })
+          .then(response => response.json())
+          .then(data => {
+            if (data.success) {
+              showSnackbar(data.message, 'success');
+            } else {
+              showSnackbar(data.message, 'error');
+            }
+          })
+          .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred while adding to wishlist');
+          });
+        });
+      });
+    });
+  </script>
 
 
   <script>

@@ -13,6 +13,8 @@
                     <%= order.shippingAddress ? `${order.shippingAddress.street}, ${order.shippingAddress.city}, ${order.shippingAddress.state}, ${order.shippingAddress.zipcode}, ${order.shippingAddress.country}` : 'N/A' %>
                 </p>
                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                <p><strong>return status:</strong> <%= order.returnStatus %></p>
+                <p><strong>return reason:</strong> <%= order.returnReason%></p>
                 <form action="/admin/updateOrderStatus" method="POST">
                     <p><strong>Status:</strong>
                         <select name="paymentStatus" class="form-control" style="width: 150px;color: aliceblue;" required>
@@ -20,6 +22,7 @@
                             <option value="shipped" style="color: aliceblue;" <%= order.paymentStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
                             <option value="delivered" style="color: aliceblue;" <%= order.paymentStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
                             <option value="Canceled" style="color: aliceblue;" <%= order.paymentStatus === 'Canceled' ? 'selected' : '' %>>Canceled</option>
+                            <option value="order returned" style="color: aliceblue;" <%= order.paymentStatus === 'order returned' ? 'selected' : '' %>>order returned</option>
                         </select>
                     </p>
                     <input type="hidden" name="orderId" value="<%= order._id %>">

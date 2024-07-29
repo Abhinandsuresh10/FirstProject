@@ -63,7 +63,13 @@
                             <td style="color: aliceblue;"><%= order.paymentMethod %></td>
                             
                             <td style="color: aliceblue;">
-                              <a href="/admin/adminOrderView?orderId=<%= order._id %>"><button class="btn btn-primary">View</button></a>  
+                                  <% if(order.returnStatus === 'requested') {%>
+                                    <% if(order.paymentStatus !== 'order returned') {%>
+                                <div style="width: 5px; height: 5px;background-color: red;"></div> 
+                                <%}%>
+                                <%}%>
+                              <a href="/admin/adminOrderView?orderId=<%= order._id %>"><button class="btn btn-primary">View</button></a> 
+                            
                             </td>
                         </tr>
                         <% }) %>

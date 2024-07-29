@@ -131,8 +131,6 @@ const editProduct = async (req, res) => {
 
 
 
-
-
 module.exports = {
     productsLoad,
     addProductsLoad,

@@ -137,6 +137,14 @@ const insertPlaceOrder = async(req,res)=>{
         });
 
         await newOrder.save();
+
+        for (const item of orderItems) {
+            const product = await Product.findById(item.productId);
+            if (product) {
+                product.stock -= item.quantity;
+                await product.save();
+            }
+        }
         await Cart.findOneAndDelete({userId:userId})
       res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?orderId=${newOrder._id}`});
 
@@ -221,6 +229,28 @@ const CancelOrder = async (req, res) => {
     }
 };
 
+const ReturnRequest = async (req, res) => {
+    const { orderId } = req.params;
+    const { reason } = req.body;
+    try {
+        const updatedOrder = await order.findByIdAndUpdate(
+            orderId, 
+            { returnStatus: 'requested', returnReason: reason }, 
+            { new: true, runValidators: true } 
+        );
+
+        if (!updatedOrder) {
+            return res.status(404).json({ success: false, message: 'Order not found' });
+        }
+
+        res.json({ success: true, message: 'Order return requested successfully', updatedOrder });
+        
+    } catch (error) {
+        console.log(error.message);
+        res.status(500).json({ success: false, message: 'Server error' });  
+    }
+};
+
 
 
 module.exports = {
@@ -229,5 +259,6 @@ module.exports = {
     loadUserOrderDetails,
     insertPlaceOrder,
     loadOrdersShow,
-    CancelOrder
+    CancelOrder,
+    ReturnRequest
 }

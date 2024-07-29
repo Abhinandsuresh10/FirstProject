@@ -1,0 +1,133 @@
+<%-include ('./header.ejs') %>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
+<style>
+       .thead-primary th {
+        background-color: black;
+        color: white;
+    }
+</style>
+
+<section class="ftco-section ftco-wishlist">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-12 ftco-animate">
+                <div class="wishlist-list">
+                    <table class="table">
+                        <thead class="thead-primary text-white" style="background-color: black;">
+                            <tr class="text-center">
+                                <th>&nbsp;</th>
+                                <th>&nbsp;</th>
+                                <th class="text-white">Product</th>
+                                <th class="text-white">Price</th>
+                                <th class="text-white">Discount</th>
+                                <th class="text-white">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <% if (wishlist && wishlist.products && wishlist.products.length > 0) { %>
+                                <% wishlist.products.forEach(item => { %>
+                                    <tr class="text-center product-row" data-product-id="<%= item._id %>">
+                                        <td class="product-remove">
+                                            <a href="#" class="remove-wishlist" data-product-id="<%= item._id %>">
+                                                <span class="ion-ios-close"></span>
+                                            </a>
+                                        </td>
+                                        <td class="image-prod">
+                                            <a href="/productDetails?id=<%= item._id %>"  class="img-prod">
+                                            <div class="img" style="background-image: url('<%= '/static/productimages/' + (item.image && item.image[0]) %>');"></div>
+                                        </a>
+                                        </td>
+                                        <td class="product-name">
+                                            <h3><%= item.name %></h3>
+                                            <p><%= item.description %></p>
+                                        </td>
+                                        <td class="price">₹<%= item.price.toFixed(2) %></td>
+                                        <td class="discount"><del>₹<%= item.discount.toFixed(2) %></del></td>
+                                        <td class="total">₹<%= (item.price - item.discount).toFixed(2) %></td>
+                                    </tr>
+                                <% }) %>
+                            <% } else { %>
+                                <tr>
+                                    <td colspan="6" class="text-center">Your wishlist is empty.</td>
+                                </tr>
+                            <% } %>
+                        </tbody>
+
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
+<script>
+    function showSnackbar(message, type) {
+        Toastify({
+            text: message,
+            duration: 3000,
+            gravity: "bottom", 
+            position: "right", 
+            backgroundColor: type === 'success' ? "green" : "red",
+            stopOnFocus: true 
+        }).showToast();
+    }
+
+    document.addEventListener('DOMContentLoaded', function() {
+        const removeButtons = document.querySelectorAll('.remove-wishlist');
+        removeButtons.forEach(button => {
+            button.addEventListener('click', async function (event) {
+                event.preventDefault();
+                const productId = this.getAttribute('data-product-id');
+
+                try {
+                    const response = await fetch(`/removeFromWishlist/${productId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                    });
+
+                    if (!response.ok) {
+                        throw new Error('Failed to remove product from wishlist');
+                    }
+
+                    const data = await response.json();
+
+                    if (data.success) {
+                        showSnackbar('Product removed from wishlist', 'danger');
+                        const rowToRemove = this.closest('tr');
+                        rowToRemove.remove();
+                    } else {
+                        throw new Error('Failed to remove product from wishlist');
+                    }
+                } catch (error) {
+                    console.error('Error removing product from wishlist:', error);
+                    showSnackbar('Error occurred', 'error');
+                }
+            });
+        });
+    });
+</script>
+
+
+
+<script src="/static/user/js/jquery.min.js"></script>
+<script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
+<script src="/static/user/js/popper.min.js"></script>
+<script src="/static/user/js/bootstrap.min.js"></script>
+<script src="/static/user/js/jquery.easing.1.3.js"></script>
+<script src="/static/user/js/jquery.waypoints.min.js"></script>
+<script src="/static/user/js/jquery.stellar.min.js"></script>
+<script src="/static/user/js/owl.carousel.min.js"></script>
+<script src="/static/user/js/jquery.magnific-popup.min.js"></script>
+<script src="/static/user/js/aos.js"></script>
+<script src="/static/user/js/jquery.animateNumber.min.js"></script>
+<script src="/static/user/js/bootstrap-datepicker.js"></script>
+<script src="/static/user/js/scrollax.min.js"></script>
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyBVWaKrjvy3MaE7SQ74_uJiULgl1JY0H2s&sensor=false"></script>
+<script src="/static/user/js/google-map.js"></script>
+<script src="/static/user/js/main.js"></script>
+
+<%- include('./footer.ejs') %>

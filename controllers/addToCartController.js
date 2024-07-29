@@ -1,16 +1,6 @@
 const cart = require('../models/cartModal')
-
-
-// const cartLoad = async(req,res)=>{
-//     try {
-//         const userId = req.session.userData._id;
-//         const cartData = await cart.findOne({userId:userId}).populate("products.productId");
-     
-//        res.render('addToCart',{isLoggedIn : req.session.userData,cart:cartData}) 
-//     } catch (error) {
-//         console.log(error.message);
-//     }
-// }
+const Wishlist = require('../models/wishlistModal');
+const User = require('../models/userModel')
 
 const cartLoad = async (req, res) => {
     try {
@@ -125,9 +115,73 @@ const deleteCart = async(req,res)=>{
  }
 
 
+ // wishlist 
+
+ const loadWishlist = async(req,res)=>{
+    try {
+        const userId = req.session.userData._id;
+        const wishlist = await Wishlist.findOne({ userId }).populate('products', 'productId name description price discount image');
+        res.render('wishlist', { wishlist: wishlist || { items: [] }, isLoggedIn: req.session.userData });
+    } catch (error) {
+        console.log(error.message)
+    }
+ }
+
+ const InsertWishlist = async (req, res) => {
+    const { productId } = req.body;
+    const userId = req.session.userData._id; 
+  
+    try {
+      let wishlist = await Wishlist.findOne({ userId });
+  
+      if (!wishlist) {
+        wishlist = new Wishlist({
+          userId,
+          products: [productId]
+        });
+      } else {
+        if (!wishlist.products.includes(productId)) {
+          wishlist.products.push(productId);
+        } else {
+          return res.status(200).json({ success: false, message: 'Product already in wishlist' });
+        }
+      }
+  
+      await wishlist.save();
+      res.status(200).json({ success: true, message: 'Product added to wishlist' });
+  
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ success: false, message: 'Server error' });
+    }
+  };
+
+  const RemoveFromWishlist = async (req, res) => {
+    try {
+        const userId = req.session.userData._id; 
+        const productId = req.params.productId;
+
+        const wishlist = await Wishlist.findOne({ userId: userId });
+
+        if (!wishlist) {
+            return res.status(404).json({ success: false, message: 'Wishlist not found' });
+        }
+        wishlist.products.pull(productId);
+        await wishlist.save();
+
+        res.status(200).json({ success: true, message: 'Product removed from wishlist' });
+    } catch (error) {
+        console.error('Error removing product from wishlist:', error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 module.exports = {
     cartLoad,
     insertCart,
     deleteCart,
-    quantityAdd
+    quantityAdd,
+    loadWishlist,
+    InsertWishlist,
+    RemoveFromWishlist
 }

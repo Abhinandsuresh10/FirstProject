@@ -1,4 +1,6 @@
 <%-include ('./header.ejs') %>
+<link rel="stylesheet" type="text/css" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 <style>
    .input-group-prepend,
     .input-group-append {
@@ -338,7 +340,16 @@
                 updateSubtotal();
                 
                 updateCartQuantity(productId, parseInt(quantityInput.value));
-            }
+            } else {
+        
+        Toastify({
+            text: "Maximum quantity reached",
+            duration: 3000, 
+            gravity: "bottom", 
+            position: "right", 
+            backgroundColor: "#ff4d4d" 
+        }).showToast();
+    }
         });
 
         quantityInput.addEventListener('input', function () {
