@@ -64,7 +64,7 @@
                             
                             <td style="color: aliceblue;">
                                   <% if(order.returnStatus === 'requested') {%>
-                                    <% if(order.paymentStatus !== 'order returned') {%>
+                                    <% if(order.orderStatus !== 'order returned') {%>
                                 <div style="width: 5px; height: 5px;background-color: red;"></div> 
                                 <%}%>
                                 <%}%>

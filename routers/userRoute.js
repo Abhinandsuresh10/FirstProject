@@ -113,6 +113,8 @@ userRoute.get('/checkout',userAuth.isLogin,checkoutController.loadCheckout);
 userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress);
 userRoute.get('/userOrderDetails',userAuth.isLogin,checkoutController.loadUserOrderDetails);
 userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
+userRoute.post('/createOrder',checkoutController.CreateRazorpay);
+userRoute.post('/verifyPayment',checkoutController.VerifyRazorpay)
 
 
 //orders..
@@ -125,5 +127,12 @@ userRoute.patch('/returnOrders/:orderId',checkoutController.ReturnRequest);
 userRoute.get('/wishlist',userAuth.isLogin,cartController.loadWishlist);
 userRoute.post('/insertWishlist',userAuth.isLogin,cartController.InsertWishlist);
 userRoute.delete('/removeFromWishlist/:productId',cartController.RemoveFromWishlist);
+
+//wallet
+
+userRoute.get('/wallet',cartController.LoadWallet);
+userRoute.post('/create-order',cartController.InsertWallet);
+userRoute.post('/payment-success',cartController.AddToWallet)
+
 
 module.exports = userRoute;

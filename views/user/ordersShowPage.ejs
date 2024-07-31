@@ -204,32 +204,32 @@
                                 <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                     <p><strong>Status:</strong> 
-                                        <span class="<%= order.paymentStatus === 'pending' ? 'pending-status' : 
-                                        order.paymentStatus === 'shipped' ? 'shipped-status' : 
-                                        order.paymentStatus === 'delivered' ? 'delivered-status' : 
-                                        order.paymentStatus === 'Canceled' ? 'canceled-status' : 
-                                        order.paymentStatus === 'order returned' ? 'returned-status' : 
+                                        <span class="<%= order.orderStatus === 'pending' ? 'pending-status' : 
+                                        order.orderStatus === 'shipped' ? 'shipped-status' : 
+                                        order.orderStatus === 'delivered' ? 'delivered-status' : 
+                                        order.orderStatus === 'Canceled' ? 'canceled-status' : 
+                                        order.orderStatus === 'order returned' ? 'returned-status' : 
                                         '' %>">
-                                                                     <%= order.paymentStatus %>
+                                                                     <%= order.orderStatus %>
                                         </span>
                                     </p>
                             </div>
-                            <% if(order.paymentStatus !== "Canceled") { %>
-                                <div class="button-container">
-                                    <% if(order.paymentStatus !== "delivered") { %>
-                                        <% if(order.paymentStatus !== "order returned"){ %>
-                                        <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
-                                        <%}%>
-                                    <% }else{ %>
-                                        <% if(order.returnStatus === "not requested") {%>
-                                        <button class="return-button" data-order-id="<%= order._id %>">Return Order</button>
-                                        <%}%>
-                                        <%if(order.returnStatus === "requested") {%>
-                                            <p style="color: red;">return requested</p>
+                                <% if(order.orderStatus !== "Canceled") { %>
+                                    <div class="button-container">
+                                        <% if(order.orderStatus !== "delivered") { %>
+                                            <% if(order.orderStatus !== "order returned"){ %>
+                                            <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
                                             <%}%>
-                                    <%}%>
-                                </div>
-                                <% } %>
+                                        <% }else{ %>
+                                            <% if(order.returnStatus === "not requested") {%>
+                                            <button class="return-button" data-order-id="<%= order._id %>">Return Order</button>
+                                            <%}%>
+                                            <%if(order.returnStatus === "requested") {%>
+                                                <p style="color: red;">return requested</p>
+                                                <%}%>
+                                        <%}%>
+                                    </div>
+                                    <% } %>
                             
                         </div>
                     <% }) %>

@@ -3,7 +3,8 @@ const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
 const prducts = require('../models/produntsModel');
-const Cart = require('../models/cartModal')
+const Cart = require('../models/cartModal');
+const Wallet = require('../models/walletModel');
 require('dotenv').config();
 
 
@@ -119,6 +120,19 @@ const verifyOtp = async (req, res) => {
             if (savedUser) {
                 delete req.session.otp;
                  req.session.userData = userData;
+
+                 const userId = req.session.userData._id;
+
+                 let userWallet = await Wallet.findOne({ userId: userId });
+                 if (!userWallet) {
+                     userWallet = new Wallet({
+                         userId: userId,
+                         balance: 0.00
+                     });
+                 }
+         
+                 await userWallet.save();
+
                 res.status(201).json({ message: 'OTP verification successful' }); 
             } else {
                 res.status(400).json({ message: 'Failed to register user' }); 
@@ -220,6 +234,18 @@ const googleLoginCallback = async(req, res) => {
          return  res.render('login',{message:'user is blocked',data: {email,password},isLoggedIn : req.session.userData})
         }
         req.session.userData = req.user;
+        
+        const userId = req.session.userData._id;
+
+        let userWallet = await Wallet.findOne({ userId: userId });
+        if (!userWallet) {
+            userWallet = new Wallet({
+                userId: userId,
+                balance: 0.00
+            });
+        }
+
+          await userWallet.save();
           return res.redirect('/home');
     }catch(error){
         console.log(error);

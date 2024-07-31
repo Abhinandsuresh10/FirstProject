@@ -334,7 +334,7 @@
 
         increaseButton.addEventListener('click', function () {
             let currentQuantity = parseInt(quantityInput.value);
-            if (currentQuantity < stock) {
+            if (currentQuantity < stock && currentQuantity < 10) {
                 quantityInput.value = currentQuantity + 1;
                 updateTotal(row);
                 updateSubtotal();
@@ -446,6 +446,27 @@ function updateCartQuantity(productId, quantity) {
 
 </script>
 
+<script>
+    function getQueryParameter(name) {
+        const urlParams = new URLSearchParams(window.location.search);
+        return urlParams.get(name);
+    }
+
+    const message = getQueryParameter('message');
+
+    if (message === 'out-of-stock') {
+    Toastify({
+        text: "One or more products are out of stock.",
+        duration: 3000,
+        gravity: "bottom", 
+        position: "center", 
+        style: {
+            background: "linear-gradient(to right, #ff0000, #8b0000, #000000)" 
+        }
+    }).showToast();
+}
+
+</script>
 
 
 <script src="/static/user/js/jquery.min.js"></script>

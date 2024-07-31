@@ -31,10 +31,16 @@ const orderSchema = new mongoose.Schema({
     },
     paymentMethod: {
         type: String,
-        enum: ['Cash on delivery', 'PayPal'],
+        enum: ['Cash on delivery', 'RazorPay'],
         
     },
-    paymentStatus:{
+    paymentStatus: {
+        type: String,
+        enum: ['unpaid', 'paid'],
+        default:'paid'
+        
+    },
+    orderStatus:{
         type: String,
         enum: ['pending', 'shipped', 'delivered', 'Canceled' ,'order returned'],
         default: 'pending'

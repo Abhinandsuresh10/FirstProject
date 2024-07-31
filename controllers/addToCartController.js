@@ -1,6 +1,9 @@
 const cart = require('../models/cartModal')
 const Wishlist = require('../models/wishlistModal');
-const User = require('../models/userModel')
+const User = require('../models/userModel');
+const Wallet = require('../models/walletModel');
+const crypto = require('crypto');
+const Razorpay = require('razorpay');
 
 const cartLoad = async (req, res) => {
     try {
@@ -176,6 +179,87 @@ const deleteCart = async(req,res)=>{
     }
 };
 
+//wallet
+
+const LoadWallet = async(req,res)=>{
+    try {
+        const userId = req.session.userData._id;
+        const wallets = await Wallet.find({userId:userId});
+        res.render('wallet',{isLoggedIn: req.session.userData,wallets})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const razorpay = new Razorpay({
+    key_id: 'rzp_test_Mwa9XdFzCTCV9f',
+    key_secret: 'T5Bve4C2Dn1VwYXtVQNEWDHZ'
+});
+
+const InsertWallet = async(req,res)=>{
+    const { amount } = req.body;
+
+    try {
+        const options = {
+            amount: amount * 100, 
+            currency: 'INR',
+            receipt: `receipt_${new Date().getTime()}`,
+            payment_capture: '1'
+        };
+
+        const order = await razorpay.orders.create(options);
+        res.json({ orderId: order.id });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+}
+
+const AddToWallet = async (req, res) => {
+    const { paymentId, orderId, signature, amount } = req.body;
+
+    try {
+        const hmac = crypto.createHmac('sha256', 'T5Bve4C2Dn1VwYXtVQNEWDHZ');
+        hmac.update(orderId + "|" + paymentId);
+        const generatedSignature = hmac.digest('hex');
+
+        if (generatedSignature === signature) {
+            const numericAmount = Number(amount);
+            if (isNaN(numericAmount) || numericAmount <= 0) {
+                return res.status(400).json({ success: false, message: 'Invalid amount' });
+            }
+
+            const userId = req.session.userData._id;
+            let userWallet = await Wallet.findOne({ userId: userId });
+
+            if (!userWallet) {
+                userWallet = new Wallet({
+                    userId: userId,
+                    balance: numericAmount
+                });
+            } else {
+                userWallet.balance += numericAmount;
+            }
+
+            userWallet.transactions.push({
+                date: new Date(),
+                type: 'credit',
+                amount: numericAmount,
+                description: 'Funds added via Razorpay'
+            });
+
+            await userWallet.save();
+
+            res.json({ success: true, message: 'Payment successful' });
+        } else {
+            res.status(400).json({ success: false, message: 'Invalid signature' });
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+};
+
 module.exports = {
     cartLoad,
     insertCart,
@@ -183,5 +267,8 @@ module.exports = {
     quantityAdd,
     loadWishlist,
     InsertWishlist,
-    RemoveFromWishlist
+    RemoveFromWishlist,
+    LoadWallet,
+    InsertWallet,
+    AddToWallet
 }

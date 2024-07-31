@@ -103,10 +103,10 @@ const LoadOrderView = async(req,res)=>{
 }
 
 const ChangeStatus = async(req,res)=>{
-    const { orderId, paymentStatus } = req.body;
+    const { orderId, orderStatus } = req.body;
 
     try {
-        await Order.findByIdAndUpdate(orderId, { paymentStatus });
+        await Order.findByIdAndUpdate(orderId, { orderStatus });
         res.redirect(`/admin/orders`);
         
     } catch (error) {
