@@ -22,6 +22,7 @@
                                 <th class="text-white">Price</th>
                                 <th class="text-white">Discount</th>
                                 <th class="text-white">Total</th>
+                                <th class="text-white">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -45,6 +46,14 @@
                                         <td class="price">₹<%= item.price.toFixed(2) %></td>
                                         <td class="discount"><del>₹<%= item.discount.toFixed(2) %></del></td>
                                         <td class="total">₹<%= (item.price - item.discount).toFixed(2) %></td>
+                                        
+                                        <% if (item.stock > 0) { %>
+                                            <td><a href="#" class="btn btn-black cart-cls" data-product-id="<%= item._id %>">Add to Cart</a></td>
+                                        <% } else { %>
+                                            <td style="color: red;">Out of stock </td>
+                                        <% } %>
+                                       
+                                        
                                     </tr>
                                 <% }) %>
                             <% } else { %>
@@ -111,7 +120,51 @@
     });
 </script>
 
+<script>
+   document.addEventListener('DOMContentLoaded', () => {
+  document.querySelectorAll('.cart-cls').forEach(button => {
+    button.addEventListener('click', async (event) => {
+      try {
+        const productId = event.target.getAttribute('data-product-id');
+        const response = await fetch('/addTocart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({ productId })
+        });
 
+        if (!response.ok) {
+          throw new Error('Failed to add product to cart');
+        }
+
+        const data = await response.json();
+
+        if (data.success === false) {
+          Toastify({
+            text: 'Product is already in the cart.',
+            duration: 3000,
+            gravity: 'bottom',
+            position: 'right',
+            backgroundColor: 'linear-gradient(to right, #ff5f6d, #ffc371)',
+          }).showToast();
+        } else {
+          Toastify({
+            text: 'Product successfully added to cart.',
+            duration: 3000,
+            gravity: 'bottom',
+            position: 'right',
+            backgroundColor: 'linear-gradient(to right, #00b09b, #96c93d)',
+          }).showToast();
+        }
+      } catch (error) {
+        console.error('Error adding product to cart:', error);
+      }
+    });
+  });
+});
+
+    </script>
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>

@@ -2,7 +2,9 @@
 const User = require('../models/userModel');
 const Category = require('../models/category');
 const Brands = require('../models/brandsModel');
-const product = require('../models/produntsModel')
+const product = require('../models/produntsModel');
+const CategoryOffer = require('../models/CategoryOffer');
+const productOffer = require('../models/ProductOfferModel');
 
 
 
@@ -177,6 +179,87 @@ const recoverBrands = async(req,res)=>{
     }
 }
 
+//category offer
+
+const LoadCategoryOffers = async(req,res)=>{
+    try {
+        const categoryOffer = await CategoryOffer.find({}).populate('categoryId');
+        const category = await Category.find({is_delete:false})
+        res.render('CategoryOffer',{category,categoryOffer})
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
+const InsertCategoryOffer = async (req, res) => {
+    const { category, offerPercentage, expiryDate } = req.body;
+
+    try {
+      const newOffer = new CategoryOffer({
+        categoryId: category,
+        discountPercentage: offerPercentage,
+        expiryDate: new Date(expiryDate),
+        isActive: true
+      });
+  
+      await newOffer.save();
+      res.status(200).json({ message: 'Offer added successfully!' });
+    } catch (error) {
+      console.error('Error adding offer:', error);
+      res.status(500).json({ error: 'An error occurred while adding the offer.' });
+    }
+  };
+
+  const UpdateCategoryOffer = async (req, res) => {
+    try {
+        const { offerId, category, offerPercentage, expiryDate } = req.body;
+
+        if (!offerId || !category || !offerPercentage || !expiryDate) {
+            return res.status(400).json({ error: 'All fields are required.' });
+        }
+
+        const updatedOffer = await CategoryOffer.findByIdAndUpdate(
+            offerId,
+            {
+                categoryId: category,
+                discountPercentage: offerPercentage,
+                expiryDate: new Date(expiryDate)
+            },
+            { new: true } 
+        );
+
+        if (!updatedOffer) {
+            return res.status(404).json({ error: 'Offer not found.' });
+        }
+        res.status(200).json(updatedOffer);
+    } catch (error) {
+        console.error('Error updating offer:', error);
+        res.status(500).json({ error: 'An error occurred while updating the offer.' });
+    }
+};
+
+const DeleteCategoryOffer =async(req,res) => {
+    try {
+        const { id } = req.params;
+        await CategoryOffer.findByIdAndDelete(id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to delete offer' });
+    }
+}
+
+
+const LoadProductOffers = async(req,res)=>{
+    try {
+        const products = await product.find({is_delete:false})
+        res.render('productOffers',{products})
+    } catch (error) {
+        console.log(error.message)
+    }
+}
+
 
 
 
@@ -193,5 +276,10 @@ module.exports = {
     deleteBrand,
     deletedBrand,
     recoverBrands,
+    LoadCategoryOffers,
+    InsertCategoryOffer,
+    UpdateCategoryOffer,
+    DeleteCategoryOffer,
+    LoadProductOffers
     
 }

@@ -1,0 +1,82 @@
+<%- include('./adminHeader.ejs') %>
+
+
+<div class="col-lg-6 grid-margin stretch-card" style="width: 100%;">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Hoverable Table</h4>
+        <p class="card-description">  <code></code>
+            <p>
+                <button type="button" class="badge badge-success" style="width: 90px; color: black;" data-bs-toggle="modal" data-bs-target="#addOfferModal">
+                    <b>Add Offer</b>
+                  </button>
+              </p>
+        </p>
+        <div class="table-responsive">
+          <table class="table table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>discount</th>
+                <th>expiryDate</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                
+                    <tr>
+                      <td>categoryId.name</td>
+                      <td>discountPercentage %</td>
+                      <td class="text-danger">expiryDate</td>
+                      <td>
+                        <button class="btn btn-primary" style="width: 90px;">
+                        Edit offer
+                       </button>
+                        <br><br>
+                        <label class="badge badge-danger" style="width: 90px;" >Delete offer</label>
+                      </td>
+                    </tr>
+                  
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--Add offer Modal Structure -->
+<div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true" style="margin-top: -10%;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addOfferModalLabel">Add Offer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgb(41, 41, 41);"></button>
+        </div>
+        <div class="modal-body">
+          <form id="offerForm">
+            <div class="form-group">
+              <label for="categorySelect">Product</label>
+              <select class="form-control" id="categorySelect" name="category" required style="color: aliceblue;">
+                <% products.forEach(pro => { %>
+                  <option value="<%= pro._id %>"><%= pro.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="offerPercentage">Offer Percentage</label>
+              <input type="number" class="form-control" id="offerPercentage" name="offerPercentage" placeholder="Enter percentage" min="0" max="100" style="color: aliceblue;" required>
+            </div>
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" required>
+            </div>
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">Add Offer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<%- include('./adminFooter.ejs') %>

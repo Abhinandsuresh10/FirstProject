@@ -87,7 +87,16 @@ adminRoute.get('/brandrecover', adminAuth.isAdminLogin, adminCategoryController.
 
 adminRoute.get('/orders', adminAuth.isAdminLogin, adminOrderController.loadorders);
 adminRoute.get('/adminOrderView',adminOrderController.LoadOrderView);
-adminRoute.post('/updateOrderStatus',adminOrderController.ChangeStatus)
+adminRoute.post('/updateOrderStatus',adminOrderController.ChangeStatus);
+
+
+//offers
+
+adminRoute.get('/CategoryOffers',adminCategoryController.LoadCategoryOffers);
+adminRoute.post('/addCetegoryOffer',adminCategoryController.InsertCategoryOffer);
+adminRoute.put('/editCategoryOffer',adminCategoryController.UpdateCategoryOffer);
+adminRoute.delete('/deletecategoryoffer/:id',adminCategoryController.DeleteCategoryOffer);
+adminRoute.get('/productOffers',adminCategoryController.LoadProductOffers)
 
 //logout
 

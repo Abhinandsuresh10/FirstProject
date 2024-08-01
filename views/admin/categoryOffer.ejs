@@ -1,0 +1,316 @@
+<%- include('./adminHeader.ejs') %>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+
+<div class="col-lg-6 grid-margin stretch-card" style="width: 100%;">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Hoverable Table</h4>
+        <p class="card-description">  <code></code>
+            <p>
+                <button type="button" class="badge badge-success" style="width: 90px; color: black;" data-bs-toggle="modal" data-bs-target="#addOfferModal">
+                  <b>Add Offer</b>
+                </button>
+              </p>
+        </p>
+        <div class="table-responsive">
+          <table class="table table">
+            <thead>
+              <tr>
+                <th>Category</th>
+                <th>discount</th>
+                <th>expiryDate</th>
+                <th>Action</th>
+              </tr>
+            </thead>
+            <tbody>
+                <% categoryOffer.forEach(offer => { %>
+                    <tr>
+                      <td><%= offer.categoryId ? offer.categoryId.name : 'N/A' %></td>
+                      <td><%= offer.discountPercentage %>%</td>
+                      <td class="text-danger"><%= new Date(offer.expiryDate).toLocaleDateString() %></td>
+                      <td>
+                        <button class="btn btn-primary edit-offer-button" 
+                        data-offer-id="<%= offer._id %>"
+                        data-category="<%= offer.categoryId ? offer.categoryId._id : '' %>"
+                        data-discount="<%= offer.discountPercentage %>"
+                        data-expiry="<%= new Date(offer.expiryDate).toISOString().split('T')[0] %>"
+                        style="width: 90px;">
+                       <b>Edit offer</b>
+                       </button>
+                        <br><br>
+                        <label class="badge badge-danger delete-offer-button" data-offer-id="<%= offer._id %>">Delete offer</label>
+                      </td>
+                    </tr>
+                  <% }) %>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!--Add offer Modal Structure -->
+<div class="modal fade" id="addOfferModal" tabindex="-1" aria-labelledby="addOfferModalLabel" aria-hidden="true" style="margin-top: -10%;">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="addOfferModalLabel">Add Offer</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close" style="background-color: rgb(41, 41, 41);"></button>
+        </div>
+        <div class="modal-body">
+          <form id="offerForm">
+            <div class="form-group">
+              <label for="categorySelect">Category</label>
+              <select class="form-control" id="categorySelect" name="category" required style="color: aliceblue;">
+                <% category.forEach(category => { %>
+                  <option value="<%= category._id %>"><%= category.name %></option>
+                <% }); %>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="offerPercentage">Offer Percentage</label>
+              <input type="number" class="form-control" id="offerPercentage" name="offerPercentage" placeholder="Enter percentage" min="0" max="100" style="color: aliceblue;" required>
+            </div>
+            <div class="form-group">
+              <label for="expiryDate">Expiry Date</label>
+              <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" required>
+            </div>
+            <div class="form-group text-right">
+              <button type="submit" class="btn btn-primary">Add Offer</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+<!-- Edit Offer Modal Structure -->
+<div class="modal fade" id="editOfferModal" tabindex="-1" aria-labelledby="editOfferModalLabel" aria-hidden="true" style="margin-top: -10%;">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editOfferModalLabel">Edit Offer</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editOfferForm">
+                    <input type="hidden" id="editOfferId" name="offerId">
+                    <div class="form-group">
+                        <label for="editCategorySelect">Category</label>
+                        <select class="form-control" id="editCategorySelect" name="category" style="color: aliceblue;" required>
+                            <% category.forEach(cat => { %>
+                                <option style="color: aliceblue;" value="<%= cat._id %>"><%= cat.name %></option>
+                            <% }); %>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="editOfferPercentage">Offer Percentage</label>
+                        <input type="number" class="form-control" id="editOfferPercentage" name="offerPercentage" placeholder="Enter percentage" min="0" max="100" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="editExpiryDate">Expiry Date</label>
+                        <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" required>
+                    </div>
+                    <div class="form-group text-right">
+                        <button type="submit" class="btn btn-primary">Update Offer</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+  
+  
+
+<!-- Bootstrap 5 JavaScript -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+      const form = document.getElementById('offerForm');
+      const modalElement = document.getElementById('addOfferModal');
+      
+      form.addEventListener('submit', async (event) => {
+        event.preventDefault();
+  
+        const formData = new FormData(form);
+        const data = {};
+        formData.forEach((value, key) => {
+          data[key] = value;
+        });
+  
+        try {
+          const response = await fetch('/admin/addCetegoryOffer', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(data),
+          });
+  
+          if (response.ok) {
+            const result = await response.json();
+            location.reload();
+          } else {
+            const errorText = await response.text();
+            console.error('Error:', errorText);
+            alert('An error occurred while adding the offer.');
+          }
+        } catch (error) {
+          console.error('Fetch error:', error);
+          alert('An error occurred while adding the offer.');
+        }
+      });
+    });
+  </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const editModal = new bootstrap.Modal(document.getElementById('editOfferModal'));
+        const editForm = document.getElementById('editOfferForm');
+        const editOfferId = document.getElementById('editOfferId');
+        const editCategorySelect = document.getElementById('editCategorySelect');
+        const editOfferPercentage = document.getElementById('editOfferPercentage');
+        const editExpiryDate = document.getElementById('editExpiryDate');
+
+        document.querySelectorAll('.edit-offer-button').forEach(button => {
+            button.addEventListener('click', () => {
+                const offerId = button.getAttribute('data-offer-id');
+                const categoryId = button.getAttribute('data-category');
+                const discount = button.getAttribute('data-discount');
+                const expiry = button.getAttribute('data-expiry');
+
+                editOfferId.value = offerId;
+                editCategorySelect.value = categoryId;
+                editOfferPercentage.value = discount;
+                editExpiryDate.value = expiry;
+
+                editModal.show();
+            });
+        });
+
+        editForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            const formData = new FormData(editForm);
+            const data = {};
+            formData.forEach((value, key) => {
+                data[key] = value;
+            });
+
+            try {
+                const response = await fetch('/admin/editCategoryOffer', {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(data),
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    location.reload();
+                } else {
+                    const errorText = await response.text();
+                    console.error('Error:', errorText);
+                    alert('An error occurred while updating the offer.');
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                alert('An error occurred while updating the offer.');
+            }
+        });
+    });
+</script>
+
+
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+       
+        async function deleteOffer(offerId) {
+            try {
+                const response = await fetch(`/admin/deletecategoryoffer/${offerId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Network response was not ok.');
+                }
+
+                const result = await response.json();
+                if (result.success) {
+                    Swal.fire({
+                        text: 'The offer has been deleted successfully.',
+                        confirmButtonText: 'OK',
+                        background: '#f1f1f1',
+                        customClass: {
+                            title: 'swal-title',
+                            confirmButton: 'swal-confirm-button'
+                        }
+                    }).then(() => {
+                        location.reload(); 
+                    });
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error!',
+                        text: result.message || 'Something went wrong.',
+                        confirmButtonText: 'OK',
+                        background: '#f8d7da',
+                        customClass: {
+                            title: 'swal-title',
+                            confirmButton: 'swal-confirm-button'
+                        }
+                    });
+                }
+            } catch (error) {
+                console.error('Fetch error:', error);
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error!',
+                    text: 'An unexpected error occurred.',
+                    confirmButtonText: 'OK',
+                    background: '#f8d7da',
+                    customClass: {
+                        title: 'swal-title',
+                        confirmButton: 'swal-confirm-button'
+                    }
+                });
+            }
+        }
+
+        document.querySelectorAll('.delete-offer-button').forEach(label => {
+            label.addEventListener('click', () => {
+                const offerId = label.getAttribute('data-offer-id');
+                Swal.fire({
+                    text: "🛑Are you sure you want to delete this ?!",
+                    showCancelButton: true,
+                    confirmButtonColor: '#3085d6',
+                    cancelButtonColor: '#d33',
+                    confirmButtonText: 'Yes, delete it!',
+                    background: '#ffffff',
+                    customClass: {
+                        confirmButton: 'swal-confirm-button',
+                        cancelButton: 'swal-cancel-button'
+                    }
+                }).then((result) => {
+                    if (result.isConfirmed) {
+                        deleteOffer(offerId);
+                    }
+                });
+            });
+        });
+    });
+</script>
+
+
+
+
+<%- include('./adminFooter.ejs') %>

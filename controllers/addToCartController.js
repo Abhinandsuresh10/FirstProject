@@ -4,6 +4,7 @@ const User = require('../models/userModel');
 const Wallet = require('../models/walletModel');
 const crypto = require('crypto');
 const Razorpay = require('razorpay');
+const Product = require('../models/produntsModel');
 
 const cartLoad = async (req, res) => {
     try {
@@ -123,8 +124,9 @@ const deleteCart = async(req,res)=>{
  const loadWishlist = async(req,res)=>{
     try {
         const userId = req.session.userData._id;
-        const wishlist = await Wishlist.findOne({ userId }).populate('products', 'productId name description price discount image');
-        res.render('wishlist', { wishlist: wishlist || { items: [] }, isLoggedIn: req.session.userData });
+        const products = await Product.findOne({_id:userId})
+        const wishlist = await Wishlist.findOne({ userId }).populate('products', 'productId name description price discount stock image');
+        res.render('wishlist', { wishlist: wishlist || { items: [] }, isLoggedIn: req.session.userData ,product:products});
     } catch (error) {
         console.log(error.message)
     }
