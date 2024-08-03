@@ -27,6 +27,7 @@ const loadorders = async (req, res) => {
                     const discountPrice = product.discount || 0;
                     const discountedPrice = item.price - discountPrice;
                     const totalAmount = discountedPrice * item.quantity;
+
                     return {
                         ...item,
                         productDetails: product,
@@ -37,11 +38,15 @@ const loadorders = async (req, res) => {
                 })
             );
 
+            const totalOrderAmount = order.amount;
+            totalOrderAmount.toFixed(2);
+
             return {
                 ...order,
                 user: userDetails,
                 shippingAddress: shippingAddressDetails,
-                orderItems: productDetails
+                orderItems: productDetails,
+                amount: totalOrderAmount 
             };
         }));
 
@@ -57,8 +62,8 @@ const loadorders = async (req, res) => {
 }
 
 
-const LoadOrderView = async(req,res)=>{
-   
+
+const LoadOrderView = async (req, res) => {
     try {
         const orderId = req.query.orderId;
         const order = await Order.findById(orderId).lean();
@@ -76,6 +81,7 @@ const LoadOrderView = async(req,res)=>{
                 const discountPrice = product.discount || 0;
                 const discountedPrice = item.price - discountPrice;
                 const totalAmount = discountedPrice * item.quantity;
+
                 return {
                     ...item,
                     productDetails: product,
@@ -86,21 +92,24 @@ const LoadOrderView = async(req,res)=>{
             })
         );
 
+        const totalOrderAmount = order.amount;
+        totalOrderAmount.toFixed(2);
+
         const detailedOrder = {
             ...order,
             user: userDetails,
             shippingAddress: shippingAddressDetails,
-            orderItems: productDetails
+            orderItems: productDetails,
+            amount: totalOrderAmount
         };
 
         res.render('adminOrderView', { order: detailedOrder });
     } catch (error) {
         console.log(error.message);
         res.status(500).send('Server Error');
-        
-}
-  
-}
+    }
+};
+
 
 const ChangeStatus = async(req,res)=>{
     const { orderId, orderStatus } = req.body;

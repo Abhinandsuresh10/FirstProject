@@ -195,7 +195,7 @@
                                     <tr class="total-row">
                                         <td colspan="4" class="text-right">Order Total</td>
                                         <td class="text-center">
-                                            ₹<%= order.orderItems.reduce((total, item) => total + parseFloat(item.totalAmount), 0).toFixed(2) %>
+                                            ₹<%= order.amount %>
                                         </td>
                                     </tr>
                                 </tbody>

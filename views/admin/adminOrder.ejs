@@ -51,13 +51,7 @@
                             <td style="color: aliceblue;"><%= order.user ? order.user.name : 'N/A' %></td>
                             <td style="color: aliceblue;"><%= new Date(order.createdAt).toLocaleDateString() %></td>
                             <td style="color: aliceblue;">
-                                <% 
-                                    let totalCost = 0;
-                                    order.orderItems.forEach(item => {
-                                        totalCost += parseFloat(item.totalAmount);
-                                    });
-                                    %>
-                                ₹<%= totalCost.toFixed(2) %>
+                                ₹<%= order.amount.toFixed(2) %>
                             </td>
                             
                             <td style="color: aliceblue;"><%= order.paymentMethod %></td>

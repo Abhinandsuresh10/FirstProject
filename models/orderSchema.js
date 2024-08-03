@@ -22,6 +22,7 @@ const orderSchema = new mongoose.Schema({
                 type: Number,
                 required: true
             }
+
         }
     ],
     shippingAddress: {
@@ -33,6 +34,9 @@ const orderSchema = new mongoose.Schema({
         type: String,
         enum: ['Cash on delivery', 'RazorPay'],
         
+    },
+    amount : {
+        type : Number
     },
     paymentStatus: {
         type: String,

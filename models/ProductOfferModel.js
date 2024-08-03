@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const ProductOfferSchema = new mongoose.Schema({
     productId: {
       type: mongoose.Schema.Types.ObjectId,
-      ref: 'Product',
+      ref: 'Products',
       required: false,
     },
     discountPercentage: {

@@ -132,7 +132,12 @@ userRoute.delete('/removeFromWishlist/:productId',cartController.RemoveFromWishl
 
 userRoute.get('/wallet',cartController.LoadWallet);
 userRoute.post('/create-order',cartController.InsertWallet);
-userRoute.post('/payment-success',cartController.AddToWallet)
+userRoute.post('/payment-success',cartController.AddToWallet);
+
+//coupon
+
+userRoute.post('/applyCoupon',checkoutController.ApplyCoupon);
+userRoute.post('/removeCoupon',checkoutController.RemoveCoupon)
 
 
 module.exports = userRoute;

@@ -96,7 +96,17 @@ adminRoute.get('/CategoryOffers',adminCategoryController.LoadCategoryOffers);
 adminRoute.post('/addCetegoryOffer',adminCategoryController.InsertCategoryOffer);
 adminRoute.put('/editCategoryOffer',adminCategoryController.UpdateCategoryOffer);
 adminRoute.delete('/deletecategoryoffer/:id',adminCategoryController.DeleteCategoryOffer);
-adminRoute.get('/productOffers',adminCategoryController.LoadProductOffers)
+adminRoute.get('/productOffers',adminCategoryController.LoadProductOffers);
+adminRoute.post('/addProductOffer',adminCategoryController.InsertProductOffer);
+adminRoute.put('/editProductOffer',adminCategoryController.UpdateProductOffer);
+adminRoute.delete('/deleteproductoffer/:id',adminCategoryController.DeleteProductOffer);
+
+
+//coupons
+
+adminRoute.get('/Coupons',adminController.LoadCoupons);
+adminRoute.post('/addCoupon',adminController.InsertCoupon);
+adminRoute.delete('/deleteCoupon/:id',adminController.DeleteCoupon)
 
 //logout
 

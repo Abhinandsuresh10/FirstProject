@@ -1,5 +1,7 @@
 <%-include ('./header.ejs') %>
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
+
 <style>
   .validation-message {
     color: red;
@@ -160,6 +162,70 @@
   }
 </style>
 
+<style>
+  .btn-close{
+    margin-left: 90%;
+  }
+.checkout-coupon-section {
+    margin: 20px;
+}
+
+.input-group {
+    margin-bottom: 15px;
+}
+
+.text-danger {
+    color: red;
+}
+
+.coupon-popup {
+    position: fixed;
+    top: 100px; 
+    left: 20px; 
+    width: 300px; 
+    background: white;
+    border: 1px solid #ddd;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    z-index: 1000;
+}
+
+.coupon-popup-content {
+    padding: 15px;
+}
+
+.coupon-popup .btn-close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #333;
+    cursor: pointer;
+}
+
+.coupon-popup ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.coupon-popup li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+    border-bottom: 1px solid #ddd;
+}
+
+.coupon-popup .copy-btn {
+    margin-left: 10px;
+}
+
+.d-none {
+    display: none;
+}
+
+</style>
+
+
 
 <div class="hero-wrap hero-bread" style="background-image: url('/static/user/images/bg_6.jpg');">
     <div class="container">
@@ -315,7 +381,8 @@
               </div>
               </div>
             </form><!-- END -->
-
+           
+            
 
             <div class="cart-section">
               <% if (cart && cart.products && cart.products.length > 0) { %>
@@ -340,8 +407,39 @@
                   </div>
               <% } %>
           </div>
+<!-- Inside your checkout.ejs template -->
+<div class="checkout-coupon-section">
+  <h3>Have a Coupon?</h3>
+  <div class="input-group mb-3" style="width: 25%;">
+    <input type="text" class="form-control" id="couponCode" placeholder="Enter coupon code">
+    <div class="input-group-append">
+      <button class="btn btn-primary" type="button" id="applyCouponButton">Apply</button>
+    </div>
+  </div>
+  <button id="showCouponsPopupButton" class="btn btn-primary">Show Coupons</button>
+  <button id="removeCouponButton" class="btn btn-secondary d-none">Remove Coupon</button>
+  <div id="couponMessage" class="text-danger"></div>
+</div>
 
-
+<!-- Coupon Popup -->
+<div id="couponPopup" class="coupon-popup d-none">
+  <div class="coupon-popup-content">
+    <button type="button" class="btn-close" onclick="closeCouponPopup()">&times;</button>
+    <h5>Available Coupons</h5>
+    <ul id="couponList">
+      <% coupons.forEach(coupon => { %>
+        
+        <li>
+          <span class="coupon-code"><small><%= coupon.code %></small></span>
+          <span class="coupon-code" style="color: red;"><small><%= coupon.discountValue %>%</small></span>
+          <span class="coupon-code" style="color: rgb(11, 84, 34);"><small><%= new Date(coupon.expiryDate).toLocaleDateString() %></small></span>
+          <button class="btn btn-outline-primary copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
+        </li>
+          
+      <% }) %>
+    </ul>
+  </div>
+</div>
 
             <div class="row mt-5 pt-3 d-flex">
               <div class="col-md-6 d-flex">
@@ -386,7 +484,9 @@
                                   </div>
                                   <div class="form-group">
                                       <div class="col-md-12">
-                                         
+                                        <div class="radio">
+                                          <label><input type="radio" name="optradio" class="mr-2" value="Wallet"> Wallet</label>
+                                       </div>
                                       </div>
                                   </div>
                                   <p><a href="#" id="placeOrderBtn" class="btn btn-primary py-3 px-4">Place an order</a></p>
@@ -551,6 +651,46 @@
   </div>
 <% } %>
 
+<script src="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.js"></script>
+
+
+
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  
+    document.getElementById('showCouponsPopupButton').addEventListener('click', () => {
+        document.getElementById('couponPopup').classList.remove('d-none');
+    });
+    document.querySelector('.coupon-popup .btn-close').addEventListener('click', () => {
+        document.getElementById('couponPopup').classList.add('d-none');
+    });
+    window.copyCouponCode = function(code) {
+        navigator.clipboard.writeText(code).then(() => {
+            Toastify({
+                text: "Coupon code copied to clipboard!",
+                duration: 3000,
+                gravity: "top", 
+                position: "right", 
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+            }).showToast();
+        }).catch(err => {
+            console.error('Failed to copy coupon code: ', err);
+            Toastify({
+                text: "Failed to copy coupon code.",
+                duration: 3000,
+                close: true,
+                gravity: "top", 
+                position: "right", 
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+            }).showToast();
+        });
+    };
+});
+
+
+</script>
+
+
 <script>
   document.addEventListener('DOMContentLoaded', function () {
       const snackbar = document.querySelector('.custom-snackbar');
@@ -567,22 +707,117 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.bundle.min.js"></script>
 
 <script>
+  document.addEventListener('DOMContentLoaded', function() {
+    updateCartTotalFromLocalStorage();
 
-function updateCartTotalFromLocalStorage() {
-    let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
-    let totalDiscount = parseFloat(localStorage.getItem('cartDiscount')) || 0;
-    let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
-    let total = parseFloat(localStorage.getItem('cartTotal')) || 0;
+    const applyCouponButton = document.getElementById('applyCouponButton');
+    const couponCodeInput = document.getElementById('couponCode');
+    const couponMessage = document.getElementById('couponMessage');
 
-    document.getElementById('sub-total').textContent = `₹${subtotal.toFixed(2)}`;
-    document.getElementById('delivery').textContent = `₹${deliveryCharge.toFixed(2)}`;
-    document.getElementById('discount-amount').textContent = `₹${totalDiscount.toFixed(2)}`;
-    document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+    function updateCartTotalFromLocalStorage() {
+        let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+        let totalDiscount = parseFloat(localStorage.getItem('cartDiscount')) || 0;
+        let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+        let total = subtotal + deliveryCharge - totalDiscount;
+
+        document.getElementById('sub-total').textContent = `₹${subtotal.toFixed(2)}`;
+        document.getElementById('delivery').textContent = `₹${deliveryCharge.toFixed(2)}`;
+        document.getElementById('discount-amount').textContent = `₹${totalDiscount.toFixed(2)}`;
+        document.getElementById('cart-total').textContent = `₹${total.toFixed(2)}`;
+    }
+
+    async function applyCoupon(couponCode) {
+        const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
+        const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
+        try {
+            const response = await fetch('/applyCoupon', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ couponCode ,total , discount})
+            });
+
+            if (response.ok) {
+                const { success, discountAmount, message } = await response.json();
+                if (success) {
+                    localStorage.setItem('cartDiscount', discountAmount);
+                    updateCartTotalFromLocalStorage();
+                    couponMessage.textContent = '';
+                    changeButtonToRemove(); 
+                } else {
+                    couponMessage.textContent = message;
+                }
+            } else {
+                couponMessage.textContent = 'Error applying coupon. Please try again.';
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            couponMessage.textContent = 'An error occurred. Please try again.';
+        }
+    }
+
+    function removeCoupon() {
+    const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
+    const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
+    const couponCode = couponCodeInput.value.trim(); 
+    fetch('/removeCoupon', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ couponCode, total, discount })
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            localStorage.setItem('cartDiscount', data.newDiscountAmount);
+            console.log(data.newDiscountAmount,'edfgn')
+            updateCartTotalFromLocalStorage(); 
+            couponMessage.textContent = data.message;
+            changeButtonToApply(); 
+        } else {
+            couponMessage.textContent = data.message;
+        }
+    })
+    .catch(error => {
+        console.error('Error removing coupon:', error);
+        couponMessage.textContent = 'An error occurred. Please try again.';
+    });
 }
-  
-updateCartTotalFromLocalStorage();
 
-</script>
+
+    function changeButtonToRemove() {
+        applyCouponButton.textContent = 'Remove Coupon';
+        applyCouponButton.classList.remove('btn-primary');
+        applyCouponButton.classList.add('btn-secondary');
+        applyCouponButton.removeEventListener('click', applyCouponHandler);
+        applyCouponButton.addEventListener('click', removeCouponHandler);
+    }
+
+    function changeButtonToApply() {
+        applyCouponButton.textContent = 'Apply Coupon';
+        applyCouponButton.classList.remove('btn-secondary');
+        applyCouponButton.classList.add('btn-primary');
+        applyCouponButton.removeEventListener('click', removeCouponHandler);
+        applyCouponButton.addEventListener('click', applyCouponHandler);
+    }
+
+    function applyCouponHandler() {
+        const couponCode = couponCodeInput.value.trim();
+        if (couponCode) {
+            applyCoupon(couponCode);
+        } else {
+            couponMessage.textContent = 'Please enter a coupon code.';
+        }
+    }
+
+    function removeCouponHandler() {
+        removeCoupon();
+    }
+    
+    applyCouponButton.addEventListener('click', applyCouponHandler);
+   
+});
+
+  </script>
+  
 
 <script>
   document.addEventListener('DOMContentLoaded', function() {
@@ -774,6 +1009,8 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: parseFloat(item.querySelector('.product-price').textContent.replace('Price: ₹', ''))
             };
         });
+        console.log(orderItems);
+        
 
         const cartTotalElement = document.getElementById('cart-total');
         let total = 0;

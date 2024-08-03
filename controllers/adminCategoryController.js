@@ -253,13 +253,74 @@ const DeleteCategoryOffer =async(req,res) => {
 
 const LoadProductOffers = async(req,res)=>{
     try {
+        const productOffers = await productOffer.find({}).populate('productId');
         const products = await product.find({is_delete:false})
-        res.render('productOffers',{products})
+        res.render('productOffers',{products,productOffers})
     } catch (error) {
         console.log(error.message)
     }
 }
 
+
+const InsertProductOffer = async(req,res)=>{
+    const { product, offerPercentage, expiryDate } = req.body;
+
+    try {
+      const newOffer = new productOffer({
+        productId: product,
+        discountPercentage: offerPercentage,
+        expiryDate: new Date(expiryDate),
+        isActive: true
+      });
+  
+      await newOffer.save();
+      res.status(200).json({ message: 'Offer added successfully!' });
+    } catch (error) {
+      console.error('Error adding offer:', error);
+      res.status(500).json({ error: 'An error occurred while adding the offer.' });
+    }
+}
+
+
+const UpdateProductOffer = async(req,res)=>{
+    try {
+        const { offerId, product, offerPercentage, expiryDate } = req.body;
+
+        if (!offerId || !product || !offerPercentage || !expiryDate) {
+            return res.status(400).json({ error: 'All fields are required.' });
+        }
+
+        const updatedOffer = await productOffer.findByIdAndUpdate(
+            offerId,
+            {
+                productId: product,
+                discountPercentage: offerPercentage,
+                expiryDate: new Date(expiryDate)
+            },
+            { new: true } 
+        );
+
+        if (!updatedOffer) {
+            return res.status(404).json({ error: 'Offer not found.' });
+        }
+        res.status(200).json(updatedOffer);
+    } catch (error) {
+        console.error('Error updating offer:', error);
+        res.status(500).json({ error: 'An error occurred while updating the offer.' });
+    }
+}
+
+
+const DeleteProductOffer = async(req,res)=>{
+    try {
+        const { id } = req.params;
+        await productOffer.findByIdAndDelete(id);
+        res.json({ success: true });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ success: false, message: 'Failed to delete offer' });
+    }
+}
 
 
 
@@ -280,6 +341,9 @@ module.exports = {
     InsertCategoryOffer,
     UpdateCategoryOffer,
     DeleteCategoryOffer,
-    LoadProductOffers
+    LoadProductOffers,
+    InsertProductOffer,
+    UpdateProductOffer,
+    DeleteProductOffer
     
 }
