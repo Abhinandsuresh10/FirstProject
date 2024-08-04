@@ -176,7 +176,7 @@
             <div class="col-lg-6 product-details pl-md-5 ftco-animate" style="padding-top: 10%;">
                 <h3><%=product.name%></h3>
                
-                <p class="price"><span style="color: rgb(98, 97, 97);font-size: 20px;"><strike>₹<%=product.price %></strike></span>&nbsp;&nbsp;<span>₹<%=product.price - product.discount%></span></p>
+                <p class="price"><% if(product.discount > 0 ) {%><span style="color: rgb(98, 97, 97);font-size: 20px;"><strike>₹<%=product.price %></strike><% } %></span>&nbsp;&nbsp;<span>₹<%=product.price - product.discount%></span></p>
 
                 <div class="rating">
                    

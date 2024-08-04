@@ -52,7 +52,7 @@
         </div>
         <div class="form-group">
           <label for="exampleInputDiscount">Discount</label>
-          <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" >
+          <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" readonly>
           <small class="form-text text-danger" id="errorDiscount"></small>
         </div>
         <div class="form-group">
@@ -263,7 +263,6 @@
     const model = document.getElementById('exampleInputModel').value.trim();
     const material = document.getElementById('exampleInputMaterial').value.trim();
     const price = document.getElementById('exampleInputPrice').value.trim();
-    const discount = document.getElementById('exampleInputDiscount').value.trim();
     const stock = document.getElementById('exampleInputStock').value.trim();
     const description = document.getElementById('exampleInputDescription').value.trim();
 
@@ -307,13 +306,6 @@
       isValid = false;
     } else {
       document.getElementById('errorPrice').innerText = '';
-    }
-
-    if (!discount || discount < 100 || discount > 1000) {
-      document.getElementById('errorDiscount').innerText = 'Discount is required and discount should be in 100 to 1000';
-      isValid = false;
-    } else {
-      document.getElementById('errorDiscount').innerText = '';
     }
 
     if (!stock || stock < 0) {

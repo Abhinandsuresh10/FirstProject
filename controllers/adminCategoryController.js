@@ -2,7 +2,7 @@
 const User = require('../models/userModel');
 const Category = require('../models/category');
 const Brands = require('../models/brandsModel');
-const product = require('../models/produntsModel');
+const Product = require('../models/produntsModel');
 const CategoryOffer = require('../models/CategoryOffer');
 const productOffer = require('../models/ProductOfferModel');
 
@@ -71,7 +71,7 @@ const deleteCategory = async(req,res)=>{
         const id = req.query.id;
         const cat = await Category.findByIdAndUpdate({_id:id},{$set:{is_delete:true}});
         
-        await product.updateMany({ category: cat.name }, { $set: { is_delete: true } });
+        await Product.updateMany({ category: cat.name }, { $set: { is_delete: true } });
 
         res.redirect('/admin/category');
     } catch (error) {
@@ -192,24 +192,48 @@ const LoadCategoryOffers = async(req,res)=>{
     }
 }
 
-const InsertCategoryOffer = async (req, res) => {
-    const { category, offerPercentage, expiryDate } = req.body;
+ const InsertCategoryOffer = async (req, res) => {
 
-    try {
-      const newOffer = new CategoryOffer({
-        categoryId: category,
-        discountPercentage: offerPercentage,
-        expiryDate: new Date(expiryDate),
-        isActive: true
-      });
+        const { category, offerPercentage, expiryDate } = req.body;
+    
+        try {
+        console.log(category);
+        const cate = await Category.findById(category);
+        if (!cate) {
+            console.log('Category not found');
+            return res.status(404).json({ error: 'Category not found' });
+        }
+    
+        const products = await Product.find({ category: cate.name });
+        console.log(products);
+    
+        for (let product of products) {
+            const originalPrice = product.price;
+            const discountAmount = (originalPrice * offerPercentage) / 100;
+            const result = Math.ceil(discountAmount);
+            if(discountAmount > product.discount){
+                product.discount = result;
+                await product.save();
+            }
+
+            
+        }
+    
+        const newOffer = new CategoryOffer({
+            categoryId: category,
+            discountPercentage: offerPercentage,
+            expiryDate: new Date(expiryDate),
+            isActive: true
+        });
+    
+        await newOffer.save();
+        res.status(200).json({ message: 'Offer added and products updated successfully!' });
+        } catch (error) {
+        console.error('Error adding offer:', error);
+        res.status(500).json({ error: 'An error occurred while adding the offer.' });
+        }
+    };
   
-      await newOffer.save();
-      res.status(200).json({ message: 'Offer added successfully!' });
-    } catch (error) {
-      console.error('Error adding offer:', error);
-      res.status(500).json({ error: 'An error occurred while adding the offer.' });
-    }
-  };
 
   const UpdateCategoryOffer = async (req, res) => {
     try {
@@ -254,7 +278,7 @@ const DeleteCategoryOffer =async(req,res) => {
 const LoadProductOffers = async(req,res)=>{
     try {
         const productOffers = await productOffer.find({}).populate('productId');
-        const products = await product.find({is_delete:false})
+        const products = await Product.find({is_delete:false})
         res.render('productOffers',{products,productOffers})
     } catch (error) {
         console.log(error.message)
@@ -266,6 +290,20 @@ const InsertProductOffer = async(req,res)=>{
     const { product, offerPercentage, expiryDate } = req.body;
 
     try {
+        const productData = await Product.findById(product);   
+        if (!productData) {
+          return res.status(404).json({ error: 'Product not found' });
+        }
+    
+        const originalPrice = productData.price;
+        const discountAmount = (originalPrice * offerPercentage) / 100;
+        const result = Math.ceil(discountAmount);
+        if(discountAmount > productData.discount){
+            productData.discount = result;
+            await productData.save();
+        }
+        
+
       const newOffer = new productOffer({
         productId: product,
         discountPercentage: offerPercentage,

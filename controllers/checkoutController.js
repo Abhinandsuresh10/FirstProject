@@ -460,34 +460,7 @@ const ReturnRequest = async (req, res) => {
 
         await Promise.all(productPromises);
         
-        if(updatedOrder.paymentMethod == 'RazorPay'){
-
-            const totalPrice = updatedOrder.orderItems.reduce((sum, item) => sum + item.price, 0);
-    
-            const userId = req.session.userData._id;
-            let userWallet = await Wallet.findOne({ userId: userId });
-    
-            if (!userWallet) {
-                userWallet = new Wallet({
-                    userId,
-                    balance: totalPrice,
-                    transactions: [{
-                        type: 'credit',
-                        amount: totalPrice,
-                        description: 'Order returned - refund added to wallet'
-                    }]
-                });
-            } else {
-                userWallet.balance += totalPrice;
-                userWallet.transactions.push({
-                    type: 'credit',
-                    amount: totalPrice,
-                    description: 'Order returned - refund added to wallet'
-                });
-            }
-    
-            await userWallet.save();
-        }
+       
         if (!updatedOrder) {
             return res.status(404).json({ success: false, message: 'Order not found' });
         }

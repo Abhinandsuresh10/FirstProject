@@ -768,7 +768,6 @@ document.addEventListener('DOMContentLoaded', () => {
     .then(data => {
         if (data.success) {
             localStorage.setItem('cartDiscount', data.newDiscountAmount);
-            console.log(data.newDiscountAmount,'edfgn')
             updateCartTotalFromLocalStorage(); 
             couponMessage.textContent = data.message;
             changeButtonToApply(); 

@@ -1,7 +1,8 @@
 const Order = require('../models/orderSchema');
 const User = require('../models/userModel');
 const Address = require('../models/addressModel');
-const Product = require('../models/produntsModel')
+const Product = require('../models/produntsModel');
+const Wallet = require('../models/walletModel')
 
 
 const loadorders = async (req, res) => {
@@ -111,17 +112,61 @@ const LoadOrderView = async (req, res) => {
 };
 
 
-const ChangeStatus = async(req,res)=>{
-    const { orderId, orderStatus } = req.body;
+// const ChangeStatus = async(req,res)=>{
+//     const { orderId, orderStatus } = req.body;
 
-    try {
-        await Order.findByIdAndUpdate(orderId, { orderStatus });
-        res.redirect(`/admin/orders`);
+//     try {
+//         await Order.findByIdAndUpdate(orderId, { orderStatus });
+//         res.redirect(`/admin/orders`);
         
+//     } catch (error) {
+//         console.log(error.message)
+//     }
+// }
+
+const ChangeStatus = async (req, res) => {
+    const { orderId, orderStatus } = req.body;
+  
+    try {
+      const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
+  
+      if (orderStatus === 'order returned') {
+        const totalPrice = updatedOrder.orderItems.reduce((sum, item) => sum + item.price, 0);
+      
+        const userId = updatedOrder.user;
+  
+        let userWallet = await Wallet.findOne({ userId: userId });
+  
+        if (!userWallet) {
+          userWallet = new Wallet({
+            userId,
+            balance: totalPrice,
+            transactions: [{
+              type: 'credit',
+              amount: totalPrice,
+              description: 'Order returned - refund added to wallet'
+            }]
+          });
+        } else {
+          userWallet.balance += totalPrice;
+          userWallet.transactions.push({
+            type: 'credit',
+            amount: totalPrice,
+            description: 'Order returned - refund added to wallet'
+          });
+        }
+  
+        await userWallet.save();
+      }
+  
+      res.redirect(`/admin/orders`);
+      
     } catch (error) {
-        console.log(error.message)
+      console.log(error.message);
+      res.status(500).json({ success: false, message: 'Server error' });
     }
-}
+  };
+  
 
 
 module.exports = {

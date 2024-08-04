@@ -131,8 +131,11 @@
                   <div class="d-flex">
                     <div class="pricing">
                       <p class="price">
+                        
                         <span class="price-sale">₹<%= product[i].price - product[i].discount %></span>&nbsp;&nbsp;
+                       <% if(product[i].discount > 0) {%>
                         <del><span class="price-sale">₹<%= product[i].price %></span></del>
+                        <% } %>
                       </p>
                     </div>
                   </div>

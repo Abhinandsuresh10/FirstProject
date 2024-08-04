@@ -54,12 +54,6 @@
                     <small id="priceError" class="form-text text-danger"></small>
                 </div>
                 <div class="form-group">
-                    <label for="exampleInputDiscount">Discount</label>
-                    <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;"
-                        name="discount">
-                    <small id="discountError" class="form-text text-danger"></small>
-                </div>
-                <div class="form-group">
                     <label for="exampleInputStock">Stock</label>
                     <input type="number" class="form-control" id="exampleInputStock" style="color: rgb(252, 252, 252);width: 15%;"
                         name="stock">
@@ -135,7 +129,6 @@
     const model = document.getElementById('exampleInputModel');
     const material = document.getElementById('exampleInputMaterial');
     const price = document.getElementById('exampleInputPrice');
-    const discount = document.getElementById('exampleInputDiscount');
     const stock = document.getElementById('exampleInputStock');
     const description = document.getElementById('exampleInputDescription');
     const image = document.getElementById('ocs-productImage');
@@ -180,11 +173,6 @@
 
     if (price.value.trim() === '' || price.value <= 0) {
       showError('priceError', 'Price must be a positive number');
-      isValid = false;
-    }
-
-    if (discount.value.trim() === '' || discount.value < 0) {
-      showError('discountError', 'Discount cannot be negative');
       isValid = false;
     }
 
@@ -239,9 +227,6 @@
     clearError('priceError');
   });
 
-  document.getElementById('exampleInputDiscount').addEventListener('input', function () {
-    clearError('discountError');
-  });
 
   document.getElementById('exampleInputStock').addEventListener('input', function () {
     clearError('stockError');

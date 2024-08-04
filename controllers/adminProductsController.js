@@ -24,7 +24,7 @@ const addProductsLoad = async(req,res)=>{
 }
 
 const insertProducts = async(req,res)=>{
-    const {name,category,brand,model,material,price,discount,stock,discription} = req.body;
+    const {name,category,brand,model,material,price,stock,discription} = req.body;
     try {
      
         const imagePaths = req.files.map(file => file.filename);
@@ -35,7 +35,6 @@ const insertProducts = async(req,res)=>{
             model:model,
             material:material,
             price:price,
-            discount:discount,
             stock:stock,
             discription:discription,
             image: imagePaths,
