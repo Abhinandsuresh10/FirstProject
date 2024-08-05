@@ -106,7 +106,12 @@ adminRoute.delete('/deleteproductoffer/:id',adminCategoryController.DeleteProduc
 
 adminRoute.get('/Coupons',adminController.LoadCoupons);
 adminRoute.post('/addCoupon',adminController.InsertCoupon);
-adminRoute.delete('/deleteCoupon/:id',adminController.DeleteCoupon)
+adminRoute.delete('/deleteCoupon/:id',adminController.DeleteCoupon);
+
+//sales report
+
+adminRoute.get('/SalesReport',adminController.LoadSalesReport);
+adminRoute.get('/FilterSalesReport',adminController.FilterSalesReport)
 
 //logout
 

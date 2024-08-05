@@ -197,15 +197,12 @@ const LoadCategoryOffers = async(req,res)=>{
         const { category, offerPercentage, expiryDate } = req.body;
     
         try {
-        console.log(category);
         const cate = await Category.findById(category);
         if (!cate) {
-            console.log('Category not found');
             return res.status(404).json({ error: 'Category not found' });
         }
     
         const products = await Product.find({ category: cate.name });
-        console.log(products);
     
         for (let product of products) {
             const originalPrice = product.price;
@@ -241,6 +238,24 @@ const LoadCategoryOffers = async(req,res)=>{
 
         if (!offerId || !category || !offerPercentage || !expiryDate) {
             return res.status(400).json({ error: 'All fields are required.' });
+        }
+        const cate = await Category.findById(category);
+        if (!cate) {
+            return res.status(404).json({ error: 'Category not found' });
+        }
+    
+        const products = await Product.find({ category: cate.name });
+    
+        for (let product of products) {
+            const originalPrice = product.price;
+            const discountAmount = (originalPrice * offerPercentage) / 100;
+            const result = Math.ceil(discountAmount);
+            if(discountAmount > product.discount){
+                product.discount = result;
+                await product.save();
+            }
+
+            
         }
 
         const updatedOffer = await CategoryOffer.findByIdAndUpdate(

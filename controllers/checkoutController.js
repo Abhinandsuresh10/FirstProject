@@ -218,7 +218,6 @@ const insertPlaceOrder = async(req,res)=>{
             amount : amounts
         });
 
-        console.log(newOrder);
         
         await newOrder.save();
 

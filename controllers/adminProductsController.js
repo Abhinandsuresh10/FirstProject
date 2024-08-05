@@ -1,6 +1,7 @@
 const Category = require('../models/category');
 const prducts = require('../models/produntsModel');
 const brand = require('../models/brandsModel');
+const CategoryOffer = require('../models/CategoryOffer');
 
 
 const productsLoad = async(req,res)=>{
@@ -26,7 +27,29 @@ const addProductsLoad = async(req,res)=>{
 const insertProducts = async(req,res)=>{
     const {name,category,brand,model,material,price,stock,discription} = req.body;
     try {
-     
+
+        const cate = await Category.findOne({name:category});
+        const discount = await CategoryOffer.findOne({categoryId:cate._id});
+        const offerDisc = discount.discountPercentage;
+        const resDisc = Math.ceil((price * offerDisc) / 100);
+
+      if(discount){
+        const imagePaths = req.files.map(file => file.filename);
+        const newproduct = await prducts({
+            name:name,
+            category:category,
+            brand:brand,
+            model:model,
+            material:material,
+            price:price,
+            discount:resDisc,
+            stock:stock,
+            discription:discription,
+            image: imagePaths,
+            is_delete:false
+        });
+        await newproduct.save();
+      }else{
         const imagePaths = req.files.map(file => file.filename);
         const newproduct = await prducts({
             name:name,
@@ -41,6 +64,8 @@ const insertProducts = async(req,res)=>{
             is_delete:false
         });
         await newproduct.save();
+      }
+      
         res.redirect('/admin/products')
     } catch (error) {
         console.log(error.message);
