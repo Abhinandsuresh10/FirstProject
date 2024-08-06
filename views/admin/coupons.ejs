@@ -60,10 +60,12 @@
             <div class="form-group">
               <label for="code">Code:</label>
               <input type="text" class="form-control" id="code" name="code" style="color: aliceblue;" required>
+              <small id="codeError" class="text-danger d-none">Code must be at least 4 characters long.</small>
             </div>
             <div class="form-group">
               <label for="discountValue">Discount Value:</label>
               <input type="number" class="form-control" id="discountValue" name="discountValue" style="color: aliceblue;" required>
+              <small id="DiscountError" class="text-danger d-none">Discount should be in 1 to 100.</small>
             </div>
             <div class="form-group">
               <label for="expiryDate">Expiry Date:</label>
@@ -72,10 +74,12 @@
             <div class="form-group">
               <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
               <input type="number" class="form-control" id="minPurchaseAmount" style="color: aliceblue;" name="minPurchaseAmount">
+              <small id="minPurchaseError" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
             </div>
             <div class="form-group">
               <label for="usageLimit">Usage Limit:</label>
               <input type="number" class="form-control" id="usageLimit" style="color: aliceblue;" name="usageLimit">
+              <small id="usageLimitError" class="text-danger d-none">Usage limit must be greater than 0.</small>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
@@ -91,56 +95,98 @@
 
 
   <script>
-   document.getElementById('addCouponForm').addEventListener('submit', async function (event) {
-  event.preventDefault();
+    document.getElementById('addCouponForm').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      
+      const codeInput = document.getElementById('code');
+      const minPurchaseAmountInput = document.getElementById('minPurchaseAmount');
+      const usageLimitInput = document.getElementById('usageLimit');
+      const codeError = document.getElementById('codeError');
+      const minPurchaseError = document.getElementById('minPurchaseError');
+      const usageLimitError = document.getElementById('usageLimitError');
+      const discountInput = document.getElementById('discountValue')
+      const discountError = document.getElementById('DiscountError');
+      let isValid = true;
+    
+      if (codeInput.value.length < 4) {
+        codeError.classList.remove('d-none');
+        isValid = false;
+      } else {
+        codeError.classList.add('d-none');
+      }
+    
+      if (parseFloat(minPurchaseAmountInput.value) < 1000) {
+        minPurchaseError.classList.remove('d-none');
+        isValid = false;
+      } else {
+        minPurchaseError.classList.add('d-none');
+      }
+    
+      if (parseFloat(usageLimitInput.value) <= 0) {
+        usageLimitError.classList.remove('d-none');
+        isValid = false;
+      } else {
+        usageLimitError.classList.add('d-none');
+      }
 
-  const code = document.getElementById('code').value;
-  const discountValue = document.getElementById('discountValue').value;
-  const expiryDate = document.getElementById('expiryDate').value;
-  const minPurchaseAmount = document.getElementById('minPurchaseAmount').value;
-  const usageLimit = document.getElementById('usageLimit').value;
-  try {
-       const response = await fetch('/admin/addCoupon', {
-         method: 'POST',
-         headers: {
-           'Content-Type': 'application/json'
-         },
-         body: JSON.stringify({
-           code,
-           discountValue,
-           expiryDate,
-           minPurchaseAmount,
-           usageLimit
-         })
-       });
- 
-       const data = await response.json();
- 
-       if (response.ok) {
-         Toastify({
-           text: "Coupon added successfully",
-           duration: 2000,
-           backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
-         }).showToast();
-         setTimeout(() => location.reload(), 2000); 
-       } else {
-         Toastify({
-           text: data.message || 'Error adding coupon',
-           duration: 3000,
-           backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-         }).showToast();
-       }
-     } catch (error) {
-       console.error('Error:', error);
-       Toastify({
-         text: 'An error occurred while adding the coupon.',
-         duration: 3000,
-         backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
-       }).showToast();
-  }
-});
-
-  </script>
+    if(parseFloat(discountInput.value) < 1 || parseFloat(discountInput.value) > 100){
+      discountError.classList.remove('d-none');
+      isValid = false;
+    } else {
+      discountError.classList.add('d-none');
+    }
+    
+      if (!isValid) {
+        return;
+      }
+    
+      const code = codeInput.value;
+      const discountValue = document.getElementById('discountValue').value;
+      const expiryDate = document.getElementById('expiryDate').value;
+      const minPurchaseAmount = minPurchaseAmountInput.value;
+      const usageLimit = usageLimitInput.value;
+    
+      try {
+        const response = await fetch('/admin/addCoupon', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            code,
+            discountValue,
+            expiryDate,
+            minPurchaseAmount,
+            usageLimit
+          })
+        });
+    
+        const data = await response.json();
+    
+        if (response.ok) {
+          Toastify({
+            text: "Coupon added successfully",
+            duration: 2000,
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+          }).showToast();
+          setTimeout(() => location.reload(), 2000);
+        } else {
+          Toastify({
+            text: data.message || 'Error adding coupon',
+            duration: 3000,
+            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+          }).showToast();
+        }
+      } catch (error) {
+        console.error('Error:', error);
+        Toastify({
+          text: 'An error occurred while adding the coupon.',
+          duration: 3000,
+          backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+        }).showToast();
+      }
+    });
+    </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 

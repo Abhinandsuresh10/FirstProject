@@ -1,4 +1,43 @@
 <%- include('./adminHeader.ejs') %>
+<style>
+    .pagination {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.pagination-link {
+    color: #fff;
+    padding: 10px 15px;
+    margin: 5px;
+    border-radius: 4px;
+    text-decoration: none;
+    background-color: #444; 
+    transition: background-color 0.3s ease;
+}
+
+.pagination-link:hover {
+    background-color: #555; 
+}
+
+.pagination-link.active {
+    background-color: #000000; 
+    color: #fff;
+}
+
+@media (max-width: 600px) {
+    .pagination {
+        flex-direction: column;
+        align-items: center;
+    }
+    .pagination-link {
+        margin: 5px 0;
+    }
+}
+
+</style>
 
 <div class="col-lg-6 grid-margin stretch-card" style="width: 90%;">
     <div class="card">
@@ -41,42 +80,70 @@
             </div>
             <div class="table-responsive">
                 <table class="table">
-                    <thead>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th style="width: 5%;">Products</th>
+                      <th>Total Quantity</th>
+                      <th>Customer Name</th>
+                      <th>Payment Method</th>
+                      <th>Total Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (sales.length > 0) { %>
+                      <% sales.forEach(sale => { %>
                         <tr>
-                            <th>Date</th>
-                            <th>Products</th>
-                            <th>Total Quantity</th>
-                            <th>Customer Name</th>
-                            <th>Payment Method</th>
-                            <th>Total Amount</th>
+                          <td><%= new Date(sale.createdAt).toLocaleDateString() %></td>
+                          <td style="width: 5%;">
+                            <% sale.orderItems.forEach((item, index) => { %>
+                              <%= item.product.name %> x <%= item.quantity %>
+                              <%= index < sale.orderItems.length - 1 ? ', ' : '' %>
+                            <% }) %>
+                          </td>
+                          <td>
+                            <% 
+                              let totalQuantity = 0;
+                              sale.orderItems.forEach(item => {
+                                totalQuantity += item.quantity;
+                              });
+                            %>
+                            &nbsp;&nbsp;&nbsp;
+                            &nbsp;&nbsp;&nbsp;<%= totalQuantity %>
+                          </td>
+                          <td><%= sale.user.name %></td>
+                          <td><%= sale.paymentMethod %></td>
+                          <td><%= sale.amount.toFixed(2) %></td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        <% sales.forEach(sale => { %>
-                            <tr>
-                                <td><%= new Date(sale.createdAt).toLocaleDateString() %></td>
-                                <td>
-                                    <% sale.orderItems.forEach((item, index) => { %>
-                                        <%= item.product.name %> x <%= item.quantity %>
-                                        <%= index < sale.orderItems.length - 1 ? ', ' : '' %>
-                                    <% }) %>
-                                </td>
-                                <td>
-                                    <% 
-                                        let totalQuantity = 0;
-                                        sale.orderItems.forEach(item => {
-                                            totalQuantity += item.quantity;
-                                        });
-                                    %>
-                                    <%= totalQuantity %>
-                                </td>
-                                <td><%= sale.user.name %></td>
-                                <td><%= sale.paymentMethod %></td>
-                                <td><%= sale.amount.toFixed(2) %></td>
-                            </tr>
-                        <% }) %>
-                    </tbody>
+                      <% }) %>
+                    <% } else { %>
+                      <tr>
+                        <td colspan="6" style="text-align: center; color: brown;">No data</td>
+                      </tr>
+                    <% } %>
+                  </tbody>
+                  
+                <% if (sales.length > 0) { %>
+                    <br> <td></td><td></td><td></td><td></td><td></td>
+                       <td class="grand-total-label">Grand Total:
+                        &nbsp;<%= grandTotalAmount.toFixed(2) %> 
+                       </td>
+                    
+                   <% } %>
                 </table>
+              
+              </div>
+              
+            <div class="pagination">
+                <% if (currentPage > 1) { %>
+                    <a href="?page=<%= currentPage - 1 %>&limit=<%= limit %>" class="pagination-link"><</a>
+                <% } %>
+                <% for (let i = 1; i <= totalPages; i++) { %>
+                    <a href="?page=<%= i %>&limit=<%= limit %>" class="pagination-link <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+                <% } %>
+                <% if (currentPage < totalPages) { %>
+                    <a href="?page=<%= currentPage + 1 %>&limit=<%= limit %>" class="pagination-link">></a>
+                <% } %>
             </div>
         </div>
     </div>

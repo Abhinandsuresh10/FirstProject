@@ -109,7 +109,7 @@
                                         <p><%= item.productId.description %></p>
                                     </td>
                                     <td class="price">₹<%= item.productId.price.toFixed(2) %></td>
-                                    <td class="discount"><del>₹<%= item.productId.discount.toFixed(2) %></del></td>
+                                    <td class="discount">₹<%= item.productId.discount.toFixed(2) %></td>
                                     <td class="quantity">
                                         <div class="input-group">
                                             <div class="input-group-prepend">
@@ -268,7 +268,7 @@
     function updateTotal(row) {
         const quantityInput = row.querySelector('.quantity-input');
         const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-        const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+        const discount = parseFloat(row.querySelector('.discount').textContent.replace('₹', ''));
         const quantity = parseInt(quantityInput.value);
         const totalCell = row.querySelector('.total');
         const total = ((price - discount) * quantity).toFixed(2); 
@@ -283,7 +283,7 @@
 
         productRows.forEach(function (row) {
             const price = parseFloat(row.querySelector('.price').textContent.replace('₹', ''));
-            const discount = parseFloat(row.querySelector('.discount del').textContent.replace('₹', ''));
+            const discount = parseFloat(row.querySelector('.discount').textContent.replace('₹', ''));
             const quantity = parseInt(row.querySelector('.quantity-input').value);
 
             subtotal += price * quantity; 

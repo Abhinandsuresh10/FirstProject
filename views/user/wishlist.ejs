@@ -44,7 +44,7 @@
                                             <p><%= item.description %></p>
                                         </td>
                                         <td class="price">₹<%= item.price.toFixed(2) %></td>
-                                        <td class="discount"><del>₹<%= item.discount.toFixed(2) %></del></td>
+                                        <td class="discount">₹<%= item.discount.toFixed(2) %></td>
                                         <td class="total">₹<%= (item.price - item.discount).toFixed(2) %></td>
                                         
                                         <% if (item.stock > 0) { %>

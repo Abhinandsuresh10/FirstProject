@@ -739,8 +739,11 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok) {
                 const { success, discountAmount, message } = await response.json();
                 if (success) {
-                    localStorage.setItem('cartDiscount', discountAmount);
-                    updateCartTotalFromLocalStorage();
+                    document.getElementById('discount-amount').textContent = `₹${discountAmount.toFixed(2)}`;
+                    let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+                    let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+                    let newTotal = subtotal + deliveryCharge - discountAmount;
+                    document.getElementById('cart-total').textContent = `₹${newTotal.toFixed(2)}`;
                     couponMessage.textContent = '';
                     changeButtonToRemove(); 
                 } else {

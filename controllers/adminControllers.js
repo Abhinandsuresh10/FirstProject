@@ -120,7 +120,18 @@ const InsertCoupon = async (req, res) => {
 
   const LoadSalesReport = async (req, res) => {
     try {
-        const sales = await Order.find({ orderStatus: 'delivered' }).lean();
+        const page = parseInt(req.query.page) || 1; 
+        const limit = parseInt(req.query.limit) || 6; 
+        const skip = (page - 1) * limit;
+
+        const totalSales = await Order.countDocuments({ orderStatus: 'delivered' });
+
+        const sales = await Order.find({ orderStatus: 'delivered' })
+            .sort({ createdAt: -1 })
+            .skip(skip)
+            .limit(limit)
+            .lean();
+        const grandTotalAmount = sales.reduce((total, order) => total + order.amount, 0);
 
         const productIds = [];
         const userIds = [];
@@ -160,8 +171,8 @@ const InsertCoupon = async (req, res) => {
                 }))
             };
         });
-
-        res.render('salesReport', { sales: salesWithDetails });
+        const totalPages = Math.ceil(totalSales / limit);
+        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount});
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');
@@ -171,108 +182,120 @@ const InsertCoupon = async (req, res) => {
 
 
 const FilterSalesReport = async (req, res) => {
-  try {
+    try {
 
+      const page = parseInt(req.query.page) || 1;
+      const limit = parseInt(req.query.limit) || 6;
+      const skip = (page - 1) * limit;
+  
       const buildFilterCriteria = (query) => {
-          let filterCriteria = { orderStatus: 'delivered' };
-
-          if (query.salesPeriod) {
-              const now = new Date();
-              switch (query.salesPeriod) {
-                  case 'Daily':
-                      filterCriteria.createdAt = {
-                          $gte: new Date(now.setHours(0, 0, 0, 0)),
-                          $lte: new Date(now.setHours(23, 59, 59, 999))
-                      };
-                      break;
-                  case 'weekly':
-                      const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
-                      const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6));
-                      filterCriteria.createdAt = {
-                          $gte: startOfWeek,
-                          $lte: endOfWeek
-                      };
-                      break;
-                  case 'monthly':
-                      const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
-                      const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
-                      filterCriteria.createdAt = {
-                          $gte: startOfMonth,
-                          $lte: endOfMonth
-                      };
-                      break;
-                  case 'yearly':
-                      const startOfYear = new Date(now.getFullYear(), 0, 1);
-                      const endOfYear = new Date(now.getFullYear(), 11, 31);
-                      filterCriteria.createdAt = {
-                          $gte: startOfYear,
-                          $lte: endOfYear
-                      };
-                      break;
-              }
-          }
-
-          if (query.startDate && query.endDate) {
+        let filterCriteria = { orderStatus: 'delivered' };
+  
+        if (query.salesPeriod) {
+          const now = new Date();
+          switch (query.salesPeriod.toLowerCase()) {
+            case 'daily':
               filterCriteria.createdAt = {
-                  $gte: new Date(query.startDate),
-                  $lte: new Date(query.endDate)
+                $gte: new Date(now.setHours(0, 0, 0, 0)),
+                $lte: new Date(now.setHours(23, 59, 59, 999)),
               };
+              break;
+            case 'weekly':
+              const startOfWeek = new Date(now.setDate(now.getDate() - now.getDay()));
+              const endOfWeek = new Date(now.setDate(startOfWeek.getDate() + 6));
+              filterCriteria.createdAt = {
+                $gte: startOfWeek,
+                $lte: endOfWeek,
+              };
+              break;
+            case 'monthly':
+              const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
+              const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+              filterCriteria.createdAt = {
+                $gte: startOfMonth,
+                $lte: endOfMonth,
+              };
+              break;
+            case 'yearly':
+              const startOfYear = new Date(now.getFullYear(), 0, 1);
+              const endOfYear = new Date(now.getFullYear(), 11, 31);
+              filterCriteria.createdAt = {
+                $gte: startOfYear,
+                $lte: endOfYear,
+              };
+              break;
           }
-
-          return filterCriteria;
+        }
+  
+        if (query.startDate && query.endDate) {
+          filterCriteria.createdAt = {
+            $gte: new Date(query.startDate),
+            $lte: new Date(query.endDate),
+          };
+        }
+  
+        return filterCriteria;
       };
-
+  
       const filterCriteria = buildFilterCriteria(req.query);
-
-      const sales = await Order.find(filterCriteria).lean();
-
+  
+      const totalDocs = await Order.countDocuments(filterCriteria);
+  
+      const sales = await Order.find(filterCriteria)
+        .skip(skip)
+        .limit(limit)
+        .lean();
+      const grandTotalAmount = sales.reduce((total, order) => total + order.amount, 0);
       const productIds = [];
       const userIds = [];
-
-      sales.forEach(order => {
-          userIds.push(order.user.toString());
-          order.orderItems.forEach(item => {
-              productIds.push(item.product.toString());
-          });
+      sales.forEach((order) => {
+        userIds.push(order.user.toString());
+        order.orderItems.forEach((item) => {
+          productIds.push(item.product.toString());
+        });
       });
-
       const uniqueProductIds = [...new Set(productIds)];
       const uniqueUserIds = [...new Set(userIds)];
-
+  
       const [products, users] = await Promise.all([
-          Product.find({ _id: { $in: uniqueProductIds } }).lean(),
-          User.find({ _id: { $in: uniqueUserIds } }).lean()
+        Product.find({ _id: { $in: uniqueProductIds } }).lean(),
+        User.find({ _id: { $in: uniqueUserIds } }).lean(),
       ]);
-
+  
       const productMap = products.reduce((map, product) => {
-          map[product._id.toString()] = product;
-          return map;
+        map[product._id.toString()] = product;
+        return map;
       }, {});
-
+  
       const userMap = users.reduce((map, user) => {
-          map[user._id.toString()] = user;
-          return map;
+        map[user._id.toString()] = user;
+        return map;
       }, {});
-
-      const salesWithDetails = sales.map(order => {
-          return {
-              ...order,
-              user: userMap[order.user.toString()] || { name: 'Unknown' },
-              orderItems: order.orderItems.map(item => ({
-                  ...item,
-                  product: productMap[item.product.toString()] || { name: 'Unknown' }
-              }))
-          };
+  
+      const salesWithDetails = sales.map((order) => ({
+        ...order,
+        user: userMap[order.user.toString()] || { name: 'Unknown' },
+        orderItems: order.orderItems.map((item) => ({
+          ...item,
+          product: productMap[item.product.toString()] || { name: 'Unknown' },
+        })),
+      }));
+  
+      const totalPages = Math.ceil(totalDocs / limit);
+  
+      res.render('salesReport', {
+        sales: salesWithDetails,
+        currentPage: page,
+        totalPages,
+        limit,
+        grandTotalAmount
       });
-
-      console.log('Sales with Details:', salesWithDetails);
-
-      res.render('salesReport', { sales: salesWithDetails });
-  } catch (error) {
+    } catch (error) {
       console.error(error.message);
       res.status(500).send('Server Error');
-  }
-};
+    }
+  };
+  
 
 
 

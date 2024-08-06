@@ -278,16 +278,33 @@ const LoadCategoryOffers = async(req,res)=>{
     }
 };
 
-const DeleteCategoryOffer =async(req,res) => {
+const DeleteCategoryOffer = async (req, res) => {
     try {
         const { id } = req.params;
+        
+        const offer = await CategoryOffer.findById(id);
+        if (!offer) {
+            return res.status(404).json({ success: false, message: 'Offer not found' });
+        }
+        const categoryId = offer.categoryId;
+        const category = await Category.findById(categoryId);
+
+        if (!category) {
+            return res.status(404).json({ success: false, message: 'Category not found' });
+        }
+        await Product.updateMany(
+            { category: category.name, discount: { $gt: 0 } },
+            { $set: { discount: 0 } }
+        );
         await CategoryOffer.findByIdAndDelete(id);
-        res.json({ success: true });
+
+        res.json({ success: true, message: 'Offer and product discounts removed successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Failed to delete offer' });
     }
-}
+};
+
 
 
 const LoadProductOffers = async(req,res)=>{
@@ -343,6 +360,19 @@ const UpdateProductOffer = async(req,res)=>{
             return res.status(400).json({ error: 'All fields are required.' });
         }
 
+        const productData = await Product.findById(product);   
+        if (!productData) {
+          return res.status(404).json({ error: 'Product not found' });
+        }
+    
+        const originalPrice = productData.price;
+        const discountAmount = (originalPrice * offerPercentage) / 100;
+        const result = Math.ceil(discountAmount);
+        if(discountAmount > productData.discount){
+            productData.discount = result;
+            await productData.save();
+        }
+
         const updatedOffer = await productOffer.findByIdAndUpdate(
             offerId,
             {
@@ -364,16 +394,34 @@ const UpdateProductOffer = async(req,res)=>{
 }
 
 
-const DeleteProductOffer = async(req,res)=>{
+const DeleteProductOffer = async (req, res) => {
     try {
         const { id } = req.params;
+
+        const offer = await productOffer.findById(id);
+        if (!offer) {
+            return res.status(404).json({ success: false, message: 'Offer not found' });
+        }
+
+        const productId = offer.productId;
+        const product = await Product.findById(productId);
+
+        if (!product) {
+            return res.status(404).json({ success: false, message: 'Product not found' });
+        }
+
+        product.discount = 0;
+        await product.save();
+
         await productOffer.findByIdAndDelete(id);
-        res.json({ success: true });
+
+        res.json({ success: true, message: 'Offer and product discount removed successfully' });
     } catch (error) {
         console.error(error);
         res.status(500).json({ success: false, message: 'Failed to delete offer' });
     }
-}
+};
+
 
 
 

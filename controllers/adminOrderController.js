@@ -14,6 +14,7 @@ const loadorders = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const orders = await Order.find()
+            .sort({ _id: -1 })
             .skip(skip)
             .limit(limit)
             .lean(); 

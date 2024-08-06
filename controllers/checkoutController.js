@@ -267,7 +267,7 @@ const CreateRazorpay = async (req, res) => {
 const VerifyRazorpay = async (req, res) => {
     try {
         const { paymentId, orderId, signature, addressId, paymentMethod, orderItems ,amount} = req.body;
-        console.log(paymentId, orderId, signature, addressId, paymentMethod, orderItems)
+        
         const hmac = crypto.createHmac('sha256', 'T5Bve4C2Dn1VwYXtVQNEWDHZ');
         hmac.update(orderId + '|' + paymentId);
         const generatedSignature = hmac.digest('hex');
@@ -328,6 +328,7 @@ const loadOrdersShow = async (req, res) => {
         const skip = (page - 1) * limit;
 
         const orders = await order.find({ user: req.session.userData._id })
+                                  .sort({ _id: -1 })
                                   .skip(skip)
                                   .limit(limit);
 
