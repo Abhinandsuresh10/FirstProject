@@ -44,12 +44,27 @@ const adminVerifyLogin = async (req, res) => {
 //dashboard...
 
 const dashboardLoad = async (req, res) => {
-    try {
-        res.render('dashboard'); 
-    } catch (error) {
-        console.log(error.message);
-        res.status(500).send('Internal Server Error');
-    }
+  try {
+    const totalOrders = await Order.countDocuments();
+    const pendingOrders = await Order.countDocuments({ orderStatus: 'pending' });
+    const shippedOrders = await Order.countDocuments({ orderStatus: 'shipped' });
+    const deliveredOrders = await Order.countDocuments({ orderStatus: 'delivered' });
+
+    const revenue = await Order.aggregate([
+      { $group: { _id: null, total: { $sum: '$amount' } } }
+    ]);
+
+    res.render('dashboard', {
+      totalOrders,
+      pendingOrders,
+      shippedOrders,
+      deliveredOrders,
+      revenue: revenue[0] ? revenue[0].total : 0
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Server Error');
+  }
 };
 
 //logout
@@ -75,7 +90,37 @@ const LoadCoupons = async(req,res)=>{
     }
 }
 
-const InsertCoupon = async (req, res) => {
+const EditCoupon = async (req, res) => {
+    try {
+      const { code, discountValue, expiryDate, minPurchaseAmount, usageLimit } = req.body;
+      const  { id } = req.params;
+      
+      const existingCoupon = await Coupon.findOne({ code, _id: { $ne: id } });
+      
+      if (existingCoupon) {
+        return res.status(409).json({ message: 'Code already exists' });
+      }
+
+       const updatedCoupon = await Coupon.findByIdAndUpdate(id, {
+        code,
+        discountValue,
+        expiryDate,
+        minPurchaseAmount,
+        usageLimit,
+      }, { new: true }); 
+  
+      if (!updatedCoupon) {
+        return res.status(404).json({ message: 'Coupon not found' });
+      }
+
+      res.status(201).json({ message: 'Coupon updated successfully' });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error updating coupon' });
+    }
+  }
+
+  const InsertCoupon = async (req, res) => {
     try {
       const { code, discountValue, expiryDate, minPurchaseAmount, usageLimit } = req.body;
       
@@ -312,5 +357,6 @@ module.exports = {
     InsertCoupon,
     DeleteCoupon,
     LoadSalesReport,
-    FilterSalesReport
+    FilterSalesReport,
+    EditCoupon
 };

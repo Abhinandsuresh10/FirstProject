@@ -130,7 +130,7 @@ userRoute.delete('/removeFromWishlist/:productId',cartController.RemoveFromWishl
 
 //wallet
 
-userRoute.get('/wallet',cartController.LoadWallet);
+userRoute.get('/wallet',userAuth.isLogin,cartController.LoadWallet);
 userRoute.post('/create-order',cartController.InsertWallet);
 userRoute.post('/payment-success',cartController.AddToWallet);
 

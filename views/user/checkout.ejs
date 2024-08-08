@@ -433,6 +433,7 @@
           <span class="coupon-code"><small><%= coupon.code %></small></span>
           <span class="coupon-code" style="color: red;"><small><%= coupon.discountValue %>%</small></span>
           <span class="coupon-code" style="color: rgb(11, 84, 34);"><small><%= new Date(coupon.expiryDate).toLocaleDateString() %></small></span>
+          <span class="coupon-code">&nbsp;<small>₹<%= coupon.minPurchaseAmount %></small></span>
           <button class="btn btn-outline-primary copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
         </li>
           
@@ -727,41 +728,75 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     async function applyCoupon(couponCode) {
-        const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
-        const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
-        try {
-            const response = await fetch('/applyCoupon', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ couponCode ,total , discount})
-            });
+    const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
+    const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
 
-            if (response.ok) {
-                const { success, discountAmount, message } = await response.json();
-                if (success) {
-                    document.getElementById('discount-amount').textContent = `₹${discountAmount.toFixed(2)}`;
-                    let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
-                    let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
-                    let newTotal = subtotal + deliveryCharge - discountAmount;
-                    document.getElementById('cart-total').textContent = `₹${newTotal.toFixed(2)}`;
-                    couponMessage.textContent = '';
-                    changeButtonToRemove(); 
-                } else {
-                    couponMessage.textContent = message;
-                }
+    try {
+        const response = await fetch('/applyCoupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ couponCode, total, discount })
+        });
+
+        if (response.ok) {
+            const { success, discountAmount, message } = await response.json();
+            if (success) {
+                document.getElementById('discount-amount').textContent = `₹${discountAmount.toFixed(2)}`;
+                let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+                let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+                let newTotal = subtotal + deliveryCharge - discountAmount;
+                document.getElementById('cart-total').textContent = `₹${newTotal.toFixed(2)}`;
+                
+             
+                Toastify({
+                    text: "Coupon applied successfully!",
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+                }).showToast();
+
+                changeButtonToRemove(); 
             } else {
-                couponMessage.textContent = 'Error applying coupon. Please try again.';
+               
+                Toastify({
+                    text: message,
+                    duration: 3000,
+                    gravity: "bottom",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
             }
-        } catch (error) {
-            console.error('Fetch error:', error);
-            couponMessage.textContent = 'An error occurred. Please try again.';
+        } else {
+           
+            Toastify({
+                text: 'Error applying coupon. Please try again.',
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+            }).showToast();
         }
-    }
+    } catch (error) {
+        console.error('Fetch error:', error);
+       
+        Toastify({
+            text: 'An error occurred. Please try again.',
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "linear-gradient(to right, #ff4b2b, #ff416c)"
 
-    function removeCoupon() {
+        }).showToast();
+    }
+}
+
+
+function removeCoupon() {
     const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
     const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
     const couponCode = couponCodeInput.value.trim(); 
+
     fetch('/removeCoupon', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -772,17 +807,41 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data.success) {
             localStorage.setItem('cartDiscount', data.newDiscountAmount);
             updateCartTotalFromLocalStorage(); 
-            couponMessage.textContent = data.message;
+            
+           
+            Toastify({
+                text: data.message ,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+            }).showToast();
+
             changeButtonToApply(); 
         } else {
-            couponMessage.textContent = data.message;
+      
+            Toastify({
+                text: data.message,
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+            }).showToast();
         }
     })
     .catch(error => {
         console.error('Error removing coupon:', error);
-        couponMessage.textContent = 'An error occurred. Please try again.';
+       
+        Toastify({
+            text: 'An error occurred. Please try again.',
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+        }).showToast();
     });
 }
+
 
 
     function changeButtonToRemove() {
@@ -806,7 +865,14 @@ document.addEventListener('DOMContentLoaded', () => {
         if (couponCode) {
             applyCoupon(couponCode);
         } else {
-            couponMessage.textContent = 'Please enter a coupon code.';
+             
+        Toastify({
+            text: 'Please enter a coupon code.',
+            duration: 3000,
+            gravity: "top",
+            position: "right",
+            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+        }).showToast();
         }
     }
 
@@ -1015,10 +1081,13 @@ document.addEventListener('DOMContentLoaded', function() {
         
 
         const cartTotalElement = document.getElementById('cart-total');
+        const AllDiscount = document.getElementById('discount-amount');
+        let Discounts = 0;
         let total = 0;
 
         if (cartTotalElement) {
             total = parseFloat(cartTotalElement.textContent.replace('₹', ''));
+            Discounts = parseFloat(AllDiscount.textContent.replace('₹', ''))
             if (isNaN(total)) {
                 showSnackbar('Invalid total amount.', '#ff4444');
                 return false;
@@ -1032,18 +1101,19 @@ document.addEventListener('DOMContentLoaded', function() {
             addressId: addressChecked.value,
             paymentMethod: validPaymentMethods[paymentMethod],
             orderItems: orderItems,
-            amount: total
+            amount: total,
+            AllDiscount:Discounts
         };
     }
 
-    async function initiateRazorpayPayment(orderId, amount, formData) {
+    async function initiateRazorpayPayment(orderId, amount, AllDiscount, formData) {
         const options = {
             key: 'rzp_test_Mwa9XdFzCTCV9f', 
-            amount: amount * 100, // Convert to paise
+            amount: amount * 100,
             currency: 'INR',
             name: 'G BAGS',
             description: 'Test Transaction',
-            image: 'https://your_logo_url', 
+            image: '/static/productImages/1719847122922-g bags image.jpg', 
             order_id: orderId, 
             handler: function(response) {
                 console.log(response);
@@ -1106,7 +1176,7 @@ document.addEventListener('DOMContentLoaded', function() {
                     });
 
                     if (response.ok) {
-                        const { orderId, amount } = await response.json();
+                        const { orderId, amount, AllDiscount } = await response.json();
                         initiateRazorpayPayment(orderId, amount, formData);
                     } else {
                         showSnackbar('Failed to initiate payment. Please try again.', '#ff4444');
@@ -1122,8 +1192,14 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (response.ok) {
                         const result = await response.json();
-                        showSnackbar('Order placed successfully!', '#00C851');
-                        setTimeout(() => window.location.href = result.redirectUrl, 1500);
+                        const message = result.message;
+                        if(message == 'atleast 1000 needs on cash on delivery'){
+                          showSnackbar(message, '#00C851');
+                        }else{
+                          showSnackbar(message, '#00C851');
+                          setTimeout(() => window.location.href = result.redirectUrl, 1500);
+                        }
+                        
                     } else {
                         showSnackbar('Failed to place order. Please try again.', '#ff4444');
                     }

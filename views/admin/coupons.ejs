@@ -32,9 +32,74 @@
                       <td class="text-danger"><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
                       <td>₹ <%= coupon.minPurchaseAmount %>/-</td>
                       <td>
+                        <button type="button" class="btn btn-warning edit-coupon-button" data-toggle="modal" data-target="#editCouponModal">Edit</button>
                         <button type="button" class="btn btn-danger delete-coupon-button" data-id="<%= coupon._id %>">Delete</button>
                       </td>
                     </tr>
+
+                    <!-- edit modal -->
+
+                   <div class="modal fade" id="editCouponModal" style="margin-top: -5%;">
+                   <div class="modal-dialog modal-dialog-centered">
+                   <div class="modal-content">
+      
+                   <!-- Modal Header -->
+                   <div class="modal-header" >
+                   <h4 class="modal-title">Add Coupon</h4>
+                   <button type="button" class="close" data-dismiss="modal">&times;</button>
+                   </div>
+        
+                   <!-- Modal Body -->
+               <div class="modal-body" >
+                   <form id="editCouponModal">
+                    <input type="hidden" id="couponId" name="couponId" value="<%= coupon._id %>">
+
+               <div class="form-group">
+                   <label for="code">Code:</label>
+                   <input type="text" class="form-control" id="code" name="code" style="color: aliceblue;" value="<%= coupon.code %>" required>
+                   <small id="codeError" class="text-danger d-none">Code must be at least 4 characters long.</small>
+             </div>
+             <div class="form-group">
+                   <label for="discountValue">Discount Value:</label>
+                   <input type="number" class="form-control" id="discountValue" name="discountValue" style="color: aliceblue;" value="<%= coupon.discountValue %>" required>
+                   <small id="DiscountError" class="text-danger d-none">Discount should be in 1 to 100.</small>
+             </div>
+             <% 
+             const formatDate = (date) => {
+                const d = new Date(date);
+                  let month = '' + (d.getMonth() + 1);
+                let day = '' + d.getDate();
+             const year = d.getFullYear();
+
+               if (month.length < 2) month = '0' + month;
+                  if (day.length < 2) day = '0' + day;
+
+                      return [year, month, day].join('-');
+                    };
+
+                 const formattedExpiryDate = formatDate(coupon.expiryDate);
+                          %>
+             <div class="form-group">
+                   <label for="expiryDate">Expiry Date:</label>
+                   <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" value="<%= formattedExpiryDate %>" required>
+             </div>
+             <div class="form-group">
+                   <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
+                   <input type="number" class="form-control" id="minPurchaseAmount" style="color: aliceblue;" value="<%= coupon.minPurchaseAmount %>" name="minPurchaseAmount">
+                   <small id="minPurchaseError" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
+            </div>
+            <div class="form-group">
+                   <label for="usageLimit">Usage Limit:</label>
+                   <input type="number" class="form-control" id="usageLimit" style="color: aliceblue;" value="<%= coupon.usageLimit %>" name="usageLimit">
+                   <small id="usageLimitError" class="text-danger d-none">Usage limit must be greater than 0.</small>
+            </div>
+                   <button type="submit" class="btn btn-primary">Submit</button>
+                   </form>
+            </div>
+        
+            </div>
+            </div>
+            </div>
                   <% }); %>
             </tbody>
           </table>
@@ -89,6 +154,8 @@
     </div>
   </div>
 
+
+
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.12.0/toastify.min.js"></script>
@@ -115,7 +182,7 @@
         codeError.classList.add('d-none');
       }
     
-      if (parseFloat(minPurchaseAmountInput.value) < 1000) {
+      if (parseFloat(minPurchaseAmountInput.value) < 500) {
         minPurchaseError.classList.remove('d-none');
         isValid = false;
       } else {
@@ -187,6 +254,101 @@
       }
     });
     </script>
+
+<script>
+  document.getElementById('editCouponModal').addEventListener('submit', async function (event) {
+    event.preventDefault();
+
+    
+    const codeInput = document.getElementById('code');
+    const minPurchaseAmountInput = document.getElementById('minPurchaseAmount');
+    const usageLimitInput = document.getElementById('usageLimit');
+    const codeError = document.getElementById('codeError');
+    const minPurchaseError = document.getElementById('minPurchaseError');
+    const usageLimitError = document.getElementById('usageLimitError');
+    const discountInput = document.getElementById('discountValue')
+    const discountError = document.getElementById('DiscountError');
+    let isValid = true;
+  
+    if (codeInput.value.length < 4) {
+      codeError.classList.remove('d-none');
+      isValid = false;
+    } else {
+      codeError.classList.add('d-none');
+    }
+  
+    if (parseFloat(minPurchaseAmountInput.value) < 500) {
+      minPurchaseError.classList.remove('d-none');
+      isValid = false;
+    } else {
+      minPurchaseError.classList.add('d-none');
+    }
+  
+    if (parseFloat(usageLimitInput.value) <= 0) {
+      usageLimitError.classList.remove('d-none');
+      isValid = false;
+    } else {
+      usageLimitError.classList.add('d-none');
+    }
+
+  if(parseFloat(discountInput.value) < 1 || parseFloat(discountInput.value) > 100){
+    discountError.classList.remove('d-none');
+    isValid = false;
+  } else {
+    discountError.classList.add('d-none');
+  }
+  
+    if (!isValid) {
+      return;
+    }
+    const couponId = document.getElementById('couponId').value;
+    const code = codeInput.value;
+    const discountValue = document.getElementById('discountValue').value;
+    const expiryDate = document.getElementById('expiryDate').value;
+    const minPurchaseAmount = minPurchaseAmountInput.value;
+    const usageLimit = usageLimitInput.value;
+  
+    try {
+      const response = await fetch(`/admin/editCoupon/${couponId}`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          code,
+          discountValue,
+          expiryDate,
+          minPurchaseAmount,
+          usageLimit
+        })
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok) {
+        Toastify({
+          text: "Coupon updated successfully",
+          duration: 2000,
+          backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+        }).showToast();
+        setTimeout(() => location.reload(), 2000);
+      } else {
+        Toastify({
+          text: data.message || 'Error adding coupon',
+          duration: 3000,
+          backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+        }).showToast();
+      }
+    } catch (error) {
+      console.error('Error:', error);
+      Toastify({
+        text: 'An error occurred while updating the coupon.',
+        duration: 3000,
+        backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)",
+      }).showToast();
+    }
+  });
+  </script>
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.all.min.js"></script>
 

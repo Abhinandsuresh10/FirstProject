@@ -38,6 +38,9 @@ const orderSchema = new mongoose.Schema({
     amount : {
         type : Number
     },
+    AllDiscount : {
+        type: Number
+    },
     paymentStatus: {
         type: String,
         enum: ['unpaid', 'paid'],

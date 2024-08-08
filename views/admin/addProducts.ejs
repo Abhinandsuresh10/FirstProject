@@ -118,11 +118,10 @@
 <!-- Validation Script -->
 
 <script>
-  // Function to validate the form
+  
   function validateForm() {
     let isValid = true;
 
-    // Get form elements
     const name = document.getElementById('exampleInputName1');
     const category = document.getElementById('exampleSelectCategory');
     const brand = document.getElementById('exampleSelectBrand');
@@ -133,19 +132,17 @@
     const description = document.getElementById('exampleInputDescription');
     const image = document.getElementById('ocs-productImage');
 
-    // Clear previous error messages
-    clearError('nameError');
-    clearError('categoryError');
-    clearError('brandError');
-    clearError('modelError');
-    clearError('materialError');
-    clearError('priceError');
-    clearError('discountError');
-    clearError('stockError');
-    clearError('descriptionError');
-    clearError('imageError');
+    // clearError('nameError');
+    // clearError('categoryError');
+    // clearError('brandError');
+    // clearError('modelError');
+    // clearError('materialError');
+    // clearError('priceError');
+    // clearError('discountError');
+    // clearError('stockError');
+    // clearError('descriptionError');
+    // clearError('imageError');
 
-    // Validate each field
     if (name.value.trim() === '') {
       showError('nameError', 'Name is required');
       isValid = false;
@@ -407,7 +404,7 @@
           console.error(error);
           alert('An error occurred while submitting the form');
         });
-    }, 500); // Delay to ensure blobs are added to formData
+    }, 500); 
   }
 });
 </script>

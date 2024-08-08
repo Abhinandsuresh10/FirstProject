@@ -10,10 +10,11 @@ const Coupon = require('../models/couponModal');
 
 
 const ApplyCoupon = async (req, res) => {
-    const { couponCode , total , discount} = req.body;
+    const { couponCode , total , discount } = req.body;
 
     try {
         const coupon = await Coupon.findOne({ code: couponCode });
+        const minPurchaseAmount = coupon.minPurchaseAmount;
 
         if (!coupon) {
             return res.json({
@@ -28,18 +29,27 @@ const ApplyCoupon = async (req, res) => {
                 message: 'Coupon has expired'
             });
         }
+      if(total < minPurchaseAmount){
+        return res.json({
+            success: false,
+            message: `minimum total atleast ${minPurchaseAmount}` 
+        });
+      }
 
         const discounts = ((coupon.discountValue / 100) * total);
         const discountAmount = discounts + discount;
+        
         req.session.coupon = {
             code: coupon.code,
             discountAmount,
-            discount
+            discount,
+            
         };
 
         res.json({
             success: true,
-            discountAmount
+            discountAmount,
+            
         });
     } catch (error) {
         console.error('Server error:', error);
@@ -63,7 +73,7 @@ const RemoveCoupon = async(req, res) => {
                 success: true,
                 newDiscountAmount: coupon.discount,
                 newTotalAmount: newTotal,
-                message: 'Coupon removed successfully'
+                message: 'Coupon has been removed '
             });
         } else {
             res.json({ success: false, message: 'No coupon to remove' });
@@ -200,11 +210,17 @@ const insertPlaceOrder = async(req,res)=>{
     try {
    
         const userId = req.session.userData._id;
-        const { addressId, paymentMethod, orderItems, amount } = req.body;
+        const { addressId, paymentMethod, orderItems, amount ,AllDiscount} = req.body;
 
-        const addresses = await address.findById(addressId);
+        await address.findById(addressId);
 
         const amounts =  Math.ceil(amount);
+        const AllDiscounts = Math.ceil(AllDiscount)
+
+        if(amounts < 1000){
+            res.status(200).json({ message: 'atleast 1000 needs on cash on delivery'});
+
+        }else{
 
         const newOrder = new order({
             user: userId,
@@ -215,7 +231,8 @@ const insertPlaceOrder = async(req,res)=>{
                 quantity: item.quantity,
                 price: item.price
             })),
-            amount : amounts
+            amount : amounts,
+            AllDiscount : AllDiscounts
         });
 
         
@@ -230,7 +247,7 @@ const insertPlaceOrder = async(req,res)=>{
         }
         await Cart.findOneAndDelete({userId:userId})
       res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?orderId=${newOrder._id}`});
-
+    }
     } catch (error) {
         console.log(error.message)
     }
@@ -240,9 +257,13 @@ const insertPlaceOrder = async(req,res)=>{
 //razorpay
 
 const razorpayInstance = new Razorpay({
-    key_id: 'rzp_test_Mwa9XdFzCTCV9f',
-    key_secret: 'T5Bve4C2Dn1VwYXtVQNEWDHZ',
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET,
+    
 });
+
+
+
 
 const CreateRazorpay = async (req, res) => {
     try {
@@ -266,9 +287,9 @@ const CreateRazorpay = async (req, res) => {
 
 const VerifyRazorpay = async (req, res) => {
     try {
-        const { paymentId, orderId, signature, addressId, paymentMethod, orderItems ,amount} = req.body;
+        const { paymentId, orderId, signature, addressId, paymentMethod, orderItems ,amount , AllDiscount} = req.body;
         
-        const hmac = crypto.createHmac('sha256', 'T5Bve4C2Dn1VwYXtVQNEWDHZ');
+        const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
         hmac.update(orderId + '|' + paymentId);
         const generatedSignature = hmac.digest('hex');
 
@@ -281,6 +302,7 @@ const VerifyRazorpay = async (req, res) => {
             }
 
            const amounts =  Math.ceil(amount);
+           const AllDiscounts = Math.ceil(AllDiscount);
 
     
             const newOrder = new order({
@@ -292,7 +314,8 @@ const VerifyRazorpay = async (req, res) => {
                     quantity: item.quantity,
                     price: item.price 
                 })),
-                amount:amounts
+                amount:amounts,
+                AllDiscount : AllDiscounts
             });
 
             await newOrder.save();
@@ -404,7 +427,7 @@ const CancelOrder = async (req, res) => {
         await Promise.all(productPromises);
 
         if (updatedOrder.paymentMethod === 'RazorPay') {
-            const totalPrice = updatedOrder.orderItems.reduce((sum, item) => sum + item.price, 0);
+            const totalPrice = updatedOrder.amount;
 
             const userId = req.session.userData._id;
             let userWallet = await Wallet.findOne({ userId: userId });

@@ -115,16 +115,16 @@
                                             <div class="input-group-prepend">
                                                 <button class="quantity-decrease btn btn-outline-secondary" type="button" data-product-id="<%= item.productId._id %>">-</button>
                                             </div>
-                                            <input type="number" name="quantity" class="quantity-input form-control text-center" data-product-id="<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="100">
+                                                <input type="number" name="quantity" class="quantity-input form-control text-center" data-product-id="<%= item.productId._id %>" value="<%= item.quantity %>" min="1" max="100" disabled>
                                             <div class="input-group-append">
                                                 <button class="quantity-increase btn btn-outline-secondary" type="button" data-product-id="<%= item.productId._id %>">+</button>
                                             </div>
                                         </div>
                                     </td>
-                                    <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
+                                     <td class="total">₹<%= (item.productId.price * item.quantity).toFixed(2) %></td>
                                 </tr>
                                 <% }); %>
-                                <%}%>
+                                <% } %>
                         </tbody>
                     </table>
                     

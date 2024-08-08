@@ -92,11 +92,11 @@ adminRoute.post('/updateOrderStatus',adminOrderController.ChangeStatus);
 
 //offers
 
-adminRoute.get('/CategoryOffers',adminCategoryController.LoadCategoryOffers);
+adminRoute.get('/CategoryOffers', adminAuth.isAdminLogin,adminCategoryController.LoadCategoryOffers);
 adminRoute.post('/addCetegoryOffer',adminCategoryController.InsertCategoryOffer);
 adminRoute.put('/editCategoryOffer',adminCategoryController.UpdateCategoryOffer);
 adminRoute.delete('/deletecategoryoffer/:id',adminCategoryController.DeleteCategoryOffer);
-adminRoute.get('/productOffers',adminCategoryController.LoadProductOffers);
+adminRoute.get('/productOffers', adminAuth.isAdminLogin,adminCategoryController.LoadProductOffers);
 adminRoute.post('/addProductOffer',adminCategoryController.InsertProductOffer);
 adminRoute.put('/editProductOffer',adminCategoryController.UpdateProductOffer);
 adminRoute.delete('/deleteproductoffer/:id',adminCategoryController.DeleteProductOffer);
@@ -104,13 +104,14 @@ adminRoute.delete('/deleteproductoffer/:id',adminCategoryController.DeleteProduc
 
 //coupons
 
-adminRoute.get('/Coupons',adminController.LoadCoupons);
+adminRoute.get('/Coupons', adminAuth.isAdminLogin,adminController.LoadCoupons);
 adminRoute.post('/addCoupon',adminController.InsertCoupon);
+adminRoute.put('/editCoupon/:id',adminController.EditCoupon)
 adminRoute.delete('/deleteCoupon/:id',adminController.DeleteCoupon);
 
 //sales report
 
-adminRoute.get('/SalesReport',adminController.LoadSalesReport);
+adminRoute.get('/SalesReport', adminAuth.isAdminLogin,adminController.LoadSalesReport);
 adminRoute.get('/FilterSalesReport',adminController.FilterSalesReport)
 
 //logout

@@ -113,18 +113,6 @@ const LoadOrderView = async (req, res) => {
 };
 
 
-// const ChangeStatus = async(req,res)=>{
-//     const { orderId, orderStatus } = req.body;
-
-//     try {
-//         await Order.findByIdAndUpdate(orderId, { orderStatus });
-//         res.redirect(`/admin/orders`);
-        
-//     } catch (error) {
-//         console.log(error.message)
-//     }
-// }
-
 const ChangeStatus = async (req, res) => {
     const { orderId, orderStatus } = req.body;
   
@@ -132,7 +120,7 @@ const ChangeStatus = async (req, res) => {
       const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
   
       if (orderStatus === 'order returned') {
-        const totalPrice = updatedOrder.orderItems.reduce((sum, item) => sum + item.price, 0);
+        const totalPrice = updatedOrder.amount;
       
         const userId = updatedOrder.user;
   

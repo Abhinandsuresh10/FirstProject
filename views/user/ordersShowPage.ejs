@@ -139,6 +139,14 @@
 .return-button:hover {
     background-color: #45a049;
 }
+.invoice-button {
+   
+    background-color: darkgray;
+    border: 2px solid #000000;
+   
+}
+
+
 
     </style>
 
@@ -187,17 +195,19 @@
                                                     N/A
                                                 <% } %>
                                             </td>
-                                            <td>₹<%= item.price.toFixed(2) %></td>
+                                            <td><%= item.price.toFixed(2) %></td>
                                             <td><%= item.quantity %></td>
-                                            <td>₹<%= item.totalAmount %></td>
+                                            <td><%= item.totalAmount %></td>
                                         </tr>
                                     <% }) %>
                                     <tr class="total-row">
-                                        <td colspan="4" class="text-right">Order Total</td>
-                                        <td class="text-center">
-                                            ₹<%= order.amount %>
+                                        <td colspan="4" class="text-right" id="a">Total discount<br><br><span id="b">Order Total</span></td>
+                                        <td id="totalDiscount" class="text-center">
+                                            <%= order.AllDiscount %><br><br>
+                                            <span id="orderTotal"><%= order.amount %></span>
                                         </td>
                                     </tr>
+                                    
                                 </tbody>
                             </table>
                             <div class="order-details">
@@ -223,6 +233,7 @@
                                         <% }else{ %>
                                             <% if(order.returnStatus === "not requested") {%>
                                             <button class="return-button" data-order-id="<%= order._id %>">Return Order</button>
+                                            <button class="invoice-button" data-order-id="<%= order._id %>" id="downloadInvoiceBtn"><b>Download Invoice</b></button>
                                             <%}%>
                                             <%if(order.returnStatus === "requested") {%>
                                                 <p style="color: red;">return requested</p>
@@ -372,6 +383,61 @@
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
+  <script>
+    document.getElementById("downloadInvoiceBtn").addEventListener("click", async function () {
+        const totalDiscount = document.getElementById("totalDiscount").innerText.split('\n')[0].trim();
+        const a = document.getElementById("a").innerText.split('\n')[0].trim();
+        const orderTotal = document.getElementById("orderTotal").innerText.trim();
+        const b = document.getElementById("b").innerText.trim();
+
+        let doc = new window.jspdf.jsPDF();
+        let pageCenter = doc.internal.pageSize.getWidth() / 2;
+
+        doc.setFontSize(25);
+        doc.text("G BAGS", pageCenter, 20, { align: 'center' });
+        doc.setFontSize(18);
+        doc.text("Sales Report", pageCenter, 30, { align: 'center' });
+
+        const table = document.querySelector(".table");
+        const tableRows = [];
+
+        table.querySelectorAll("tbody tr").forEach(tr => {
+            const rowData = [];
+            tr.querySelectorAll("td").forEach((td, index) => {
+                if (index !== 1) {
+                    rowData.push(td.innerText);
+                }
+            });
+            tableRows.push(rowData);
+        });
+
+        doc.autoTable({
+            head: [['Product', 'Price', 'Quantity', 'Total']],  
+            body: tableRows,
+            styles: {
+                fontSize: 10,
+                halign: 'center',
+                valign: 'middle',
+            },
+            headStyles: {
+                fillColor: [255, 102, 102],
+                textColor: [255, 255, 255],
+            },
+            margin: { top: 40 },
+        });
+
+        doc.setFontSize(16);
+        doc.text(a + ":" + totalDiscount, pageCenter, doc.previousAutoTable.finalY + 20, { align: 'center' });
+        doc.text(b + ":"  + orderTotal, pageCenter, doc.previousAutoTable.finalY + 30, { align: 'center' });
+
+        doc.save("SalesReport.pdf");
+    });
+</script>
+
+
+  
 
   <script>
     document.querySelectorAll('.cancel-button').forEach(button => {
