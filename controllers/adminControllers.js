@@ -1,4 +1,6 @@
 const Admin = require('../models/adminModel');
+const Category = require('../models/category');
+const Brands = require('../models/brandsModel')
 const Coupon = require('../models/couponModal');
 const Order = require('../models/orderSchema');
 const Product = require('../models/produntsModel');
@@ -49,17 +51,82 @@ const dashboardLoad = async (req, res) => {
     const pendingOrders = await Order.countDocuments({ orderStatus: 'pending' });
     const shippedOrders = await Order.countDocuments({ orderStatus: 'shipped' });
     const deliveredOrders = await Order.countDocuments({ orderStatus: 'delivered' });
+    const canceledOrders = await Order.countDocuments({ orderStatus: 'Canceled' });
+    const returnedOrders = await Order.countDocuments({ orderStatus: 'order returned' });
 
+ 
     const revenue = await Order.aggregate([
-      { $group: { _id: null, total: { $sum: '$amount' } } }
+      {
+        $match: {
+          orderStatus: { $nin: ['Canceled', 'order returned'] } 
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' }
+        }
+      }
     ]);
+
+    const razorpayRevenue  = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: { $nin: ['Canceled', 'order returned'] },
+          paymentMethod: 'RazorPay' 
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    const TotalOrderedAmount = await Order.aggregate([
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$amount' }
+        }
+      }
+    ]);
+
+    const discounts = await Order.aggregate([
+      {
+        $match: {
+          orderStatus: { $nin: ['Canceled', 'order returned'] } 
+        }
+      },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: '$AllDiscount' }
+        }
+      }
+    ]);
+    
+    const totalDiscount = discounts[0] ? discounts[0].total : 0;
+
+    const topProducts = await Product.find({is_delete:false}).sort({orderCount:-1}).limit(5) 
+    const topCategory = await Category.find({is_delete:false}).sort({orderCount:-1}).limit(5)
+    const topBrands = await Brands.find({is_delete:false}).sort({orderCount:-1}).limit(5) 
 
     res.render('dashboard', {
       totalOrders,
       pendingOrders,
       shippedOrders,
       deliveredOrders,
-      revenue: revenue[0] ? revenue[0].total : 0
+      canceledOrders,
+      returnedOrders,
+      totalDiscount,
+      revenue: revenue[0] ? revenue[0].total : 0,
+      TotalOrderedAmount: TotalOrderedAmount[0] ? TotalOrderedAmount[0].total : 0,
+      razorpayRevenue : razorpayRevenue[0] ? razorpayRevenue[0].total : 0,
+      topProducts,
+      topCategory,
+      topBrands
     });
   } catch (error) {
     console.error(error);
@@ -343,9 +410,118 @@ const FilterSalesReport = async (req, res) => {
   
 
 
+  const LoadDashboardWeekly = async (req, res) => {
+    try {
+        const startOfWeek = new Date();
+        startOfWeek.setDate(startOfWeek.getDate() - 7);
+
+        const weeklyOrders = await Order.find({ createdAt: { $gte: startOfWeek } });
+     
+        
+        const revenue = weeklyOrders.reduce((total, order) => total + order.amount, 0);
+       
+        const orderCounts = {
+            pending: weeklyOrders.filter(order => order.orderStatus === 'pending').length,
+            shipped: weeklyOrders.filter(order => order.orderStatus === 'shipped').length,
+            delivered: weeklyOrders.filter(order => order.orderStatus === 'delivered').length,
+            canceled: weeklyOrders.filter(order => order.orderStatus === 'Canceled').length,
+            returned: weeklyOrders.filter(order => order.orderStatus === 'order returned').length,
+        };
+        
+        res.status(200).json({ revenue, orderCounts });
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch weekly data' });
+    }
+};
+
+const LoadDashboardMonthly = async (req, res) => {
+  try {
+      const startOfMonth = new Date();
+      startOfMonth.setDate(1); 
+
+      const monthlyOrders = await Order.find({ createdAt: { $gte: startOfMonth } });
+
+      const revenue = monthlyOrders.reduce((total, order) => total + order.amount, 0);
+
+      const orderCounts = {
+          pending: monthlyOrders.filter(order => order.orderStatus === 'pending').length,
+          shipped: monthlyOrders.filter(order => order.orderStatus === 'shipped').length,
+          delivered: monthlyOrders.filter(order => order.orderStatus === 'delivered').length,
+          canceled: monthlyOrders.filter(order => order.orderStatus === 'Canceled').length,
+          returned: monthlyOrders.filter(order => order.orderStatus === 'order returned').length,
+      };
+    
+     
+      res.status(200).json({ revenue, orderCounts });
+  } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch monthly data' });
+  }
+};
+
+
+
+const LoadDashboardYearly = async (req, res) => {
+  try {
+      const startOfYear = new Date();
+      startOfYear.setMonth(0); 
+      startOfYear.setDate(1); 
+      startOfYear.setHours(0, 0, 0, 0); 
+
+      const endOfYear = new Date(startOfYear);
+      endOfYear.setFullYear(startOfYear.getFullYear() + 1); 
+      endOfYear.setDate(endOfYear.getDate() - 1); 
+
+      const yearlyOrders = await Order.find({
+          createdAt: { $gte: startOfYear, $lte: endOfYear }
+      });
+
+      const revenue = yearlyOrders.reduce((total, order) => total + order.amount, 0);
+
+      const orderCounts = {
+          pending: yearlyOrders.filter(order => order.orderStatus === 'pending').length,
+          shipped: yearlyOrders.filter(order => order.orderStatus === 'shipped').length,
+          delivered: yearlyOrders.filter(order => order.orderStatus === 'delivered').length,
+          canceled: yearlyOrders.filter(order => order.orderStatus === 'Canceled').length,
+          returned: yearlyOrders.filter(order => order.orderStatus === 'order returned').length,
+      };
+   
+      res.status(200).json({ revenue, orderCounts });
+  } catch (error) {
+      console.error('Failed to fetch yearly data:', error.message);
+      res.status(500).json({ error: 'Failed to fetch yearly data' });
+  }
+};
 
 
   
+const LoadDashboardDaily = async (req, res) => {
+  try {
+      const startOfDay = new Date();
+      startOfDay.setHours(0, 0, 0, 0); 
+
+      const endOfDay = new Date(startOfDay);
+      endOfDay.setHours(23, 59, 59, 999); 
+
+      const dailyOrders = await Order.find({
+          createdAt: { $gte: startOfDay, $lte: endOfDay }
+      });
+
+      const revenue = dailyOrders.reduce((total, order) => total + order.amount, 0);
+
+      const orderCounts = {
+          pending: dailyOrders.filter(order => order.orderStatus === 'pending').length,
+          shipped: dailyOrders.filter(order => order.orderStatus === 'shipped').length,
+          delivered: dailyOrders.filter(order => order.orderStatus === 'delivered').length,
+          canceled: dailyOrders.filter(order => order.orderStatus === 'Canceled').length,
+          returned: dailyOrders.filter(order => order.orderStatus === 'order returned').length,
+      };
+
+      res.status(200).json({ revenue, orderCounts });
+  } catch (error) {
+      console.error('Failed to fetch daily data:', error.message);
+      res.status(500).json({ error: 'Failed to fetch daily data' });
+  }
+};
 
 
 module.exports = {
@@ -358,5 +534,9 @@ module.exports = {
     DeleteCoupon,
     LoadSalesReport,
     FilterSalesReport,
-    EditCoupon
+    EditCoupon,
+    LoadDashboardWeekly,
+    LoadDashboardMonthly,
+    LoadDashboardYearly,
+    LoadDashboardDaily
 };

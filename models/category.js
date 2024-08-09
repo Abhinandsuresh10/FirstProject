@@ -5,6 +5,10 @@ const categorySchema = new mongoose.Schema({
         type: String,
         required: true
     },
+    orderCount: {
+        type: Number,
+        default:0
+    },
     is_delete: {
         type: Boolean,
         default: false

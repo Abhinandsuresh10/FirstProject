@@ -112,7 +112,11 @@ adminRoute.delete('/deleteCoupon/:id',adminController.DeleteCoupon);
 //sales report
 
 adminRoute.get('/SalesReport', adminAuth.isAdminLogin,adminController.LoadSalesReport);
-adminRoute.get('/FilterSalesReport',adminController.FilterSalesReport)
+adminRoute.get('/FilterSalesReport',adminController.FilterSalesReport);
+adminRoute.get('/DashboardWeekly',adminController.LoadDashboardWeekly);
+adminRoute.get('/DashboardMonthly',adminController.LoadDashboardMonthly);
+adminRoute.get('/DashboardYearly',adminController.LoadDashboardYearly);
+adminRoute.get('/DashboardDaily',adminController.LoadDashboardDaily)
 
 //logout
 

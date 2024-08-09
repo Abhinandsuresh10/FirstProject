@@ -1177,7 +1177,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
                     if (response.ok) {
                         const { orderId, amount, AllDiscount } = await response.json();
-                        initiateRazorpayPayment(orderId, amount, formData);
+                        initiateRazorpayPayment(orderId, amount, AllDiscount, formData);
                     } else {
                         showSnackbar('Failed to initiate payment. Please try again.', '#ff4444');
                     }

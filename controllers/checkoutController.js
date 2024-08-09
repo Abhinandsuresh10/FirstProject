@@ -7,6 +7,8 @@ const Razorpay = require('razorpay');
 const crypto = require('crypto');
 const Wallet = require('../models/walletModel');
 const Coupon = require('../models/couponModal');
+const Category = require('../models/category');
+const Brands = require('../models/brandsModel')
 
 
 const ApplyCoupon = async (req, res) => {
@@ -240,8 +242,22 @@ const insertPlaceOrder = async(req,res)=>{
 
         for (const item of orderItems) {
             const product = await Product.findById(item.productId);
+
             if (product) {
                 product.stock -= item.quantity;
+                product.orderCount = product.orderCount ? product.orderCount + 1 : 1;
+                const cate = product.category;
+                const category = await Category.findOne({name:cate});
+                if(category){
+                    category.orderCount = category.orderCount ? category.orderCount + 1 : 1;
+                    await category.save();
+                }
+                    const brand = product.brand;
+                    const brands = await Brands.findOne({name:brand});
+                if(brands){
+                    brands.orderCount = brands.orderCount ? brands.orderCount + 1 : 1;
+                    await brands.save();
+                }
                 await product.save();
             }
         }
@@ -324,6 +340,18 @@ const VerifyRazorpay = async (req, res) => {
                 const product = await Product.findById(item.productId);
                 if (product) {
                     product.stock -= item.quantity;
+                    product.orderCount = product.orderCount ? product.orderCount + 1 : 1;
+                    const cate = product.category;
+                    const category = await Category.findOne({name:cate});
+                if(category){
+                    category.orderCount = category.orderCount ? category.orderCount + 1 : 1;
+                    await category.save();
+                }    const brand = product.brand;
+                     const brands = await Brands.findOne({name:brand});
+                if(brands){
+                     brands.orderCount = brands.orderCount ? brands.orderCount + 1 : 1;
+                await brands.save();
+                }
                     await product.save();
                 }
             }

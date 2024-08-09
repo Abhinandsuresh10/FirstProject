@@ -200,6 +200,7 @@
                                             <td><%= item.totalAmount %></td>
                                         </tr>
                                     <% }) %>
+                                    <table class="table">
                                     <tr class="total-row">
                                         <td colspan="4" class="text-right" id="a">Total discount<br><br><span id="b">Order Total</span></td>
                                         <td id="totalDiscount" class="text-center">
@@ -207,7 +208,7 @@
                                             <span id="orderTotal"><%= order.amount %></span>
                                         </td>
                                     </tr>
-                                    
+                                </table>
                                 </tbody>
                             </table>
                             <div class="order-details">
@@ -428,9 +429,18 @@
             margin: { top: 40 },
         });
 
-        doc.setFontSize(16);
-        doc.text(a + ":" + totalDiscount, pageCenter, doc.previousAutoTable.finalY + 20, { align: 'center' });
-        doc.text(b + ":"  + orderTotal, pageCenter, doc.previousAutoTable.finalY + 30, { align: 'center' });
+        doc.setFontSize(10);
+        doc.text(a + ": " + totalDiscount, pageCenter, doc.previousAutoTable.finalY + 20, { align: 'center' });
+        doc.setTextColor(0, 128, 0);
+        doc.text(" INR", pageCenter + doc.getTextWidth(a + ": " + totalDiscount), doc.previousAutoTable.finalY + 20, { align: 'left' });
+
+        doc.setTextColor(0, 0, 0);
+        doc.text(b + ": " + orderTotal, pageCenter, doc.previousAutoTable.finalY + 30, { align: 'center' });
+        doc.setTextColor(0, 128, 0);
+        doc.text(" INR", pageCenter + doc.getTextWidth(b + ": " + orderTotal), doc.previousAutoTable.finalY + 30, { align: 'left' });
+
+        doc.setTextColor(0, 0, 0);
+
 
         doc.save("SalesReport.pdf");
     });

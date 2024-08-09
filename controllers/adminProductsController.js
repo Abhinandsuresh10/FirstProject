@@ -130,6 +130,7 @@ const editProduct = async (req, res) => {
 
         const updatedImages = [...existingImages, ...imagePaths];
 
+
         const updateData = {
             name,
             category,
