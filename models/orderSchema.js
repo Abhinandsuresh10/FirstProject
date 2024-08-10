@@ -5,6 +5,9 @@ const orderSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'User', 
        
+    },  
+      razorpayOrderId: {
+      type: String
     },
     orderItems: [
         {
@@ -43,7 +46,7 @@ const orderSchema = new mongoose.Schema({
     },
     paymentStatus: {
         type: String,
-        enum: ['unpaid', 'paid'],
+        enum: ['pending', 'paid'],
         default:'paid'
         
     },

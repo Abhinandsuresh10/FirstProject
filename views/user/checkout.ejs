@@ -1107,56 +1107,87 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     async function initiateRazorpayPayment(orderId, amount, AllDiscount, formData) {
-        const options = {
-            key: 'rzp_test_Mwa9XdFzCTCV9f', 
-            amount: amount * 100,
-            currency: 'INR',
-            name: 'G BAGS',
-            description: 'Test Transaction',
-            image: '/static/productImages/1719847122922-g bags image.jpg', 
-            order_id: orderId, 
-            handler: function(response) {
-                console.log(response);
-                processRazorpayPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, formData);
-            },
-            prefill: {
-                name: 'Customer Name',
-                email: 'customer@example.com',
-                contact: '9999999999'
-            },
-            notes: {
-                address: 'Razorpay Corporate Office'
-            },
-            theme: {
-                color: '#F37254'
+    const options = {
+        key: 'rzp_test_Mwa9XdFzCTCV9f',
+        amount: amount * 100,
+        currency: 'INR',
+        name: 'G BAGS',
+        description: 'Test Transaction',
+        image: '/static/productImages/1719847122922-g bags image.jpg',
+        order_id: orderId,
+        handler: function(response) {
+            console.log(response);
+            processRazorpayPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature, formData);
+        },
+        prefill: {
+            name: 'Customer Name',
+            email: 'customer@example.com',
+            contact: '9999999999'
+        },
+        notes: {
+            address: 'Razorpay Corporate Office'
+        },
+        theme: {
+            color: '#F37254'
+        },
+        modal: {
+            ondismiss: function() {
+               
+                handlePaymentFailure(orderId, amount, AllDiscount, formData);
             }
-        };
-        var rzp1 = new Razorpay(options);
-        rzp1.open();
-    }
-
-    async function processRazorpayPayment(paymentId, orderId, signature, formData) {
-        try {
-            const response = await fetch('/verifyPayment', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ paymentId, orderId, signature, ...formData })
-            });
-
-            if (response.ok) {
-                const result = await response.json();
-                showSnackbar('Payment successful!', '#00C851');
-                setTimeout(() => window.location.href = result.redirectUrl, 1500);
-            } else {
-                showSnackbar('Payment verification failed. Please try again.', '#ff4444');
-            }
-        } catch (error) {
-            console.error('Fetch error:', error); 
-            showSnackbar('An error occurred. Please try again.', '#ff4444');
         }
+    };
+    var rzp1 = new Razorpay(options);
+    rzp1.open();
+}
+
+async function processRazorpayPayment(paymentId, orderId, signature, formData) {
+    try {
+        const response = await fetch('/verifyPayment', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ paymentId, orderId, signature, ...formData })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            showSnackbar('Payment successful!', '#00C851');
+            setTimeout(() => window.location.href = result.redirectUrl, 1500);
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showSnackbar('An error occurred. Please try again.', '#ff4444');
     }
+}
+
+async function handlePaymentFailure(orderId, amount, AllDiscount, formData) {
+    try {
+        console.log('ok')
+        showSnackbar('Payment failed. Proceeding with order placement.', '#ff4444');
+        
+        const response = await fetch('/placeOrderOnFailure', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ orderId, amount, AllDiscount, ...formData })
+        });
+
+        if (response.ok) {
+            const result = await response.json();
+            showSnackbar('Order placed successfully despite payment failure.', '#00C851');
+            setTimeout(() => window.location.href = result.redirectUrl, 1500);
+        } else {
+            showSnackbar('Failed to place order. Please try again.', '#ff4444');
+        }
+    } catch (error) {
+        console.error('Fetch error:', error);
+        showSnackbar('An error occurred. Please try again.', '#ff4444');
+    }
+}
+
 
     placeOrderBtn.addEventListener('click', async function(event) {
         event.preventDefault();

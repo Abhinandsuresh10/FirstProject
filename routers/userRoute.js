@@ -114,7 +114,10 @@ userRoute.post('/addAddressCheckout',checkoutController.insertCheckoutAddress);
 userRoute.get('/userOrderDetails',userAuth.isLogin,checkoutController.loadUserOrderDetails);
 userRoute.post('/placeOrder',checkoutController.insertPlaceOrder);
 userRoute.post('/createOrder',checkoutController.CreateRazorpay);
-userRoute.post('/verifyPayment',checkoutController.VerifyRazorpay)
+userRoute.post('/verifyPayment',checkoutController.VerifyRazorpay);
+userRoute.post('/placeOrderOnFailure',checkoutController.PlaceOrderOnFailure );
+userRoute.post('/pendingRazorpayOrder',checkoutController.PendingRazorpayCreate);
+userRoute.post('/verifyPaymentAndUpdateOrder',checkoutController.verifyRazorPayPayment)
 
 
 //orders..

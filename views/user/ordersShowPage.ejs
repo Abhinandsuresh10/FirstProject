@@ -146,9 +146,141 @@
    
 }
 
+ </style>
+
+ <style>
+.order-tracker-container {
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.order-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.tracker-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+}
+
+.step-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ccc;
+    position: relative;
+    z-index: 1;
+}
+
+.step-label {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.tracker-line {
+    flex: 1;
+    height: 2px;
+    background-color: #ccc;
+    position: relative;
+    top: -10px;
+    z-index: 0;
+}
+
+@keyframes pulse-scale {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+    50% {
+        transform: scale(1.2);
+        opacity: 0.8;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.active-step .step-circle {
+    background-color: #7b7b7b; 
+    animation: pulse-scale 1s ease-in-out infinite; 
+}
+
+.pending-step.active-step .step-circle {
+    background-color: orange;
+}
+
+.shipped-step.active-step .step-circle {
+    background-color: blue;
+}
+
+.delivered-step.active-step .step-circle {
+    background-color: green;
+}
+
+.canceled-step.active-step .step-circle {
+    background-color: red;
+}
+
+.returned-step.active-step .step-circle {
+    background-color: purple;
+}
 
 
-    </style>
+.order-tracker-container {
+    margin: 20px 0;
+    padding: 10px;
+}
+
+.order-tracker {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+}
+
+.tracker-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: relative;
+    text-align: center;
+}
+
+.step-circle {
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    background-color: #ccc;
+    position: relative;
+    z-index: 1;
+}
+
+.step-label {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.tracker-line {
+    flex: 1;
+    height: 2px;
+    background-color: #ccc;
+    position: relative;
+    top: -10px;
+    z-index: 0;
+}
+
+.active-line {
+    background-color: #989898; 
+}
+ </style>
+
 
 <div class="breadcrumbs" style="background-color: #ffffff;">
     <div class="container">
@@ -171,6 +303,9 @@
                                 <h3>Order ID: <%= order._id %></h3>
                                 <p>Order Date: <%= new Date(order.createdAt).toLocaleDateString() %></p>
                             </div>
+
+                         
+
                             <table class="table">
                                 <thead class="thead-light">
                                     <tr class="text-center">
@@ -212,8 +347,51 @@
                                 </tbody>
                             </table>
                             <div class="order-details">
-                                <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
+
+                           <!-- modal  -->
+                    <div class="modal fade" id="orderStatusModal-<%= order._id %>" tabindex="-1" aria-labelledby="orderStatusModalLabel" aria-hidden="true">
+                 <div class="modal-dialog modal-dialog-centered">
+              <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="orderStatusModalLabel">Order Tracking</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="order-tracker-container">
+                    <div class="order-tracker">
+                        <div class="tracker-step <%= order.orderStatus === 'pending' || ['shipped', 'delivered', 'Canceled', 'order returned'].includes(order.orderStatus) ? 'active-step pending-step' : '' %>">
+                            <div class="step-circle"></div>
+                            <div class="step-label">Pending</div>
+                        </div>
+                        <div class="tracker-line <%= ['shipped', 'delivered', 'Canceled', 'order returned'].includes(order.orderStatus) ? 'active-line' : '' %>"></div>
+
+                        <div class="tracker-step <%= order.orderStatus === 'shipped' || ['delivered', 'Canceled', 'order returned'].includes(order.orderStatus) ? 'active-step shipped-step' : '' %>">
+                            <div class="step-circle"></div>
+                            <div class="step-label">Shipped</div>
+                        </div>
+                        <div class="tracker-line <%= ['delivered', 'Canceled', 'order returned'].includes(order.orderStatus) ? 'active-line' : '' %>"></div>
+
+                        <div class="tracker-step <%= order.orderStatus === 'delivered' || ['Canceled', 'order returned'].includes(order.orderStatus) ? 'active-step delivered-step' : '' %>">
+                            <div class="step-circle"></div>
+                            <div class="step-label">Delivered</div>
+                        </div>
+                        
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>                       
+          <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
+                                <p><strong>Payment Status:</strong>&nbsp;<span style="color: rgb(12, 61, 61);"><%= order.paymentStatus %></span></p>
+
+                                <% if(order.orderStatus !== "Canceled" && order.orderStatus !== "order returned") { %>
+                                    <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#orderStatusModal-<%= order._id %>">Order Status</button><br><br>
+                                <% } else { %>
                                     <p><strong>Status:</strong> 
                                         <span class="<%= order.orderStatus === 'pending' ? 'pending-status' : 
                                         order.orderStatus === 'shipped' ? 'shipped-status' : 
@@ -221,15 +399,20 @@
                                         order.orderStatus === 'Canceled' ? 'canceled-status' : 
                                         order.orderStatus === 'order returned' ? 'returned-status' : 
                                         '' %>">
-                                                                     <%= order.orderStatus %>
+                                            <%= order.orderStatus %>
                                         </span>
                                     </p>
+                                <% } %>
+                                
                             </div>
                                 <% if(order.orderStatus !== "Canceled") { %>
                                     <div class="button-container">
                                         <% if(order.orderStatus !== "delivered") { %>
                                             <% if(order.orderStatus !== "order returned"){ %>
                                             <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
+                                            <% if(order.paymentStatus === "pending") {%>
+                                                <button class="btn btn-warning payment-cpl" data-order-id="<%= order._id %>">Continue Payment</button>
+                                                <% } %>
                                             <%}%>
                                         <% }else{ %>
                                             <% if(order.returnStatus === "not requested") {%>
@@ -379,7 +562,10 @@
 
   <div id="ftco-loader" class="show fullscreen"><svg class="circular" width="48px" height="48px"><circle class="path-bg" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke="#eeeeee"/><circle class="path" cx="24" cy="24" r="22" fill="none" stroke-width="4" stroke-miterlimit="10" stroke="#F96D00"/></svg></div>
 
-
+  <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.min.js"></script>
+  
+  
   <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.3/dist/umd/popper.min.js"></script>
   <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
@@ -560,8 +746,89 @@
 });
 
 </script>
+<script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelectorAll('.payment-cpl').forEach(button => {
+            button.addEventListener('click', async (event) => {
+                const orderId = event.target.getAttribute('data-order-id');
+                const total = document.getElementById('orderTotal');
+                let amount = 0;
+                amount = parseFloat(total.textContent.replace('₹', ''));
+                try {
+                    const response = await fetch('/pendingRazorpayOrder', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        },
+                        body: JSON.stringify({ amount, orderId })
+                    });
+                    const data = await response.json();
+                    
+                    if (data.orderId) {
+                        initiateRazorpayPayment(data.orderId, amount);
+                    } else {
+                        console.error('Error creating Razorpay order');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                }
+            });
+        });
+    });
+    
+    function initiateRazorpayPayment(orderId, amount) {
+        const options = {
+            key: 'rzp_test_Mwa9XdFzCTCV9f',
+            amount: amount * 100, 
+            currency: 'INR',
+            name: 'G BAGS',
+            description: 'Order Payment',
+            order_id: orderId,
+            handler: function(response) {
+                processRazorpayPayment(response.razorpay_payment_id, response.razorpay_order_id, response.razorpay_signature);
+            },
+            prefill: {
+                name: 'Customer Name',
+                email: 'customer@example.com',
+                contact: '9999999999'
+            },
+            theme: {
+                color: '#F37254'
+            }
+        };
+        var rzp1 = new Razorpay(options);
+        rzp1.open();
+    }
+    
+    async function processRazorpayPayment(paymentId, orderId, signature) {
+        try {
+            console.log(paymentId, orderId, signature,'yes comes here ')
+            const response = await fetch('/verifyPaymentAndUpdateOrder', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ paymentId, orderId, signature })
+            });
+    
+            if (response.ok) {
+                const result = await response.json();
+                alert('Payment successful!', '#00C851');
+                setTimeout(() => {
+                   window.location.reload();
+                }, 2000);
 
-
+            } else {
+                alert('Payment verification failed. Please try again.', '#ff4444');
+            }
+        } catch (error) {
+            console.error('Fetch error:', error);
+            alert('An error occurred. Please try again.', '#ff4444');
+        }
+    }
+    </script>
+    
 
 <script src="/static/user/js/jquery.min.js"></script>
 <script src="/static/user/js/jquery-migrate-3.0.1.min.js"></script>
