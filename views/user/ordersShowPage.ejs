@@ -1,5 +1,6 @@
 <%- include('./header.ejs') %>
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 
 <style>
       .input-group-prepend,
@@ -279,6 +280,9 @@
 .active-line {
     background-color: #989898; 
 }
+
+
+
  </style>
 
 
@@ -325,7 +329,9 @@
                                             </td>
                                             <td>
                                                 <% if (item.productDetails && item.productDetails.image) { %>
+                                                    <a href="/productDetails?id=<%= item.productDetails._id %>">
                                                     <img src="/static/productImages/<%= item.productDetails.image[0] %>" alt="Product Image" style="width: 80px; height: 100px;">
+                                                    </a>
                                                 <% } else { %>
                                                     N/A
                                                 <% } %>
@@ -384,14 +390,18 @@
             </div>
         </div>
     </div>
-</div>                       
+</div>                   
+ 
           <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                 <p><strong>Payment Status:</strong>&nbsp;<span style="color: rgb(12, 61, 61);"><%= order.paymentStatus %></span></p>
-
+                                <% if(order.paymentStatus === "pending") {%>
+                                    <p style="position: absolute; left: 55%; color: red; "><b>your order payment is not completed yet due to some payment issue! <br> please complete the payment</b></p>
+                                    <% } %>   
                                 <% if(order.orderStatus !== "Canceled" && order.orderStatus !== "order returned") { %>
                                     <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#orderStatusModal-<%= order._id %>">Order Status</button><br><br>
                                 <% } else { %>
+                                    
                                     <p><strong>Status:</strong> 
                                         <span class="<%= order.orderStatus === 'pending' ? 'pending-status' : 
                                         order.orderStatus === 'shipped' ? 'shipped-status' : 
@@ -403,7 +413,7 @@
                                         </span>
                                     </p>
                                 <% } %>
-                                
+                               
                             </div>
                                 <% if(order.orderStatus !== "Canceled") { %>
                                     <div class="button-container">
@@ -465,7 +475,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="returnReasonModalLabel">Return Order</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" id="hehe" data-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -697,9 +707,10 @@
         button.addEventListener('click', () => {
             selectedOrderId = button.getAttribute('data-order-id');
             $('#returnReasonModal').modal('show');
+            
         });
     });
-
+    
     document.getElementById('submitReturnReason').addEventListener('click', async () => {
         const reason = document.getElementById('returnReason').value;
 
@@ -747,6 +758,8 @@
 
 </script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+
 <script>
     document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.payment-cpl').forEach(button => {
@@ -814,7 +827,14 @@
     
             if (response.ok) {
                 const result = await response.json();
-                alert('Payment successful!', '#00C851');
+                Toastify({
+                text: "Payment successful completed",
+                duration: 3000,
+                gravity: "bottom", 
+                position: "center",
+                backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)",
+                stopOnFocus: true 
+            }).showToast();
                 setTimeout(() => {
                    window.location.reload();
                 }, 2000);

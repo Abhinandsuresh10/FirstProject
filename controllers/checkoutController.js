@@ -40,6 +40,7 @@ const ApplyCoupon = async (req, res) => {
 
         const discounts = ((coupon.discountValue / 100) * total);
         const discountAmount = discounts + discount;
+        await Coupon.findOneAndUpdate({code: couponCode},{$inc:{usedCount: 1}})
         
         req.session.coupon = {
             code: coupon.code,
@@ -69,7 +70,7 @@ const RemoveCoupon = async(req, res) => {
             const { coupon } = req.session;
             const newDiscount = coupon.discountAmount - coupon.discount;
             const newTotal = total + newDiscount; 
-
+            await Coupon.findOneAndUpdate({code: coupon.code},{$inc:{usedCount: -1}})
             delete req.session.coupon;
             res.json({
                 success: true,
@@ -265,7 +266,7 @@ const insertPlaceOrder = async(req,res)=>{
       res.status(200).json({ message: 'Order placed successfully', redirectUrl:  `/userOrderDetails?orderId=${newOrder._id}`});
     }
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
     }
 }
 

@@ -426,9 +426,11 @@
   <div class="coupon-popup-content">
     <button type="button" class="btn-close" onclick="closeCouponPopup()">&times;</button>
     <h5>Available Coupons</h5>
-    <ul id="couponList">
+    <ul id="couponList">  
       <% coupons.forEach(coupon => { %>
-        
+        <% if(coupon.usedCount >= coupon.usageLimit) {%>
+          <p style="color: red;">no coupons available</p>
+        <% } else { %>
         <li>
           <span class="coupon-code"><small><%= coupon.code %></small></span>
           <span class="coupon-code" style="color: red;"><small><%= coupon.discountValue %>%</small></span>
@@ -436,8 +438,9 @@
           <span class="coupon-code">&nbsp;<small>₹<%= coupon.minPurchaseAmount %></small></span>
           <button class="btn btn-outline-primary copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
         </li>
-          
+        <% } %>
       <% }) %>
+      
     </ul>
   </div>
 </div>

@@ -131,8 +131,26 @@
                     
                    <% } %>
                 </table>
-              
+             
               </div>
+              <div class="table-responsive">
+              <table class="table">
+                <thead >
+                  <tr>
+                    <th>Total Sales count</th>
+                    <th>Toatal Ordered amound</th>
+                    <th>Total DIscount</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td>&nbsp;&nbsp;&nbsp; <%= totalOrders %></td>
+                    <td>&nbsp;&nbsp;&nbsp;<%= totalAmount %></td>
+                    <td>&nbsp;&nbsp;&nbsp;<%= totalDiscount %></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
               
             <div class="pagination">
                 <% if (currentPage > 1) { %>

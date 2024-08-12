@@ -283,8 +283,33 @@ const EditCoupon = async (req, res) => {
                 }))
             };
         });
+        const discounts = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: { $nin: ['Canceled', 'order returned'] } 
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$AllDiscount' }
+            }
+          }
+        ]);
+        const totalDiscount = discounts[0] ? discounts[0].total : 0;
+
+        const TotalOrderedAmount = await Order.aggregate([
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$amount' }
+            }
+          }
+        ]);
+        const totalAmount = TotalOrderedAmount[0] ? TotalOrderedAmount[0].total : 0;
+        const totalOrders = await Order.countDocuments();
         const totalPages = Math.ceil(totalSales / limit);
-        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount});
+        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount,totalDiscount,totalAmount,totalOrders});
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');

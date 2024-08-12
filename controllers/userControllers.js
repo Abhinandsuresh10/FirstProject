@@ -2,7 +2,7 @@ const User = require('../models/userModel');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const nodemailer = require('nodemailer');
-const prducts = require('../models/produntsModel');
+const Product = require('../models/produntsModel');
 const Cart = require('../models/cartModal');
 const Wallet = require('../models/walletModel');
 require('dotenv').config();
@@ -19,6 +19,7 @@ const transporter = nodemailer.createTransport({
 
 // register load
 const registerLoad = async (req, res) => {
+    
     try {
         res.render('register', { data: {} ,isLoggedIn : req.session.userData});
     } catch (error) {
@@ -212,14 +213,15 @@ const resendOtp = async (req, res) => {
 //home....
 
 
-const loginHome = async(req,res)=>{
+const loginHome = async (req, res) => {
     try {
-       
-        res.render('home',{ isLoggedIn : req.session.userData})
+        const Products = await Product.find({ is_delete: false }).sort({ orderCount: -1 }).limit(4);
+        res.render('home', { isLoggedIn: req.session.userData, product: Products });
     } catch (error) {
-        console.log(error.message)  
+        console.log(error.message);
     }
-}
+};
+
 
 
 // Google login callback
