@@ -55,7 +55,6 @@
         button.addEventListener('click', function() {
             const categoryId = this.getAttribute('data-id');
             Swal.fire({
-                title: 'Are you sure?',
                 text: "Doy really want recover this!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -72,8 +71,8 @@
                 }).then(response => {
                     if (response.ok) {
                         Swal.fire(
-                            'Recovered!',
-                            'The product has been recovered.',
+                            '',
+                            'The category has been recovered.',
                             'success'
                         ).then(() => {
                             window.location.reload();

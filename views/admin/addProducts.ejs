@@ -4,8 +4,8 @@
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
-            <h4 class="card-title">Basic form elements</h4>
-            <p class="card-description"> Basic form elements </p>
+            <h4 class="card-title">Add products</h4>
+            <p class="card-description">  </p>
             <form id="productForm" class="forms-sample" method="post" action="/admin/insertProducts"
                 enctype="multipart/form-data">
 
@@ -387,7 +387,7 @@
         formData.append('image', blob, `croppedImage${index}.png`);
       });
     });
-
+     console.log(formData)
     setTimeout(() => {
       fetch(form.action, {
           method: form.method,

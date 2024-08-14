@@ -25,83 +25,84 @@
               </tr>
             </thead>
             <tbody>
-                <% coupons.forEach(coupon => { %>
-                    <tr>
-                      <td><%= coupon.code %></td>
-                      <td ><%= coupon.discountValue %> %</td>
-                      <td class="text-danger"><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
-                      <td>₹ <%= coupon.minPurchaseAmount %>/-</td>
-                      <td>
-                        <button type="button" class="btn btn-warning edit-coupon-button" data-toggle="modal" data-target="#editCouponModal">Edit</button>
-                        <button type="button" class="btn btn-danger delete-coupon-button" data-id="<%= coupon._id %>">Delete</button>
-                      </td>
-                    </tr>
+              <% coupons.forEach(coupon => { %>
+                <tr>
+                  <td><%= coupon.code %></td>
+                  <td ><%= coupon.discountValue %> %</td>
+                  <td class="text-danger"><%= new Date(coupon.expiryDate).toLocaleDateString() %></td>
+                  <td>₹ <%= coupon.minPurchaseAmount %>/-</td>
+                  <td>
+                    <button type="button" class="btn btn-warning edit-coupon-button" data-toggle="modal" data-target="#editCouponModal-<%= coupon._id %>">Edit</button>
+                   
+                    <button type="button" class="btn btn-danger delete-coupon-button" data-id="<%= coupon._id %>">Delete</button>
+                  </td>
+                </tr>
 
-                    <!-- edit modal -->
+                <!-- edit modal -->
 
-                   <div class="modal fade" id="editCouponModal" style="margin-top: -5%;">
-                   <div class="modal-dialog modal-dialog-centered">
-                   <div class="modal-content">
-      
-                   <!-- Modal Header -->
-                   <div class="modal-header" >
-                   <h4 class="modal-title">Add Coupon</h4>
-                   <button type="button" class="close" data-dismiss="modal">&times;</button>
-                   </div>
+               <div class="modal fade" id="editCouponModal-<%= coupon._id %>" style="margin-top: -5%;">
+               <div class="modal-dialog modal-dialog-centered">
+               <div class="modal-content">
+  
+               <!-- Modal Header -->
+               <div class="modal-header" >
+               <h4 class="modal-title">Edit Coupon</h4>
+               <button type="button" class="close" data-dismiss="modal">&times;</button>
+               </div>
+    
+               <!-- Modal Body -->
+           <div class="modal-body" >
+               <form id="editCouponModal-<%= coupon._id %>">
+                <input type="hidden" id="couponId-<%= coupon._id %>" name="couponId" value="<%= coupon._id %>">
         
-                   <!-- Modal Body -->
-               <div class="modal-body" >
-                   <form id="editCouponModal">
-                    <input type="hidden" id="couponId" name="couponId" value="<%= coupon._id %>">
+           <div class="form-group">
+               <label for="code">Code:</label>
+               <input type="text" class="form-control" id="code" name="code" style="color: aliceblue;" value="<%= coupon  .code %>" required>
+               <small id="codeError" class="text-danger d-none">Code must be at least 4 characters long.</small>
+         </div>
+         <div class="form-group">
+               <label for="discountValue">Discount Value:</label>
+               <input type="number" class="form-control" id="discountValue" name="discountValue" style="color: aliceblue;" value="<%= coupon.discountValue %>" required>
+               <small id="DiscountError" class="text-danger d-none">Discount should be in 1 to 100.</small>
+         </div>
+         <% 
+         const formatDate = (date) => {
+            const d = new Date(date);
+              let month = '' + (d.getMonth() + 1);
+            let day = '' + d.getDate();
+         const year = d.getFullYear();
 
-               <div class="form-group">
-                   <label for="code">Code:</label>
-                   <input type="text" class="form-control" id="code" name="code" style="color: aliceblue;" value="<%= coupon.code %>" required>
-                   <small id="codeError" class="text-danger d-none">Code must be at least 4 characters long.</small>
-             </div>
-             <div class="form-group">
-                   <label for="discountValue">Discount Value:</label>
-                   <input type="number" class="form-control" id="discountValue" name="discountValue" style="color: aliceblue;" value="<%= coupon.discountValue %>" required>
-                   <small id="DiscountError" class="text-danger d-none">Discount should be in 1 to 100.</small>
-             </div>
-             <% 
-             const formatDate = (date) => {
-                const d = new Date(date);
-                  let month = '' + (d.getMonth() + 1);
-                let day = '' + d.getDate();
-             const year = d.getFullYear();
+           if (month.length < 2) month = '0' + month;
+              if (day.length < 2) day = '0' + day;
 
-               if (month.length < 2) month = '0' + month;
-                  if (day.length < 2) day = '0' + day;
+                  return [year, month, day].join('-');
+                };
 
-                      return [year, month, day].join('-');
-                    };
-
-                 const formattedExpiryDate = formatDate(coupon.expiryDate);
-                          %>
-             <div class="form-group">
-                   <label for="expiryDate">Expiry Date:</label>
-                   <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" value="<%= formattedExpiryDate %>" required>
-             </div>
-             <div class="form-group">
-                   <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
-                   <input type="number" class="form-control" id="minPurchaseAmount" style="color: aliceblue;" value="<%= coupon.minPurchaseAmount %>" name="minPurchaseAmount">
-                   <small id="minPurchaseError" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
-            </div>
-            <div class="form-group">
-                   <label for="usageLimit">Usage Limit:</label>
-                   <input type="number" class="form-control" id="usageLimit" style="color: aliceblue;" value="<%= coupon.usageLimit %>" name="usageLimit">
-                   <small id="usageLimitError" class="text-danger d-none">Usage limit must be greater than 0.</small>
-            </div>
-                   <button type="submit" class="btn btn-primary">Submit</button>
-                   </form>
-            </div>
-        
-            </div>
-            </div>
-            </div>
-                  <% }); %>
-            </tbody>
+             const formattedExpiryDate = formatDate(coupon.expiryDate);
+                      %>
+         <div class="form-group">
+               <label for="expiryDate">Expiry Date:</label>
+               <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" value="<%= formattedExpiryDate %>" required>
+         </div>
+         <div class="form-group">
+               <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
+               <input type="number" class="form-control" id="minPurchaseAmount" style="color: aliceblue;" value="<%= coupon.minPurchaseAmount %>" name="minPurchaseAmount">
+               <small id="minPurchaseError" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
+        </div>
+        <div class="form-group">
+               <label for="usageLimit">Usage Limit:</label>
+               <input type="number" class="form-control" id="usageLimit" style="color: aliceblue;" value="<%= coupon.usageLimit %>" name="usageLimit">
+               <small id="usageLimitError" class="text-danger d-none">Usage limit must be greater than 0.</small>
+        </div>
+               <button type="submit" class="btn btn-primary">Submit</button>
+               </form>
+        </div>
+    
+        </div>
+        </div>
+        </div>
+              <% }); %>
+                </tbody>
           </table>
         </div>
       </div>
@@ -124,27 +125,27 @@
           <form id="addCouponForm">
             <div class="form-group">
               <label for="code">Code:</label>
-              <input type="text" class="form-control" id="code" name="code" style="color: aliceblue;" required>
-              <small id="codeError" class="text-danger d-none">Code must be at least 4 characters long.</small>
+              <input type="text" class="form-control" id="codes" name="code" style="color: aliceblue;" required>
+              <small id="codeErrors" class="text-danger d-none">Code must be at least 4 characters long.</small>
             </div>
             <div class="form-group">
               <label for="discountValue">Discount Value:</label>
-              <input type="number" class="form-control" id="discountValue" name="discountValue" style="color: aliceblue;" required>
-              <small id="DiscountError" class="text-danger d-none">Discount should be in 1 to 100.</small>
+              <input type="number" class="form-control" id="discountValues" name="discountValue" style="color: aliceblue;" required>
+              <small id="DiscountErrors" class="text-danger d-none">Discount should be in 1 to 100.</small>
             </div>
             <div class="form-group">
               <label for="expiryDate">Expiry Date:</label>
-              <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" required>
+              <input type="date" class="form-control" id="expiryDates" name="expiryDate" style="color: aliceblue;" required>
             </div>
             <div class="form-group">
               <label for="minPurchaseAmount">Minimum Purchase Amount:</label>
-              <input type="number" class="form-control" id="minPurchaseAmount" style="color: aliceblue;" name="minPurchaseAmount">
-              <small id="minPurchaseError" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
+              <input type="number" class="form-control" id="minPurchaseAmounts" style="color: aliceblue;" name="minPurchaseAmount">
+              <small id="minPurchaseErrors" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
             </div>
             <div class="form-group">
               <label for="usageLimit">Usage Limit:</label>
-              <input type="number" class="form-control" id="usageLimit" style="color: aliceblue;" name="usageLimit">
-              <small id="usageLimitError" class="text-danger d-none">Usage limit must be greater than 0.</small>
+              <input type="number" class="form-control" id="usageLimits" style="color: aliceblue;" name="usageLimit">
+              <small id="usageLimitErrors" class="text-danger d-none">Usage limit must be greater than 0.</small>
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
           </form>
@@ -164,17 +165,17 @@
   <script>
     document.getElementById('addCouponForm').addEventListener('submit', async function (event) {
       event.preventDefault();
-      
-      const codeInput = document.getElementById('code');
-      const minPurchaseAmountInput = document.getElementById('minPurchaseAmount');
-      const usageLimitInput = document.getElementById('usageLimit');
-      const codeError = document.getElementById('codeError');
-      const minPurchaseError = document.getElementById('minPurchaseError');
-      const usageLimitError = document.getElementById('usageLimitError');
-      const discountInput = document.getElementById('discountValue')
-      const discountError = document.getElementById('DiscountError');
+      console.log('first error')
+      const codeInput = document.getElementById('codes');
+      const minPurchaseAmountInput = document.getElementById('minPurchaseAmounts');
+      const usageLimitInput = document.getElementById('usageLimits');
+      const codeError = document.getElementById('codeErrors');
+      const minPurchaseError = document.getElementById('minPurchaseErrors');
+      const usageLimitError = document.getElementById('usageLimitErrors');
+      const discountInput = document.getElementById('discountValues')
+      const discountError = document.getElementById('DiscountErrors');
       let isValid = true;
-    
+      
       if (codeInput.value.length < 4) {
         codeError.classList.remove('d-none');
         isValid = false;
@@ -208,8 +209,8 @@
       }
     
       const code = codeInput.value;
-      const discountValue = document.getElementById('discountValue').value;
-      const expiryDate = document.getElementById('expiryDate').value;
+      const discountValue = document.getElementById('discountValues').value;
+      const expiryDate = document.getElementById('expiryDates').value;
       const minPurchaseAmount = minPurchaseAmountInput.value;
       const usageLimit = usageLimitInput.value;
     
@@ -307,7 +308,7 @@
     const expiryDate = document.getElementById('expiryDate').value;
     const minPurchaseAmount = minPurchaseAmountInput.value;
     const usageLimit = usageLimitInput.value;
-  
+     
     try {
       const response = await fetch(`/admin/editCoupon/${couponId}`, {
         method: 'PUT',

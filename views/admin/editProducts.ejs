@@ -4,8 +4,8 @@
 <div class="col-12 grid-margin stretch-card">
   <div class="card">
     <div class="card-body">
-      <h4 class="card-title">Basic form elements</h4>
-      <p class="card-description">Basic form elements</p>
+      <h4 class="card-title">Edit product</h4>
+      <p class="card-description"></p>
       <form id="productForm" class="forms-sample" method="post" action="/admin/insertEditProducts?pid=<%= product._id %>" enctype="multipart/form-data">
 
         <div class="form-group">
@@ -50,7 +50,7 @@
           <input type="number" class="form-control" id="exampleInputPrice" style="color: rgb(252, 252, 252);width: 85%;" name="price" value="<%= product.price %>" >
           <small class="form-text text-danger" id="errorPrice"></small>
         </div>
-        <div class="form-group">
+        <div class="form-group" hidden>
           <label for="exampleInputDiscount">Discount</label>
           <input type="number" class="form-control" id="exampleInputDiscount" style="color: rgb(252, 252, 252);width: 85%;" name="discount" value="<%= product.discount %>" readonly>
           <small class="form-text text-danger" id="errorDiscount"></small>

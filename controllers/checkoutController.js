@@ -16,7 +16,7 @@ const ApplyCoupon = async (req, res) => {
 
     try {
         const coupon = await Coupon.findOne({ code: couponCode });
-        const minPurchaseAmount = coupon.minPurchaseAmount;
+        
 
         if (!coupon) {
             return res.json({
@@ -24,7 +24,7 @@ const ApplyCoupon = async (req, res) => {
                 message: 'Invalid coupon code'
             });
         }
-
+        const minPurchaseAmount = coupon.minPurchaseAmount;
         if (new Date() > new Date(coupon.expiryDate)) {
             return res.json({
                 success: false,
@@ -428,7 +428,7 @@ const PlaceOrderOnFailure = async (req, res) => {
 
         await Cart.findOneAndDelete({ userId: userId });
 
-        res.status(200).json({ message: 'Order placed successfully despite payment failure', redirectUrl: `/userOrderDetails?orderId=${newOrder._id}` });
+        res.status(200).json({ message: 'Order placed successfully despite payment failure', redirectUrl: `/orderShow` });
     } catch (error) {
         console.error('Error placing order on failure:', error);
         res.status(500).json({ message: 'Internal server error' });

@@ -765,7 +765,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 Toastify({
                     text: message,
                     duration: 3000,
-                    gravity: "bottom",
+                    gravity: "top",
                     position: "right",
                     backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
                 }).showToast();
@@ -1180,7 +1180,7 @@ async function handlePaymentFailure(orderId, amount, AllDiscount, formData) {
 
         if (response.ok) {
             const result = await response.json();
-            showSnackbar('Order placed successfully despite payment failure.', '#00C851');
+            showSnackbar('Order not completed despite payment failure.', '#00C851');
             setTimeout(() => window.location.href = result.redirectUrl, 1500);
         } else {
             showSnackbar('Failed to place order. Please try again.', '#ff4444');

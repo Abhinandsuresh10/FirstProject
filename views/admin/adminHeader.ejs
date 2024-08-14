@@ -115,7 +115,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-speedometer"></i>
               </span>
-              <span class="menu-title">Dashboard</span>
+              <span class="menu-title">DASHBOARD</span>
             </a>
           </li>
           <li class="nav-item menu-items">
@@ -123,7 +123,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-playlist-play"></i>
               </span>
-              <span class="menu-title">category</span>
+              <span class="menu-title">CATEGORY</span>
             </a>
           </li>
 
@@ -132,13 +132,13 @@
               <span class="menu-icon">
                 <i class="mdi mdi-cart-outline"></i>
               </span>
-              <span class="menu-title">products</span>
+              <span class="menu-title">PRODUCTS</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="auth">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="/admin/products"> Listed </a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/deletedProducts"> Unlisted </a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/products"> LISTED </a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/deletedProducts"> UNLISTED </a></li>
               </ul>
             </div>
           </li>
@@ -147,7 +147,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-account-multiple"></i>
               </span>
-              <span class="menu-title">Users</span>
+              <span class="menu-title">USERS</span>
             </a>
           </li>
     
@@ -157,7 +157,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-blogger"></i>
               </span>
-              <span class="menu-title">brands</span>
+              <span class="menu-title">BRANDS</span>
             </a>
           </li>
           <li class="nav-item menu-items">
@@ -165,7 +165,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-apps"></i>
               </span>
-              <span class="menu-title">orders</span>
+              <span class="menu-title">ORDERS</span>
             </a>
           </li>
           <li class="nav-item menu-items">
@@ -173,13 +173,13 @@
               <span class="menu-icon">
                 <i class="mdi mdi-elevator"></i>
               </span>
-              <span class="menu-title">offers</span>
+              <span class="menu-title">OFFERS</span>
               <i class="menu-arrow"></i>
             </a>
             <div class="collapse" id="auths">
               <ul class="nav flex-column sub-menu">
-                <li class="nav-item"> <a class="nav-link" href="/admin/CategoryOffers"> CategoryOffers </a></li>
-                <li class="nav-item"> <a class="nav-link" href="/admin/productOffers"> ProductOffers </a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/CategoryOffers"> CATEGORYOFFERS </a></li>
+                <li class="nav-item"> <a class="nav-link" href="/admin/productOffers"> PRODUCTOFFERS </a></li>
               </ul>
             </div>
           </li>
@@ -188,7 +188,7 @@
               <span class="menu-icon">
                 <i class="mdi mdi-folder-multiple-outline"></i>
               </span>
-              <span class="menu-title">Coupons</span>
+              <span class="menu-title">COUPONS</span>
             </a>
           </li>
 
@@ -197,19 +197,39 @@
               <span class="menu-icon">
                 <i class="mdi mdi-chart-bar"></i>
               </span>
-              <span class="menu-title">SalesReport</span>
+              <span class="menu-title">SALESREPORT</span>
             </a>
           </li>
 
            <li class="nav-item menu-items">
-            <a class="nav-link" href="/admin/logout">
+            <a class="nav-link" href="/admin/logout" id="logout">
               <span class="menu-icon">
                 <i class="mdi mdi-power-settings"></i>
               </span>
-              <span class="menu-title">Logout</span>
+              <span class="menu-title">LOGOUT</span>
             </a>
           </li>
         </ul>
       </nav>
+      
 
+      <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+      <script>
+      document.getElementById('logout').addEventListener('click', function(event) {
+          event.preventDefault(); 
+          Swal.fire({
+            text: 'Are you sure you want to logout?',
+            icon: 'warning',
+            showCancelButton: true, 
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Yes, logout!',
+            cancelButtonText: 'Cancel'
+          }).then((result) => {
+            if (result.isConfirmed) {
+              window.location.href = '/admin/logout';
+            }
+          });
+      });
+      </script>

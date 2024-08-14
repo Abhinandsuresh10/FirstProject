@@ -480,15 +480,18 @@
                 </button>
             </div>
             <div class="modal-body">
+                <form id="returnRequest">
                 <div class="form-group">
                     <label for="returnReason">Reason for Return</label>
                     <textarea class="form-control" id="returnReason" rows="3"></textarea>
+                    <small id="errMsg" class="form-text text-danger" style="display: none;">Reason is required.</small>
                 </div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
                 <button type="button" class="btn btn-primary" id="submitReturnReason">Submit</button>
             </div>
+        </form>
         </div>
     </div>
 </div>
@@ -651,7 +654,6 @@
             const orderId = this.getAttribute('data-order-id');
 
             Swal.fire({
-                title: 'Are you sure?',
                 text: "Do you want cancel the order!",
                 icon: 'warning',
                 showCancelButton: true,
@@ -671,7 +673,7 @@
                     .then(data => {
                         if (data.success) {
                             Swal.fire(
-                                'Cancelled!',
+                                '',
                                 'Your order has been cancelled.',
                                 'success'
                             ).then(() => {
@@ -698,7 +700,7 @@
         });
     });
 </script>
-
+<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 <script>
    document.addEventListener('DOMContentLoaded', () => {
     let selectedOrderId = null;
@@ -710,55 +712,62 @@
             
         });
     });
+
+
     
-    document.getElementById('submitReturnReason').addEventListener('click', async () => {
-        const reason = document.getElementById('returnReason').value;
+    document.getElementById('submitReturnReason').addEventListener('click', async (event) => {
+    const reason = document.getElementById('returnReason').value;
+    let err = document.getElementById('errMsg');
+    
+    // Validation check
+    if (reason.length < 10) {
+        err.textContent = 'Please provide a detailed reason';
+        err.style.display = 'block';
+    } else {
+        err.style.display = 'none';
+        
+        try {
+            const response = await fetch(`/returnOrders/${selectedOrderId}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ returnStatus: 'requested', reason })
+            });
 
-        if (reason) {
-            try {
-                const response = await fetch(`/returnOrders/${selectedOrderId}`, {
-                    method: 'PATCH',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ returnStatus: 'requested', reason })
+            const data = await response.json();
+            if (response.ok) {
+                Swal.fire(
+                    'Requested!',
+                    'Your return request is in process.',
+                    'success'
+                ).then(() => {
+                    location.reload(); 
                 });
-
-                const data = await response.json();
-                if (response.ok) {
-                    Swal.fire(
-                        'requested!',
-                        'Your return request is in process.',
-                        'success'
-                    ).then(() => {
-                        location.reload(); 
-                    });
-                } else {
-                    Swal.fire(
-                        'Error!',
-                        'Failed to request order return.',
-                        'error'
-                    );
-                }
-            } catch (error) {
-                console.error('Error:', error);
+            } else {
                 Swal.fire(
                     'Error!',
-                    'An error occurred while processing your request.',
+                    'Failed to request order return.',
                     'error'
                 );
-            } finally {
-                $('#returnReasonModal').modal('hide');
             }
-        } else {
-            alert('Please provide a reason for return.');
+        } catch (error) {
+            console.error('Error:', error);
+            Swal.fire(
+                'Error!',
+                'An error occurred while processing your request.',
+                'error'
+            );
+        } finally {
+            $('#returnReasonModal').modal('hide');
         }
-    });
+    }
+});
+
 });
 
 </script>
 <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
 
 <script>
     document.addEventListener('DOMContentLoaded', () => {
@@ -848,6 +857,8 @@
         }
     }
     </script>
+
+
     
 
 <script src="/static/user/js/jquery.min.js"></script>

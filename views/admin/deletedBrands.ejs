@@ -44,7 +44,6 @@
                 const brandId = this.getAttribute('data-id');
             
                 Swal.fire({
-                    title: 'Are you sure?',
                     text: "Do you really want to recover this!",
                     icon: 'warning',
                     showCancelButton: true,
@@ -63,7 +62,7 @@
                             console.log('Fetch response:', response); 
                             if (response.ok) {
                                 Swal.fire(
-                                    'Recovered!',
+                                    '',
                                     'The brand has been recovered.',
                                     'success'
                                 ).then(() => {

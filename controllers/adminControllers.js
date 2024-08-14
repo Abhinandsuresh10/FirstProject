@@ -190,12 +190,12 @@ const EditCoupon = async (req, res) => {
   const InsertCoupon = async (req, res) => {
     try {
       const { code, discountValue, expiryDate, minPurchaseAmount, usageLimit } = req.body;
-      
+      console.log('fghjk')
       const existingCoupon = await Coupon.findOne({ code });
-      
+      console.log(code ,'old code', existingCoupon, 'newibw code')
       if (existingCoupon) {
         return res.status(409).json({ message: 'Code already exists' });
-      }
+      }else{
       
       const newCoupon = new Coupon({
         code,
@@ -206,6 +206,7 @@ const EditCoupon = async (req, res) => {
       });
       
       await newCoupon.save();
+    }
       res.status(201).json({ message: 'Coupon added successfully' });
     } catch (error) {
       console.error(error);
@@ -298,18 +299,9 @@ const EditCoupon = async (req, res) => {
         ]);
         const totalDiscount = discounts[0] ? discounts[0].total : 0;
 
-        const TotalOrderedAmount = await Order.aggregate([
-          {
-            $group: {
-              _id: null,
-              total: { $sum: '$amount' }
-            }
-          }
-        ]);
-        const totalAmount = TotalOrderedAmount[0] ? TotalOrderedAmount[0].total : 0;
-        const totalOrders = await Order.countDocuments();
+        const totalOrders = await Order.countDocuments({orderStatus: 'delivered'});
         const totalPages = Math.ceil(totalSales / limit);
-        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount,totalDiscount,totalAmount,totalOrders});
+        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount,totalDiscount,totalOrders});
     } catch (error) {
         console.error(error.message);
         res.status(500).send('Server Error');
@@ -419,13 +411,32 @@ const FilterSalesReport = async (req, res) => {
       }));
   
       const totalPages = Math.ceil(totalDocs / limit);
-  
+
+      const discounts = await Order.aggregate([
+        {
+          $match: {
+            orderStatus: { $nin: ['Canceled', 'order returned'] } 
+          }
+        },
+        {
+          $group: {
+            _id: null,
+            total: { $sum: '$AllDiscount' }
+          }
+        }
+      ]);
+      const totalDiscount = discounts[0] ? discounts[0].total : 0;
+
+      const totalOrders = await Order.countDocuments({orderStatus: 'delivered'});
+
       res.render('salesReport', {
         sales: salesWithDetails,
         currentPage: page,
         totalPages,
         limit,
-        grandTotalAmount
+        grandTotalAmount,
+        totalDiscount,
+        totalOrders
       });
     } catch (error) {
       console.error(error.message);

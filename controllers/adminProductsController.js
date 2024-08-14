@@ -30,11 +30,12 @@ const insertProducts = async(req,res)=>{
 
         const cate = await Category.findOne({name:category});
         const discount = await CategoryOffer.findOne({categoryId:cate._id});
-        const offerDisc = discount.discountPercentage;
+        const offerDisc = discount?.discountPercentage;
         const resDisc = Math.ceil((price * offerDisc) / 100);
-
+   
       if(discount){
         const imagePaths = req.files.map(file => file.filename);
+        console.log(imagePaths)
         const newproduct = await prducts({
             name:name,
             category:category,

@@ -138,14 +138,12 @@
                 <thead >
                   <tr>
                     <th>Total Sales count</th>
-                    <th>Toatal Ordered amound</th>
                     <th>Total DIscount</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>&nbsp;&nbsp;&nbsp; <%= totalOrders %></td>
-                    <td>&nbsp;&nbsp;&nbsp;<%= totalAmount %></td>
                     <td>&nbsp;&nbsp;&nbsp;<%= totalDiscount %></td>
                   </tr>
                 </tbody>
@@ -171,29 +169,41 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.17.3/xlsx.full.min.js"></script>
 <script>
-    document.getElementById("downloadPdfBtn").addEventListener("click", function () {
-        let doc = new window.jspdf.jsPDF();
-        let pageCenter = doc.internal.pageSize.getWidth() / 2;
+  document.getElementById("downloadPdfBtn").addEventListener("click", function () {
+    let doc = new window.jspdf.jsPDF();
+    let pageCenter = doc.internal.pageSize.getWidth() / 2;
 
-        doc.setFontSize(25);
-        doc.text("G BAGS.", pageCenter, 10, { align: 'center' });
-        doc.setFontSize(15);
-        doc.text("Sales Report", pageCenter, 20, { align: 'center' });
+    doc.setFontSize(25);
+    doc.text("G BAGS.", pageCenter, 10, { align: 'center' });
+    doc.setFontSize(15);
+    doc.text("Sales Report", pageCenter, 20, { align: 'center' });
 
-        let table = document.querySelector(".table");
+    let tables = document.querySelectorAll(".table");
 
-        doc.autoTable({ html: table, startY: 35 });
+    let startY = 35;
 
-        doc.save("SalesReport.pdf");
+    tables.forEach((table, index) => {
+        if (index > 0) {
+            startY += 10; 
+        }
+
+        doc.autoTable({ html: table, startY: startY });
+        startY = doc.lastAutoTable.finalY + 10; 
     });
-    document.getElementById("downloadExcelBtn").addEventListener("click", function () {
-        let workbook = XLSX.utils.book_new();
 
-        let table = document.querySelector(".table");
+    doc.save("SalesReport.pdf");
+});
 
+document.getElementById("downloadExcelBtn").addEventListener("click", function () {
+    let workbook = XLSX.utils.book_new();
+
+    let tables = document.querySelectorAll(".table");
+
+    tables.forEach((table, index) => {
         let worksheet = XLSX.utils.table_to_sheet(table);
 
-        XLSX.utils.book_append_sheet(workbook, worksheet, "Sales Report");
+        let sheetName = "Sales Report " + (index + 1);
+        XLSX.utils.book_append_sheet(workbook, worksheet, sheetName);
 
         let range = XLSX.utils.decode_range(worksheet['!ref']);
         for (let C = range.s.c; C <= range.e.c; ++C) {
@@ -208,9 +218,10 @@
             worksheet['!cols'] = worksheet['!cols'] || [];
             worksheet['!cols'][C] = { wch: max_width + 1 };
         }
+    });
 
-        XLSX.writeFile(workbook, "Sales Report.xlsx", { bookSST: true, type: 'binary'});
-        });
+    XLSX.writeFile(workbook, "Sales Report.xlsx", { bookSST: true, type: 'binary' });
+});
 </script>
 
 <%- include('./adminFooter.ejs') %>
