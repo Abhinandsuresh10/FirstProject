@@ -26,6 +26,10 @@ const loadorders = async (req, res) => {
             const productDetails = await Promise.all(
                 order.orderItems.map(async item => {
                     const product = await Product.findById(item.product).lean();
+                    if (!product) {
+                        console.error(`Product with ID ${item.product} not found`);
+                        return null; // Or handle this case appropriately
+                    }
                     const discountPrice = product.discount || 0;
                     const discountedPrice = item.price - discountPrice;
                     const totalAmount = discountedPrice * item.quantity;
@@ -62,6 +66,7 @@ const loadorders = async (req, res) => {
         console.log(error.message);
     }
 }
+
 
 
 

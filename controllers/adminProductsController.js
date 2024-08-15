@@ -35,7 +35,7 @@ const insertProducts = async(req,res)=>{
    
       if(discount){
         const imagePaths = req.files.map(file => file.filename);
-        console.log(imagePaths)
+        
         const newproduct = await prducts({
             name:name,
             category:category,
@@ -52,6 +52,7 @@ const insertProducts = async(req,res)=>{
         await newproduct.save();
       }else{
         const imagePaths = req.files.map(file => file.filename);
+        
         const newproduct = await prducts({
             name:name,
             category:category,

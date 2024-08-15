@@ -131,18 +131,8 @@
     const stock = document.getElementById('exampleInputStock');
     const description = document.getElementById('exampleInputDescription');
     const image = document.getElementById('ocs-productImage');
-
-    // clearError('nameError');
-    // clearError('categoryError');
-    // clearError('brandError');
-    // clearError('modelError');
-    // clearError('materialError');
-    // clearError('priceError');
-    // clearError('discountError');
-    // clearError('stockError');
-    // clearError('descriptionError');
-    // clearError('imageError');
-
+    console.log(image,'yes');
+   
     if (name.value.trim() === '') {
       showError('nameError', 'Name is required');
       isValid = false;
@@ -387,7 +377,14 @@
         formData.append('image', blob, `croppedImage${index}.png`);
       });
     });
-     console.log(formData)
+    
+    const fileInput = document.getElementById('ocs-productImage');
+    if (fileInput.files.length > 0 && croppers.length === 0) { 
+      for (let i = 0; i < fileInput.files.length; i++) {
+        formData.append('image', fileInput.files[i]);
+      }
+    }
+     
     setTimeout(() => {
       fetch(form.action, {
           method: form.method,
@@ -404,7 +401,7 @@
           console.error(error);
           alert('An error occurred while submitting the form');
         });
-    }, 500); 
+    }, 1000); 
   }
 });
 </script>

@@ -220,8 +220,8 @@ const insertPlaceOrder = async(req,res)=>{
         const amounts =  Math.ceil(amount);
         const AllDiscounts = Math.ceil(AllDiscount)
 
-        if(amounts < 1000){
-            res.status(200).json({ message: 'atleast 1000 needs on cash on delivery'});
+        if(amounts > 1000){
+            res.status(200).json({ message: 'not deliverable COD maximum amount 1000'});
 
         }else{
 

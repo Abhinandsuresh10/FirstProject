@@ -77,7 +77,7 @@
         <% if (product.image && product.image.length > 0) { %>
           <% product.image.forEach(image => { %>
             <div class="image-container" style="position: relative; margin: 5px;">
-              <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 100px; height: 150px; object-fit: cover;"/>
+              <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 100px; height: 150px; object-fit: cover;" >
               <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this)">X</button>
             </div>
           <% }) %>
@@ -251,8 +251,39 @@
 
   function removeImage(button) {
     const imageContainer = button.parentElement;
-    imageContainer.remove();
-  }
+    const imgElement = imageContainer.querySelector('img');
+    const imgSrc = imgElement.src;
+
+    
+
+    const existingImagesContainer = document.getElementById('existingImagePreview');
+    const addedImagesContainer = document.getElementById('addedImagePreview');
+
+    if (existingImagesContainer.contains(imageContainer)) {
+        console.log('Remove existing image: ' + imgSrc);
+    } else if (addedImagesContainer.contains(imageContainer)) {
+        const fileInput = document.getElementById('ocs-productImage');
+        const dataTransfer = new DataTransfer();
+        
+        for (let i = 0; i < fileInput.files.length; i++) {
+            const file = fileInput.files[i];
+            const reader = new FileReader();
+            
+            reader.onload = (e) => {
+                const fileDataURL = e.target.result;
+                if (fileDataURL !== imgSrc) {
+                    dataTransfer.items.add(file);
+                }
+            };
+
+            reader.readAsDataURL(file);
+        }
+
+        fileInput.files = dataTransfer.files;
+        
+    }
+}
+
 
   function validateForm() {
     let isValid = true;
@@ -301,14 +332,14 @@
       document.getElementById('errorMaterial').innerText = '';
     }
 
-    if (!price) {
-      document.getElementById('errorPrice').innerText = 'Price is required';
+    if (!price || price <= 0) {
+      document.getElementById('errorPrice').innerText = 'Price is required, Price must be a positive number';
       isValid = false;
     } else {
       document.getElementById('errorPrice').innerText = '';
     }
 
-    if (!stock || stock < 0) {
+    if (!stock || stock <= 0) {
       document.getElementById('errorStock').innerText = 'Stock is required and stock cannot be negative';
       isValid = false;
     } else {
@@ -342,7 +373,7 @@
 
         const form = event.target;
         const formData = new FormData(form);
-
+        
         const oldImages = document.querySelectorAll('#addedImagePreview img');
         oldImages.forEach((img, index) => {
             const imgSrc = img.src;
@@ -358,7 +389,6 @@
             });
         });
 
-        
 
         setTimeout(() => {
             fetch(form.action, {
@@ -376,7 +406,7 @@
                 console.error(error);
                 alert('An error occurred while submitting the form');
             });
-        }, 500);
+        }, 1000);
     }
 });
 

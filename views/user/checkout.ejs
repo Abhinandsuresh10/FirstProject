@@ -1227,7 +1227,7 @@ async function handlePaymentFailure(orderId, amount, AllDiscount, formData) {
                     if (response.ok) {
                         const result = await response.json();
                         const message = result.message;
-                        if(message == 'atleast 1000 needs on cash on delivery'){
+                        if(message == 'not deliverable COD maximum amount 1000'){
                           showSnackbar(message, '#00C851');
                         }else{
                           showSnackbar(message, '#00C851');

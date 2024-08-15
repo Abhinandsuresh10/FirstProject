@@ -190,7 +190,7 @@ const EditCoupon = async (req, res) => {
   const InsertCoupon = async (req, res) => {
     try {
       const { code, discountValue, expiryDate, minPurchaseAmount, usageLimit } = req.body;
-      console.log('fghjk')
+
       const existingCoupon = await Coupon.findOne({ code });
       console.log(code ,'old code', existingCoupon, 'newibw code')
       if (existingCoupon) {

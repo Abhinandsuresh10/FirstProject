@@ -395,7 +395,7 @@
           <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                 <p><strong>Payment Status:</strong>&nbsp;<span style="color: rgb(12, 61, 61);"><%= order.paymentStatus %></span></p>
-                                <% if(order.paymentStatus === "pending") {%>
+                                <% if(order.paymentStatus === "pending" && order.orderStatus !== 'Canceled') {%>
                                     <p style="position: absolute; left: 55%; color: red; "><b>your order payment is not completed yet due to some payment issue! <br> please complete the payment</b></p>
                                     <% } %>   
                                 <% if(order.orderStatus !== "Canceled" && order.orderStatus !== "order returned") { %>

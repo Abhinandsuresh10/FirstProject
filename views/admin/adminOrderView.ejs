@@ -18,11 +18,20 @@
                 <form action="/admin/updateOrderStatus" method="POST">
                     <p><strong>Status:</strong>
                         <select name="orderStatus" class="form-control" style="width: 150px;color: aliceblue;" required>
+                            <% if(order.orderStatus !== 'delivered' && order.orderStatus !== 'Canceled' && order.orderStatus !== 'order returned') {%>
                             <option value="pending" style="color: aliceblue;" <%= order.orderStatus === 'pending' ? 'selected' : '' %>>Pending</option>
                             <option value="shipped" style="color: aliceblue;" <%= order.orderStatus === 'shipped' ? 'selected' : '' %>>Shipped</option>
                             <option value="delivered" style="color: aliceblue;" <%= order.orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
-                            <option value="Canceled" style="color: aliceblue;" <%= order.orderStatus === 'Canceled' ? 'selected' : '' %>>Canceled</option>
-                            <option value="order returned" style="color: aliceblue;" <%= order.orderStatus === 'order returned' ? 'selected' : '' %>>order returned</option>
+                            <!-- <option value="Canceled" style="color: aliceblue;" <%= order.orderStatus === 'Canceled' ? 'selected' : '' %>>Canceled</option>
+                            <option value="order returned" style="color: aliceblue;" <%= order.orderStatus === 'order returned' ? 'selected' : '' %>>order returned</option> -->
+                            <%} else if(order.orderStatus == 'delivered') {%>
+                                <option value="delivered" style="color: aliceblue;" <%= order.orderStatus === 'delivered' ? 'selected' : '' %>>Delivered</option>
+                                <option value="order returned" style="color: aliceblue;" <%= order.orderStatus === 'order returned' ? 'selected' : '' %>>Return</option>
+                                <% } else if(order.orderStatus == 'Canceled') {%>
+                                    <option value="Canceled" style="color: aliceblue;" <%= order.orderStatus === 'Canceled' ? 'selected' : '' %>>Canceled</option>
+                                    <% } else if(order.orderStatus == 'order returned') {%>
+                                        <option value="order returned" style="color: aliceblue;" <%= order.orderStatus === 'order returned' ? 'selected' : '' %>>Returned</option>
+                                        <% } %>
                         </select>
                     </p>
                     <input type="hidden" name="orderId" value="<%= order._id %>">
