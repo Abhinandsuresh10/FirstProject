@@ -38,20 +38,21 @@ const ApplyCoupon = async (req, res) => {
         });
       }
 
-        const discounts = ((coupon.discountValue / 100) * total);
-        const discountAmount = discounts + discount;
+        const couponDiscount  = ((coupon.discountValue / 100) * total);
+        const newDiscountAmount = couponDiscount  + discount;
         await Coupon.findOneAndUpdate({code: couponCode},{$inc:{usedCount: 1}})
         
         req.session.coupon = {
             code: coupon.code,
-            discountAmount,
-            discount,
+            couponDiscount ,
+            newDiscountAmount,
             
         };
 
         res.json({
             success: true,
-            discountAmount,
+            couponDiscount ,
+            newDiscountAmount,
             
         });
     } catch (error) {
@@ -68,15 +69,15 @@ const RemoveCoupon = async(req, res) => {
 
         if (req.session.coupon) {
             const { coupon } = req.session;
-            const newDiscount = coupon.discountAmount - coupon.discount;
-            const newTotal = total + newDiscount; 
+            const newDiscountAmount = coupon.newDiscountAmount - coupon.couponDiscount;
+            const newTotal = total + coupon.couponDiscount; 
             await Coupon.findOneAndUpdate({code: coupon.code},{$inc:{usedCount: -1}})
             delete req.session.coupon;
             res.json({
                 success: true,
-                newDiscountAmount: coupon.discount,
+                newDiscountAmount,
                 newTotalAmount: newTotal,
-                message: 'Coupon has been removed '
+                message: 'Coupon has been removed',
             });
         } else {
             res.json({ success: false, message: 'No coupon to remove' });
@@ -292,9 +293,10 @@ const CreateRazorpay = async (req, res) => {
             receipt,
             payment_capture: 1 
         };
-        
+
+        const amounts = Math.ceil(options.amount)
         const order = await razorpayInstance.orders.create(options);
-        res.status(200).json({ orderId: order.id, amount: options.amount });
+        res.status(200).json({ orderId: order.id, amount: amounts });
     } catch (error) {
         console.log(error);
         res.status(500).send('Server error');

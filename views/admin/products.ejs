@@ -34,7 +34,7 @@
                 <td style="color: aliceblue;"><%= product[i].brand %></td>
                 <td style="color: aliceblue;"> ₹<%= product[i].price %> </td>
                 <td style="color: aliceblue;"> <%= product[i].category %> </td>
-                <td style="color: aliceblue;"><button type="button" class="btn  " style="background-color:green;"><a href="/admin/deletedCategory" style="text-decoration: none;color: rgb(255, 255, 255);">Details</a></button>
+                <td style="color: aliceblue;"><button type="button" class="btn  " style="background-color:green;" hidden><a href="/admin/deletedCategory" style="text-decoration: none;color: rgb(255, 255, 255);">Details</a></button>
                  <a href="/admin/editProducts?id=<%= product[i]._id %>"><button class="btn edit-btn" style="background-color:blue;" >Edit</button></a>
                     <button class="btn delete-btn" style="background-color:red;" data-id="<%= product[i]._id %>">Unlist</button>
                     </td>

@@ -415,14 +415,15 @@
                                 <% } %>
                                
                             </div>
-                                <% if(order.orderStatus !== "Canceled") { %>
+                            <% if(order.paymentStatus === "pending") {%>
+                                <button class="btn btn-warning payment-cpl" data-order-id="<%= order._id %>">Continue Payment</button>
+                                <% } %>
+                                <% if(order.orderStatus !== "Canceled" && order.paymentStatus !== "pending") { %>
                                     <div class="button-container">
                                         <% if(order.orderStatus !== "delivered") { %>
                                             <% if(order.orderStatus !== "order returned"){ %>
                                             <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
-                                            <% if(order.paymentStatus === "pending") {%>
-                                                <button class="btn btn-warning payment-cpl" data-order-id="<%= order._id %>">Continue Payment</button>
-                                                <% } %>
+
                                             <%}%>
                                         <% }else{ %>
                                             <% if(order.returnStatus === "not requested") {%>
@@ -475,7 +476,7 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="returnReasonModalLabel">Return Order</h5>
-                <button type="button" class="close" id="hehe" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" id="hehe" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
@@ -488,7 +489,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
                 <button type="button" class="btn btn-primary" id="submitReturnReason">Submit</button>
             </div>
         </form>

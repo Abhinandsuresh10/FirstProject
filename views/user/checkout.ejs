@@ -429,16 +429,21 @@
     <ul id="couponList">  
       <% coupons.forEach(coupon => { %>
         <% if(coupon.usedCount >= coupon.usageLimit) {%>
-          <p style="color: red;">no coupons available</p>
+          <li>
+            <span class="coupon-code"><small><%= coupon.code %></small></span>
+            <span class="coupon-code" style="color: red;"><small><%= coupon.discountValue %>%</small></span>
+            <span class="coupon-code" style="color: rgb(11, 84, 34);"><small><%= new Date(coupon.expiryDate).toLocaleDateString() %></small></span>
+            <span class="coupon-code">&nbsp;<small>₹<%= coupon.minPurchaseAmount %></small></span>
+            <button class="btn btn-outline-primary copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
+          </li> 
         <% } else { %>
-        <li>
           <span class="coupon-code"><small><%= coupon.code %></small></span>
           <span class="coupon-code" style="color: red;"><small><%= coupon.discountValue %>%</small></span>
           <span class="coupon-code" style="color: rgb(11, 84, 34);"><small><%= new Date(coupon.expiryDate).toLocaleDateString() %></small></span>
-          <span class="coupon-code">&nbsp;<small>₹<%= coupon.minPurchaseAmount %></small></span>
-          <button class="btn btn-outline-primary copy-btn" onclick="copyCouponCode('<%= coupon.code %>')">Copy</button>
-        </li>
+          <span class="coupon-code">&nbsp;<small>₹<%= coupon.minPurchaseAmount %></small>&nbsp;&nbsp;<small style="color: red;">expired</small></span>
+  
         <% } %>
+       
       <% }) %>
       
     </ul>
@@ -461,6 +466,11 @@
                         <span>Discount</span>
                         <span id="discount-amount">₹ discountAmount </span>
                     </p>
+                    <p class="d-flex">
+                      <span>Coupon Discount</span>
+                      <span id="coupon-discount-amount">₹0.00</span>
+                  </p>
+                  
                     <hr>
                     <p class="d-flex total-price">
                         <span>Total</span>
@@ -742,15 +752,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         if (response.ok) {
-            const { success, discountAmount, message } = await response.json();
+            const { success, couponDiscount, newDiscountAmount, message } = await response.json();
             if (success) {
-                document.getElementById('discount-amount').textContent = `₹${discountAmount.toFixed(2)}`;
-                let subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
-                let deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
-                let newTotal = subtotal + deliveryCharge - discountAmount;
+                document.getElementById('coupon-discount-amount').textContent = `₹${couponDiscount.toFixed(2)}`;
+                const subtotal = parseFloat(localStorage.getItem('cartSubtotal')) || 0;
+                const deliveryCharge = parseFloat(localStorage.getItem('cartDelivery')) || 0;
+                const newTotal = subtotal + deliveryCharge - newDiscountAmount;
                 document.getElementById('cart-total').textContent = `₹${newTotal.toFixed(2)}`;
-                
-             
+
                 Toastify({
                     text: "Coupon applied successfully!",
                     duration: 3000,
@@ -761,7 +770,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
                 changeButtonToRemove(); 
             } else {
-               
                 Toastify({
                     text: message,
                     duration: 3000,
@@ -771,7 +779,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 }).showToast();
             }
         } else {
-           
             Toastify({
                 text: 'Error applying coupon. Please try again.',
                 duration: 3000,
@@ -782,70 +789,67 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     } catch (error) {
         console.error('Fetch error:', error);
-       
         Toastify({
             text: 'An error occurred. Please try again.',
             duration: 3000,
             gravity: "top",
             position: "right",
             backgroundColor: "linear-gradient(to right, #ff4b2b, #ff416c)"
-
         }).showToast();
     }
 }
 
 
+
+
 function removeCoupon() {
-    const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
-    const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
-    const couponCode = couponCodeInput.value.trim(); 
+        const total = parseFloat(document.getElementById('cart-total').textContent.replace('₹', '')) || 0;
+        const discount = parseFloat(document.getElementById('discount-amount').textContent.replace('₹', '')) || 0;
+        const couponCode = couponCodeInput.value.trim();
 
-    fetch('/removeCoupon', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ couponCode, total, discount })
-    })
-    .then(response => response.json())
-    .then(data => {
-        if (data.success) {
-            localStorage.setItem('cartDiscount', data.newDiscountAmount);
-            updateCartTotalFromLocalStorage(); 
-            
-           
+        fetch('/removeCoupon', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ couponCode, total, discount })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                localStorage.setItem('cartDiscount', data.newDiscountAmount);
+                updateCartTotalFromLocalStorage();
+                document.getElementById('coupon-discount-amount').textContent = '₹0.00';
+
+                Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
+
+                changeButtonToApply();
+            } else {
+                Toastify({
+                    text: data.message,
+                    duration: 3000,
+                    gravity: "top",
+                    position: "right",
+                    backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+                }).showToast();
+            }
+        })
+        .catch(error => {
+            console.error('Error removing coupon:', error);
+
             Toastify({
-                text: data.message ,
+                text: 'An error occurred. Please try again.',
                 duration: 3000,
                 gravity: "top",
                 position: "right",
                 backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
             }).showToast();
-
-            changeButtonToApply(); 
-        } else {
-      
-            Toastify({
-                text: data.message,
-                duration: 3000,
-                gravity: "top",
-                position: "right",
-                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
-            }).showToast();
-        }
-    })
-    .catch(error => {
-        console.error('Error removing coupon:', error);
-       
-        Toastify({
-            text: 'An error occurred. Please try again.',
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
-        }).showToast();
-    });
-}
-
-
+        });
+    }
 
     function changeButtonToRemove() {
         applyCouponButton.textContent = 'Remove Coupon';
@@ -868,23 +872,21 @@ function removeCoupon() {
         if (couponCode) {
             applyCoupon(couponCode);
         } else {
-             
-        Toastify({
-            text: 'Please enter a coupon code.',
-            duration: 3000,
-            gravity: "top",
-            position: "right",
-            backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
-        }).showToast();
+            Toastify({
+                text: 'Please enter a coupon code.',
+                duration: 3000,
+                gravity: "top",
+                position: "right",
+                backgroundColor: "linear-gradient(to right, #ff5f6d, #ffc371)"
+            }).showToast();
         }
     }
 
     function removeCouponHandler() {
         removeCoupon();
     }
-    
+
     applyCouponButton.addEventListener('click', applyCouponHandler);
-   
 });
 
   </script>

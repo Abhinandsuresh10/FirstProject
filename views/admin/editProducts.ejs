@@ -87,11 +87,11 @@
       </div>
 
       <h4>Added Images</h4>
-      <div id="addedImagePreview" style="display: flex; flex-wrap: wrap;"></div><br>
+      <div id="addedImagePreview" style="display: flex; flex-direction: wrap;"></div><br>
 
       <button type="button" class="btn btn-secondary" onclick="openCropModal()">Crop Images</button><br><br>
 
-      <div id="croppedImagesContainer"></div>
+      <div id="croppedImagesContainer" style="display: flex; flex-direction: wrap;" ></div>
 
       <button type="submit" class="btn btn-primary me-2">Submit</button>
       <a href="/admin/products" class="btn btn-dark" style="text-decoration: none; color: white;">Cancel</a>
@@ -112,10 +112,10 @@
                 </button>
             </div>
             <div class="modal-body">
-                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;" ></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
                 <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
             </div>
         </div>
@@ -143,13 +143,25 @@
         const reader = new FileReader();
 
         reader.onload = (e) => {
+          const imgWrapper = document.createElement('div');
+          imgWrapper.style.width = '200px';
+          imgWrapper.style.height = '200px';
+          imgWrapper.style.margin = '10px';
+          imgWrapper.style.overflow = 'hidden';
+          imgWrapper.style.display = 'flex';
+          imgWrapper.style.justifyContent = 'center';
+          imgWrapper.style.alignItems = 'center';
+          imgWrapper.style.border = '1px solid #ddd'; 
+
           const img = document.createElement('img');
           img.src = e.target.result;
-          img.style.maxWidth = '200px';
-          img.style.margin = '10px';
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
           img.setAttribute('data-index', i);
 
-          cropperContainer.appendChild(img);
+          imgWrapper.appendChild(img);
+
+          cropperContainer.appendChild(imgWrapper);
 
           const cropper = new Cropper(img, {
             aspectRatio: 1,
@@ -166,7 +178,8 @@
     }
 
     $('#cropModal').modal('show');
-  }
+}
+
 
   function cropAllImages() {
     const croppedImagesContainer = document.getElementById('croppedImagesContainer');
@@ -254,13 +267,13 @@
     const imgElement = imageContainer.querySelector('img');
     const imgSrc = imgElement.src;
 
-    
+    imageContainer.remove();
 
     const existingImagesContainer = document.getElementById('existingImagePreview');
     const addedImagesContainer = document.getElementById('addedImagePreview');
 
     if (existingImagesContainer.contains(imageContainer)) {
-        console.log('Remove existing image: ' + imgSrc);
+      
     } else if (addedImagesContainer.contains(imageContainer)) {
         const fileInput = document.getElementById('ocs-productImage');
         const dataTransfer = new DataTransfer();
@@ -389,6 +402,12 @@
             });
         });
 
+        const fileInput = document.getElementById('ocs-productImage');
+          if (fileInput.files.length > 0 && croppers.length === 0) { 
+           for (let i = 0; i < fileInput.files.length; i++) {
+            formData.append('image', fileInput.files[i]);
+         }
+          }
 
         setTimeout(() => {
             fetch(form.action, {

@@ -1,6 +1,7 @@
 <%- include('./adminHeader.ejs') %>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.css">
 
+
 <div class="col-12 grid-margin stretch-card">
     <div class="card">
         <div class="card-body">
@@ -94,24 +95,22 @@
         <div class="modal-content">
             <div class="modal-header">
                 <h5 class="modal-title" id="cropModalLabel">Crop Images</h5>
-                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <button type="button" class="close" data-bs-dismiss="modal" aria-label="Close">
                     <span aria-hidden="true">&times;</span>
                 </button>
             </div>
             <div class="modal-body">
-                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;"></div>
+                <div id="cropperContainer" style="display: flex; flex-wrap: wrap;" ></div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" aria-label="Close">Close</button>
                 <button type="button" class="btn btn-primary" onclick="cropAllImages()">Crop</button>
             </div>
         </div>
     </div>
 </div>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>
-
-<!-- Include jQuery (necessary for Bootstrap's JavaScript plugins) -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.12/cropper.min.js"></script>\
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 
@@ -254,13 +253,27 @@
         const reader = new FileReader();
 
         reader.onload = (e) => {
+         
+          const imgWrapper = document.createElement('div');
+          imgWrapper.style.width = '200px';
+          imgWrapper.style.height = '200px';
+          imgWrapper.style.margin = '10px';
+          imgWrapper.style.overflow = 'hidden';
+          imgWrapper.style.display = 'flex';
+          imgWrapper.style.justifyContent = 'center';
+          imgWrapper.style.alignItems = 'center';
+          imgWrapper.style.border = '1px solid #ddd'; 
+
+          
           const img = document.createElement('img');
           img.src = e.target.result;
-          img.style.maxWidth = '200px';
-          img.style.margin = '10px';
+          img.style.maxWidth = '100%';
+          img.style.maxHeight = '100%';
           img.setAttribute('data-index', i);
 
-          cropperContainer.appendChild(img);
+          imgWrapper.appendChild(img);
+
+          cropperContainer.appendChild(imgWrapper);
 
           const cropper = new Cropper(img, {
             aspectRatio: 1,
@@ -277,7 +290,7 @@
     }
 
     $('#cropModal').modal('show');
-  }
+}
 
   function cropAllImages() {
     const croppedImagesContainer = document.getElementById('imagePreview');
@@ -366,7 +379,7 @@
   } else {
     event.preventDefault(); 
 
-    const form = event.target;
+    const form = event.target;  
     const formData = new FormData(form);
 
     formData.delete('image');
