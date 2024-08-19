@@ -78,13 +78,14 @@
           <% product.image.forEach(image => { %>
             <div class="image-container" style="position: relative; margin: 5px;">
               <img src="/static/productImages/<%= image %>" alt="Product Image" style="width: 100px; height: 150px; object-fit: cover;" >
-              <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this)">X</button>
+              <button type="button" class="btn btn-warning btn-sm" onclick="removeImage(this, '<%= image %>')">X</button>
             </div>
           <% }) %>
         <% } else { %>
           <p>No images available.</p>
         <% } %>
       </div>
+      <input type="hidden" name="removeImages" id="removeImages">
 
       <h4>Added Images</h4>
       <div id="addedImagePreview" style="display: flex; flex-direction: wrap;"></div><br>
@@ -221,6 +222,7 @@
     $('#cropModal').modal('hide');
   }
 
+
   function previewImages() {
     const preview = document.getElementById('addedImagePreview');
     preview.innerHTML = '';
@@ -261,41 +263,16 @@
       }
     }
   }
+  
+  let removeImagesArray = [];
 
-  function removeImage(button) {
-    const imageContainer = button.parentElement;
-    const imgElement = imageContainer.querySelector('img');
-    const imgSrc = imgElement.src;
+    function removeImage(button, imageName) {
+        const imageContainer = button.parentElement;
+        imageContainer.remove();
 
-    imageContainer.remove();
-
-    const existingImagesContainer = document.getElementById('existingImagePreview');
-    const addedImagesContainer = document.getElementById('addedImagePreview');
-
-    if (existingImagesContainer.contains(imageContainer)) {
-      
-    } else if (addedImagesContainer.contains(imageContainer)) {
-        const fileInput = document.getElementById('ocs-productImage');
-        const dataTransfer = new DataTransfer();
-        
-        for (let i = 0; i < fileInput.files.length; i++) {
-            const file = fileInput.files[i];
-            const reader = new FileReader();
-            
-            reader.onload = (e) => {
-                const fileDataURL = e.target.result;
-                if (fileDataURL !== imgSrc) {
-                    dataTransfer.items.add(file);
-                }
-            };
-
-            reader.readAsDataURL(file);
-        }
-
-        fileInput.files = dataTransfer.files;
-        
+        removeImagesArray.push(imageName);
+        document.getElementById('removeImages').value = removeImagesArray.join(',');
     }
-}
 
 
   function validateForm() {
@@ -391,6 +368,7 @@
         oldImages.forEach((img, index) => {
             const imgSrc = img.src;
             formData.append('existingImages', imgSrc);
+            
         });
 
         formData.delete('image');

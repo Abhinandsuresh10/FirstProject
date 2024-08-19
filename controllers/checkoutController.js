@@ -25,6 +25,7 @@ const ApplyCoupon = async (req, res) => {
             });
         }
         const minPurchaseAmount = coupon.minPurchaseAmount;
+        const maxPurchaseAmount = coupon.maxPurchaseAmount;
         if (new Date() > new Date(coupon.expiryDate)) {
             return res.json({
                 success: false,
@@ -37,8 +38,14 @@ const ApplyCoupon = async (req, res) => {
             message: `minimum total atleast ${minPurchaseAmount}` 
         });
       }
+      if(total > maxPurchaseAmount){
+        return res.json({
+            success: false,
+            message: `maximum total cannot be more than ${maxPurchaseAmount}` 
+        });
+      }
 
-        const couponDiscount  = ((coupon.discountValue / 100) * total);
+        const couponDiscount  = Math.ceil((coupon.discountValue / 100) * total);
         const newDiscountAmount = couponDiscount  + discount;
         await Coupon.findOneAndUpdate({code: couponCode},{$inc:{usedCount: 1}})
         
@@ -57,7 +64,7 @@ const ApplyCoupon = async (req, res) => {
         });
     } catch (error) {
         console.error('Server error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -84,7 +91,7 @@ const RemoveCoupon = async(req, res) => {
         }
     } catch (error) {
         console.error('Server error:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -138,7 +145,7 @@ const loadCheckout = async (req, res) => {
 
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Internal Server Error');
+        res.render('500');
     }
 };
 
@@ -203,7 +210,7 @@ const loadUserOrderDetails = async (req, res) => {
             orders: completeOrderDetails
         });
     } catch (error) {
-        res.status(500).json({ message: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -236,7 +243,8 @@ const insertPlaceOrder = async(req,res)=>{
                 price: item.price
             })),
             amount : amounts,
-            AllDiscount : AllDiscounts
+            AllDiscount : AllDiscounts,
+            paymentStatus: 'pending'
         });
 
         
@@ -299,7 +307,7 @@ const CreateRazorpay = async (req, res) => {
         res.status(200).json({ orderId: order.id, amount: amounts });
     } catch (error) {
         console.log(error);
-        res.status(500).send('Server error');
+        res.render('500');
     }
 };
 
@@ -373,7 +381,7 @@ const VerifyRazorpay = async (req, res) => {
         }
     } catch (error) {
         console.error('Error verifying payment:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.render('500');
     }
 };
 
@@ -433,7 +441,7 @@ const PlaceOrderOnFailure = async (req, res) => {
         res.status(200).json({ message: 'Order placed successfully despite payment failure', redirectUrl: `/orderShow` });
     } catch (error) {
         console.error('Error placing order on failure:', error);
-        res.status(500).json({ message: 'Internal server error' });
+        res.render('500');
     }
 };
 
@@ -494,7 +502,7 @@ const verifyRazorPayPayment = async (req, res) => {
         }
     } catch (error) {
         console.error('Error verifying payment:', error);
-        res.status(500).json({ message: 'Error verifying payment' });
+        res.render('500');
     }
 }
 
@@ -552,7 +560,7 @@ const loadOrdersShow = async (req, res) => {
         });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Server Error');
+        res.render('500');
     }
 };
 
@@ -615,7 +623,7 @@ const CancelOrder = async (req, res) => {
         res.json({ success: true, message: 'Order cancellation requested successfully', updatedOrder });
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -650,7 +658,7 @@ const ReturnRequest = async (req, res) => {
         
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ success: false, message: 'Server error' });  
+        res.render('500');
     }
 };
 

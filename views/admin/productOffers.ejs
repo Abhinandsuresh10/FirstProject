@@ -1,5 +1,18 @@
 <%- include('./adminHeader.ejs') %>
+<style>
+  input.is-invalid {
+    border-color: #dc3535; 
+}
 
+.invalid-feedback {
+    display: none; 
+    color: #dc3535; 
+}
+
+input.is-invalid ~ .invalid-feedback {
+    display: block;
+}
+</style>
 
 <div class="col-lg-6 grid-margin stretch-card" style="width: 100%;">
     <div class="card">
@@ -69,11 +82,12 @@
             </div>
             <div class="form-group">
               <label for="offerPercentage">Offer Percentage</label>
-              <input type="number" class="form-control" id="offerPercentage" name="offerPercentage" placeholder="Enter percentage" min="0" max="100" style="color: aliceblue;" required>
+              <input type="number" class="form-control" id="offerPercentage" name="offerPercentage" placeholder="Enter percentage" min="1" max="100" style="color: aliceblue;" required>
             </div>
             <div class="form-group">
               <label for="expiryDate">Expiry Date</label>
               <input type="date" class="form-control" id="expiryDate" name="expiryDate" style="color: aliceblue;" required>
+              <div id="dateError" class="invalid-feedback" ></div>
             </div>
             <div class="form-group text-right">
               <button type="submit" class="btn btn-primary">Add Offer</button>
@@ -105,12 +119,13 @@
                   </div>
                   <div class="form-group">
                       <label for="editOfferPercentage">Offer Percentage</label>
-                      <input type="number" class="form-control" id="editOfferPercentage" name="offerPercentage" placeholder="Enter percentage" min="0" max="100" required>
+                      <input type="number" style="color: aliceblue;" class="form-control" id="editOfferPercentage" name="offerPercentage"  placeholder="Enter percentage" min="1" max="100" required>
                   </div>
                   <div class="form-group">
                       <label for="editExpiryDate">Expiry Date</label>
-                      <input type="date" class="form-control" id="editExpiryDate" name="expiryDate" required>
-                  </div>
+                      <input type="date" class="form-control" style="color: aliceblue;" id="editExpiryDate" name="expiryDate" required>
+                      <div id="dateErrors" class="invalid-feedback" ></div>
+                    </div>
                   <div class="form-group text-right">
                       <button type="submit" class="btn btn-primary">Update Offer</button>
                   </div>
@@ -124,9 +139,25 @@
     document.addEventListener('DOMContentLoaded', () => {
       const form = document.getElementById('offerForm');
       const modalElement = document.getElementById('addOfferModal');
+      const dateError = document.getElementById('dateError')
+      const dateInput = document.getElementById('expiryDate')
       
       form.addEventListener('submit', async (event) => {
         event.preventDefault();
+
+        dateError.textContent = "";
+       dateInput.classList.remove('is-invalid')
+  
+       const expiryDate = new Date(dateInput.value);
+       const today = new Date();
+
+       today.setHours(0,0,0,0);
+
+       if(expiryDate <= today){
+        dateError.textContent = "Expiry date must be future date";
+        dateInput.classList.add('is-invalid');
+        return;
+       }
   
         const formData = new FormData(form);
         const data = {};
@@ -167,6 +198,7 @@
       const editProductSelect = document.getElementById('editProductSelect');
       const editOfferPercentage = document.getElementById('editOfferPercentage');
       const editExpiryDate = document.getElementById('editExpiryDate');
+      const dateErrors = document.getElementById('dateErrors');
 
       document.querySelectorAll('.edit-offer-button').forEach(button => {
           button.addEventListener('click', () => {
@@ -186,6 +218,20 @@
 
       editForm.addEventListener('submit', async (event) => {
           event.preventDefault();
+          
+          dateErrors.textContent = "";
+            editExpiryDate.classList.remove('is-invalid')
+  
+       const expiryDate = new Date(editExpiryDate.value);
+       const today = new Date();
+
+       today.setHours(0,0,0,0);
+
+       if(expiryDate <= today){
+        dateErrors.textContent = "Expiry date must be future date";
+        editExpiryDate.classList.add('is-invalid');
+        return;
+       }
 
           const formData = new FormData(editForm);
           const data = {};

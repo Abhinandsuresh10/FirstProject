@@ -31,7 +31,8 @@ const cartLoad = async (req, res) => {
 
     } catch (error) {
         console.error(error.message);
-        res.status(500).send('Internal Server Error');
+        res.render('500')
+        
     }
 };
 
@@ -67,7 +68,7 @@ const insertCart = async (req, res) => {
         res.json({ success: true, message: 'Product added to cart successfully.' });
     } catch (error) {
         console.error('Error adding product to cart:', error);
-        res.status(500).json({ success: false, message: 'Failed to add product to cart.' });
+        res.render('500');
     }
 };
 
@@ -157,7 +158,7 @@ const deleteCart = async(req,res)=>{
   
     } catch (error) {
       console.error(error);
-      res.status(500).json({ success: false, message: 'Server error' });
+      res.render('500');
     }
   };
 
@@ -176,8 +177,7 @@ const deleteCart = async(req,res)=>{
 
         res.status(200).json({ success: true, message: 'Product removed from wishlist' });
     } catch (error) {
-        console.error('Error removing product from wishlist:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -213,7 +213,7 @@ const InsertWallet = async(req,res)=>{
         res.json({ orderId: order.id });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 }
 
@@ -258,7 +258,7 @@ const AddToWallet = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        re.render('500');
     }
 };
 

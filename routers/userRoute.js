@@ -143,4 +143,5 @@ userRoute.post('/applyCoupon',checkoutController.ApplyCoupon);
 userRoute.post('/removeCoupon',checkoutController.RemoveCoupon)
 
 
+
 module.exports = userRoute;

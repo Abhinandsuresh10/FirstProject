@@ -122,6 +122,8 @@ adminRoute.get('/DashboardDaily',adminController.LoadDashboardDaily)
 
 adminRoute.get('/logout',adminController.adminLogout);
 
-
+adminRoute.use((req,res,next)=> {
+    res.status(500).render('500')
+})
 
 module.exports = adminRoute;

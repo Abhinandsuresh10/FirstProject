@@ -395,9 +395,7 @@
           <p><strong>Shipping Address:</strong> <%= order.shippingAddress.street %>, <%= order.shippingAddress.city %>, <%= order.shippingAddress.state %> - <%= order.shippingAddress.zipcode %></p>
                                 <p><strong>Payment Method:</strong> <%= order.paymentMethod %></p>
                                 <p><strong>Payment Status:</strong>&nbsp;<span style="color: rgb(12, 61, 61);"><%= order.paymentStatus %></span></p>
-                                <% if(order.paymentStatus === "pending" && order.orderStatus !== 'Canceled') {%>
-                                    <p style="position: absolute; left: 55%; color: red; "><b>your order payment is not completed yet due to some payment issue! <br> please complete the payment</b></p>
-                                    <% } %>   
+            
                                 <% if(order.orderStatus !== "Canceled" && order.orderStatus !== "order returned") { %>
                                     <button class="btn btn-dark" data-bs-toggle="modal" data-bs-target="#orderStatusModal-<%= order._id %>">Order Status</button><br><br>
                                 <% } else { %>
@@ -415,28 +413,37 @@
                                 <% } %>
                                
                             </div>
-                            <% if(order.paymentStatus === "pending") {%>
+                            <% if(order.paymentStatus === "pending" && order.paymentMethod === "RazorPay") {%>
+                                <p style="position: absolute; left: 45%; color: red; "><b>your order payment is not completed yet due to some payment issue! <br> please complete the payment</b></p>
                                 <button class="btn btn-warning payment-cpl" data-order-id="<%= order._id %>">Continue Payment</button>
                                 <% } %>
-                                <% if(order.orderStatus !== "Canceled" && order.paymentStatus !== "pending") { %>
+                               
+                                <% if(order.orderStatus !== "Canceled" ) { %>
                                     <div class="button-container">
-                                        <% if(order.orderStatus !== "delivered") { %>
+                                        <% if(order.orderStatus !== "delivered" ) { %>
                                             <% if(order.orderStatus !== "order returned"){ %>
+                                                <% if(  order.paymentStatus !== "pending") {%>
                                             <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
-
+                                                     <% } %>
                                             <%}%>
                                         <% }else{ %>
                                             <% if(order.returnStatus === "not requested") {%>
                                             <button class="return-button" data-order-id="<%= order._id %>">Return Order</button>
-                                            <button class="invoice-button" data-order-id="<%= order._id %>" id="downloadInvoiceBtn"><b>Download Invoice</b></button>
+                                            <button class="invoice-button" id="downloadInvoiceBtn-<%= order._id %>"><b>Download Invoice</b></button>
                                             <%}%>
                                             <%if(order.returnStatus === "requested") {%>
                                                 <p style="color: red;">return requested</p>
                                                 <%}%>
                                         <%}%>
+                                        <% } %>
+                                        <% if (order.orderStatus === 'pending' && order.paymentMethod === 'Cash on delivery' || order.orderStatus === 'shipped' && order.paymentMethod === 'Cash on delivery') {%>
+                                            <button class="cancel-button" data-order-id="<%= order._id %>">Cancel Order</button>
+                                        <% } %>
+                                        
                                     </div>
-                                    <% } %>
-                            
+                                    
+                               
+                                   
                         </div>
                     <% }) %>
                     
@@ -587,11 +594,15 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
   <script>
-    document.getElementById("downloadInvoiceBtn").addEventListener("click", async function () {
-        const totalDiscount = document.getElementById("totalDiscount").innerText.split('\n')[0].trim();
-        const a = document.getElementById("a").innerText.split('\n')[0].trim();
-        const orderTotal = document.getElementById("orderTotal").innerText.trim();
-        const b = document.getElementById("b").innerText.trim();
+   document.querySelectorAll(".invoice-button").forEach(button => {
+    button.addEventListener("click", async function () {
+        const orderId = this.dataset.orderId;  
+        const orderContainer = this.closest(".order-container");  
+
+        const totalDiscount = orderContainer.querySelector("#totalDiscount").innerText.split('\n')[0].trim();
+        const a = orderContainer.querySelector("#a").innerText.split('\n')[0].trim();
+        const orderTotal = orderContainer.querySelector("#orderTotal").innerText.trim();
+        const b = orderContainer.querySelector("#b").innerText.trim();
 
         let doc = new window.jspdf.jsPDF();
         let pageCenter = doc.internal.pageSize.getWidth() / 2;
@@ -601,13 +612,13 @@
         doc.setFontSize(18);
         doc.text("Sales Report", pageCenter, 30, { align: 'center' });
 
-        const table = document.querySelector(".table");
+        const table = orderContainer.querySelector(".table");  
         const tableRows = [];
 
         table.querySelectorAll("tbody tr").forEach(tr => {
             const rowData = [];
             tr.querySelectorAll("td").forEach((td, index) => {
-                if (index !== 1) {
+                if (index !== 1) { 
                     rowData.push(td.innerText);
                 }
             });
@@ -615,7 +626,7 @@
         });
 
         doc.autoTable({
-            head: [['Product', 'Price', 'Quantity', 'Total']],  
+            head: [['Product', 'Price', 'Quantity', 'Total']],
             body: tableRows,
             styles: {
                 fontSize: 10,
@@ -632,18 +643,18 @@
         doc.setFontSize(10);
         doc.text(a + ": " + totalDiscount, pageCenter, doc.previousAutoTable.finalY + 20, { align: 'center' });
         doc.setTextColor(0, 128, 0);
-        doc.text(" INR", pageCenter + doc.getTextWidth(a + ": " + totalDiscount), doc.previousAutoTable.finalY + 20, { align: 'left' });
+        doc.text(" ", pageCenter + doc.getTextWidth(a + ": " + totalDiscount), doc.previousAutoTable.finalY + 20, { align: 'left' });
 
         doc.setTextColor(0, 0, 0);
         doc.text(b + ": " + orderTotal, pageCenter, doc.previousAutoTable.finalY + 30, { align: 'center' });
         doc.setTextColor(0, 128, 0);
-        doc.text(" INR", pageCenter + doc.getTextWidth(b + ": " + orderTotal), doc.previousAutoTable.finalY + 30, { align: 'left' });
+        doc.text(" ", pageCenter + doc.getTextWidth(b + ": " + orderTotal), doc.previousAutoTable.finalY + 30, { align: 'left' });
 
         doc.setTextColor(0, 0, 0);
-
-
-        doc.save("SalesReport.pdf");
+        doc.save(`SalesReport_${orderId}.pdf`);  
     });
+});
+
 </script>
 
 

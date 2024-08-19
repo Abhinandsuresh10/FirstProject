@@ -19,6 +19,10 @@ const couponSchema = new mongoose.Schema({
     type: Number,
     default: 0,
   },
+  maxPurchaseAmount: {
+    type: Number,
+    default: 0,
+  },
   usageLimit: {
     type: Number,
     default: 1,

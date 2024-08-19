@@ -27,8 +27,7 @@ const loadorders = async (req, res) => {
                 order.orderItems.map(async item => {
                     const product = await Product.findById(item.product).lean();
                     if (!product) {
-                        console.error(`Product with ID ${item.product} not found`);
-                        return null; // Or handle this case appropriately
+                        return null; 
                     }
                     const discountPrice = product.discount || 0;
                     const discountedPrice = item.price - discountPrice;
@@ -113,7 +112,7 @@ const LoadOrderView = async (req, res) => {
         res.render('adminOrderView', { order: detailedOrder });
     } catch (error) {
         console.log(error.message);
-        res.status(500).send('Server Error');
+        res.render('500');
     }
 };
 
@@ -123,6 +122,13 @@ const ChangeStatus = async (req, res) => {
   
     try {
       const updatedOrder = await Order.findByIdAndUpdate(orderId, { orderStatus }, { new: true });
+
+      if(updatedOrder.orderStatus === 'delivered'){
+          if(updatedOrder.paymentMethod === 'Cash on delivery' && updatedOrder.paymentStatus === 'pending'){
+            updatedOrder.paymentStatus = 'paid';
+            await updatedOrder.save();
+          }
+      }
   
       if (orderStatus === 'order returned') {
         const totalPrice = updatedOrder.amount;
@@ -157,7 +163,7 @@ const ChangeStatus = async (req, res) => {
       
     } catch (error) {
       console.log(error.message);
-      res.status(500).json({ success: false, message: 'Server error' });
+      res.render('500');
     }
   };
   

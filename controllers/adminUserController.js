@@ -21,7 +21,7 @@ const blockUser = async (req, res) => {
         res.json({ success: true, message: 'User has been blocked successfully.' });
     } catch (error) {
         console.error('Error blocking user:', error);
-        res.status(500).json({ success: false, message: 'Failed to block user.' });
+        res.render('500');
     }
 };
 
@@ -32,7 +32,7 @@ const unblockUser = async (req, res) => {
         res.json({ success: true, message: 'User has been unblocked successfully.' });
     } catch (error){
         console.error('Error unblocking user:', error);
-        res.status(500).json({ success: false, message: 'Failed to unblock user.' });
+        res.render('500');
     }
 };
 

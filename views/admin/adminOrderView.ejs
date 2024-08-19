@@ -79,7 +79,23 @@
                     </tbody>
                     <tfoot>
                         <tr>
-                            <th colspan="6" style="text-align:right">Total Order Cost:</th>
+                          
+                                <th>Coupon adiscount:</th>
+                                <% 
+                                let res = 0;
+                                order.orderItems.forEach((item) => { 
+                                    let itemTotal = parseFloat(item.totalAmount) || 0;
+                                    res += itemTotal;
+                                }); 
+                                let orderAmount = parseFloat(order.amount) || 0;
+                                let res2 = (res - orderAmount).toFixed(2);
+                            %>
+                            <th>
+                                <%= res2 %>
+                            </th>
+                            
+                                
+                            <th colspan="4" style="text-align:right">Total Order Cost:</th>
                             <th>₹<%= order.amount.toFixed(2) %></th>
                         </tr>
                     </tfoot>

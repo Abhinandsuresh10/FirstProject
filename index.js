@@ -12,7 +12,6 @@ const app = express();
 
 app.set('view engine','ejs');
 
-
 app.use("/static",express.static(path.join(__dirname,"public")));
 
 
@@ -26,6 +25,8 @@ app.use(session({
     resave: false,
 }));
 
+
+
 //userRoute...
 const userRoute = require('./routers/userRoute');
 app.use('/',userRoute);
@@ -33,6 +34,22 @@ app.use('/',userRoute);
 //adminRoute...
 const adminRoute = require('./routers/adminRoute');
 app.use('/admin',adminRoute);
+
+//404 page
+
+app.use((req,res,next)=> {
+    res.status(404).render('user/404')
+});
+
+
+//500 page
+
+app.use((req,res,next)=> {
+    res.status(500).render('500')
+})
+
+
+
 
 const PORT = process.env.PORT;
 

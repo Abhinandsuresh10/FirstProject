@@ -124,11 +124,17 @@ const editProductLoad  = async(req,res)=>{
 const editProduct = async (req, res) => {
     try {
         const imagePaths = req.files.map(file => file.filename);
-        const { name, category, brand, model, material, price, discount, stock, discription } = req.body;
+        const { name, category, brand, model, material, price, discount, stock, discription, removeImages  } = req.body;
+        
         const id = req.query.pid;
 
         const existingProduct = await prducts.findById(id);
-        const existingImages = existingProduct.image || [];
+        let  existingImages = existingProduct.image || [];
+
+        const imagesToRemove = removeImages ? removeImages.split(',') : [];
+
+      
+        existingImages = existingImages.filter(img => !imagesToRemove.includes(img));
 
         const updatedImages = [...existingImages, ...imagePaths];
 

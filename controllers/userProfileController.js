@@ -16,6 +16,7 @@ const loadProfile = async(req,res)=>{
 }
 
 const loadAddress = async(req,res)=>{
+    
     try {
         const id = req.session.userData._id;
         const addresses = await address.find({userId : id});
@@ -60,7 +61,7 @@ const deleteAddress = async(req, res) => {
         res.status(200).json({ message: 'Address deleted successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ error: 'Server error' });
+        res.render('500');
     }
 };
 
@@ -109,7 +110,7 @@ const userUpdates = async (req, res) => {
         res.json({ message: 'User updated successfully' });
     } catch (error) {
         console.error('Error updating user:', error.message);
-        res.status(500).json({ error: 'Failed to update user' });
+        res.render('500');
     }
 };
 
@@ -138,7 +139,7 @@ const changePassword = async(req,res)=>{
         res.status(200).json({ success: true, message: 'Password changed successfully' });
     } catch (error) {
         console.error('Error changing password:', error);
-        res.status(500).json({ success: false, message: 'Server error' });
+        res.render('500');
     }
 }
 

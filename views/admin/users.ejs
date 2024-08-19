@@ -49,7 +49,6 @@
 <script>
   function confirmBlock(userId) {
     Swal.fire({
-      title: "Are you sure?",
       text: "You are about to block this user.",
       icon: "warning",
       showCancelButton: true,
@@ -75,7 +74,6 @@
         .then(data => {
        
           Swal.fire({
-            title: "Blocked!",
             text: "User has been blocked.",
             icon: "success"
           }).then(() => {
@@ -104,7 +102,6 @@
 
   function confirmUnblock(userId) {
     Swal.fire({
-      title: "Are you sure?",
       text: "You are about to unblock this user.",
       icon: "warning",
       showCancelButton: true,
@@ -130,7 +127,6 @@
         .then(data => {
         
           Swal.fire({
-            title: "Unblocked!",
             text: "User has been unblocked.",
             icon: "success"
           }).then(() => {

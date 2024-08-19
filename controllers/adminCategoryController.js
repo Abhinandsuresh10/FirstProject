@@ -59,8 +59,7 @@ const editCategory = async (req, res) => {
         res.redirect('/admin/category')
       
     } catch (error) {
-        console.log(error.message);
-        res.status(500).json({ success: false, message: 'Failed to update category.' });
+        re.render('500');
     }
 };
 
@@ -105,7 +104,7 @@ const brandsLoad = async(req,res)=>{
     try {
         
         const userList = await Brands.find({is_delete:false});
-        res.render('brands',{brands:userList});
+        res.render('brands',{brands:userList,message:''});
     } catch (error) {
         console.log(error.message);
     }
@@ -114,16 +113,20 @@ const brandsLoad = async(req,res)=>{
 const addBrand = async(req,res)=>{
     const {name} = req.body;
     try {
-  
+        const same = await Brands.findOne({name:name},{is_delete:true});
+        const userList = await Brands.find({is_delete:false});
+        if(same){
+            res.render('brands',{brands:userList,message:'already existed brand'})
+        }else{
         const newBrands = new Brands({
             name:name,
             is_delete:false
         });
        
         await newBrands.save();
-     
         res.redirect('/admin/brands');
-
+    }
+     
     } catch (error) {
         console.log(error.message)
     }
@@ -143,7 +146,7 @@ const editBrand = async (req, res) => {
       
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ success: false, message: 'Failed to update category.' });
+        re.render('500');
     }
 };
 
@@ -227,7 +230,7 @@ const LoadCategoryOffers = async(req,res)=>{
         res.status(200).json({ message: 'Offer added and products updated successfully!' });
         } catch (error) {
         console.error('Error adding offer:', error);
-        res.status(500).json({ error: 'An error occurred while adding the offer.' });
+        re.render('500');
         }
     };
   
@@ -274,7 +277,7 @@ const LoadCategoryOffers = async(req,res)=>{
         res.status(200).json(updatedOffer);
     } catch (error) {
         console.error('Error updating offer:', error);
-        res.status(500).json({ error: 'An error occurred while updating the offer.' });
+        res.render('500');
     }
 };
 
@@ -301,7 +304,7 @@ const DeleteCategoryOffer = async (req, res) => {
         res.json({ success: true, message: 'Offer and product discounts removed successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Failed to delete offer' });
+        re.render('500');
     }
 };
 
@@ -347,7 +350,7 @@ const InsertProductOffer = async(req,res)=>{
       res.status(200).json({ message: 'Offer added successfully!' });
     } catch (error) {
       console.error('Error adding offer:', error);
-      res.status(500).json({ error: 'An error occurred while adding the offer.' });
+      res.render('500');
     }
 }
 
@@ -389,7 +392,7 @@ const UpdateProductOffer = async(req,res)=>{
         res.status(200).json(updatedOffer);
     } catch (error) {
         console.error('Error updating offer:', error);
-        res.status(500).json({ error: 'An error occurred while updating the offer.' });
+        res.render('500')
     }
 }
 
@@ -418,7 +421,7 @@ const DeleteProductOffer = async (req, res) => {
         res.json({ success: true, message: 'Offer and product discount removed successfully' });
     } catch (error) {
         console.error(error);
-        res.status(500).json({ success: false, message: 'Failed to delete offer' });
+        res.render('500')
     }
 };
 

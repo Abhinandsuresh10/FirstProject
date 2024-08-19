@@ -91,7 +91,7 @@ const insertUser = async (req, res) => {
         res.json({ success: true, redirectToOtp: true });
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ success: false, message: 'Failed to register user' });
+        res.render('500');
     }
 };
 
@@ -143,7 +143,7 @@ const verifyOtp = async (req, res) => {
         }
     } catch (error) {
         console.error(error);
-        res.status(500).json({ message: 'OTP verification failed' });
+        res.render('500');
     }
 };
 
@@ -197,7 +197,8 @@ const verifyLogin = async(req,res)=>{
 
 const resendOtp = async (req, res) => {
     try {
-        const { email } = req.session.userData;
+       
+        const { email } = req.session.user;
 
         const otp = generateOtp();
         req.session.otp = otp;
@@ -206,7 +207,7 @@ const resendOtp = async (req, res) => {
         res.json({ message: 'OTP has been resent to your email.' });
     } catch (error) {
         console.log(error.message);
-        res.status(500).json({ message: 'Failed to resend OTP' });
+        res.render('500');
     }
 };
 
@@ -320,7 +321,7 @@ const ForgotEmailSent = async (req, res) => {
         res.status(200).json({ success: true, message: 'Password reset email sent.' });
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ success: false, message: 'Server error.' });
+        res.render('500');
     }
 };
 
@@ -340,7 +341,7 @@ const forgotPassword = async (req, res) => {
        res.render('resetPassword',{token})
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ success: false, message: 'Server error.' });
+        res.render('500');
     }
 };
 
@@ -365,7 +366,7 @@ const insertNewPawword = async(req,res)=>{
         res.redirect('/login');
     } catch (error) {
         console.error(error.message);
-        res.status(500).json({ success: false, message: 'Server error.' });
+        res.render('500');
     }
 }
 

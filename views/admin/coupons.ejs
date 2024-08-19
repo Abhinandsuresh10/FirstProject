@@ -76,7 +76,13 @@
                             <input type="number" id="minPurchaseAmount<%= coupon._id %>" class="form-control" placeholder="Enter minimum purchase amount" value="<%= coupon.minPurchaseAmount %>" style="color: aliceblue;">
                             <div id="minPurchaseError<%= coupon._id %>" class="error text-danger d-none"><small>Minimum purchase amount must be at least 500.</small></div>
                           </div>
-          
+
+                          <div class="form-group">
+                            <label for="maxPurchaseAmount<%= coupon._id %>">Maximum Purchase Amount:</label>
+                            <input type="number" class="form-control" id="maxPurchaseAmount<%= coupon._id %>" style="color: aliceblue;" value="<%= coupon.maxPurchaseAmount %>" placeholder="Enter maximum purchase amount">
+                            <small id="maxPurchaseError<%= coupon._id %>" class="error text-danger d-none">Maximum purchase amount should be moret than min</small>
+                          </div>
+
                           <div class="form-group">
                             <label for="usageLimit<%= coupon._id %>">Usage Limit</label>
                             <input type="number" id="usageLimit<%= coupon._id %>" class="form-control" placeholder="Enter usage limit" value="<%= coupon.usageLimit %>" style="color: aliceblue;">
@@ -132,6 +138,11 @@
               <small id="minPurchaseErrors" class="text-danger d-none">Minimum purchase amount must be at least 1000.</small>
             </div>
             <div class="form-group">
+              <label for="maxPurchaseAmount">Maximum Purchase Amount:</label>
+              <input type="number" class="form-control" id="maxPurchaseAmounts" style="color: aliceblue;" name="maxPurchaseAmount">
+              <small id="maxPurchaseErrors" class="text-danger d-none">Maximum purchase amount should be moret than min</small>
+            </div>
+            <div class="form-group">
               <label for="usageLimit">Usage Limit:</label>
               <input type="number" class="form-control" id="usageLimits" style="color: aliceblue;" name="usageLimit">
               <small id="usageLimitErrors" class="text-danger d-none">Usage limit must be greater than 0.</small>
@@ -154,9 +165,11 @@
       
       const codeInput = document.getElementById('codes');
       const minPurchaseAmountInput = document.getElementById('minPurchaseAmounts');
+      const maxPurchaseAmountInput = document.getElementById('maxPurchaseAmounts');
       const usageLimitInput = document.getElementById('usageLimits');
       const codeError = document.getElementById('codeErrors');
       const minPurchaseError = document.getElementById('minPurchaseErrors');
+      const maxPurchaseError = document.getElementById('maxPurchaseErrors');
       const usageLimitError = document.getElementById('usageLimitErrors');
       const discountInput = document.getElementById('discountValues');
       const discountError = document.getElementById('DiscountErrors');
@@ -176,6 +189,14 @@
         isValid = false;
       } else {
         minPurchaseError.classList.add('d-none');
+      }
+     console.log(Number(maxPurchaseAmountInput.value) , Number(minPurchaseAmountInput.value));
+     
+      if (parseFloat(maxPurchaseAmountInput.value) < parseFloat(minPurchaseAmountInput.value)  ) {
+        maxPurchaseError.classList.remove('d-none');
+        isValid = false;
+      } else {
+        maxPurchaseError.classList.add('d-none');
       }
     
       if (usageLimitInput.value <= 0) {
@@ -208,6 +229,7 @@
       const discountValue = document.getElementById('discountValues').value;
       const expiryDate = document.getElementById('expiryDates').value;
       const minPurchaseAmount = minPurchaseAmountInput.value;
+      const maxPurchaseAmount = maxPurchaseAmountInput.value;
       const usageLimit = usageLimitInput.value;
     
       try {
@@ -221,6 +243,7 @@
             discountValue,
             expiryDate,
             minPurchaseAmount,
+            maxPurchaseAmount,
             usageLimit
           })
         });
@@ -266,12 +289,14 @@
         const codeInput = document.getElementById(`code${couponId}`);
         const discountInput = document.getElementById(`discountValue${couponId}`);
         const minPurchaseAmountInput = document.getElementById(`minPurchaseAmount${couponId}`);
+        const maxPurchaseAmountInput = document.getElementById(`maxPurchaseAmount${couponId}`);
         const usageLimitInput = document.getElementById(`usageLimit${couponId}`);
         const expiryDateInput = document.getElementById(`expiryDate${couponId}`);
 
         const codeError = document.getElementById(`codeError${couponId}`);
         const discountError = document.getElementById(`discountError${couponId}`);
         const minPurchaseError = document.getElementById(`minPurchaseError${couponId}`);
+        const maxPurchaseError = document.getElementById(`maxPurchaseError${couponId}`);
         const usageLimitError = document.getElementById(`usageLimitError${couponId}`);
         const expiryDateError = document.getElementById(`expiryDateError${couponId}`);
         
@@ -298,6 +323,13 @@
           minPurchaseError.classList.add('d-none');
         }
 
+        if (Number(maxPurchaseAmountInput.value.trim()) < Number(minPurchaseAmountInput.value.trim()) ) {
+          isValid = false;
+          maxPurchaseError.classList.remove('d-none');
+        } else {
+          maxPurchaseError.classList.add('d-none');
+        }
+
         if (usageLimitInput.value.trim() <= 0) {
           isValid = false;
           usageLimitError.classList.remove('d-none');
@@ -321,6 +353,7 @@
         const discountValue = discountInput.value.trim();
         const expiryDate = document.getElementById(`expiryDate${couponId}`).value;
         const minPurchaseAmount = minPurchaseAmountInput.value.trim();
+        const maxPurchaseAmount = maxPurchaseAmountInput.value.trim();
         const usageLimit = usageLimitInput.value.trim();
 
         try {
@@ -334,6 +367,7 @@
               discountValue,
               expiryDate,
               minPurchaseAmount,
+              maxPurchaseAmount,
               usageLimit
             })
           });
