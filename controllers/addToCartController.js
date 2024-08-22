@@ -194,8 +194,8 @@ const LoadWallet = async(req,res)=>{
 }
 
 const razorpay = new Razorpay({
-    key_id: 'rzp_test_Mwa9XdFzCTCV9f',
-    key_secret: 'T5Bve4C2Dn1VwYXtVQNEWDHZ'
+    key_id: process.env.RAZORPAY_KEY_ID,
+    key_secret: process.env.RAZORPAY_KEY_SECRET
 });
 
 const InsertWallet = async(req,res)=>{
@@ -221,7 +221,7 @@ const AddToWallet = async (req, res) => {
     const { paymentId, orderId, signature, amount } = req.body;
 
     try {
-        const hmac = crypto.createHmac('sha256', 'T5Bve4C2Dn1VwYXtVQNEWDHZ');
+        const hmac = crypto.createHmac('sha256', process.env.RAZORPAY_KEY_SECRET);
         hmac.update(orderId + "|" + paymentId);
         const generatedSignature = hmac.digest('hex');
 

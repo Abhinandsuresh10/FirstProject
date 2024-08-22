@@ -2,7 +2,8 @@ const Order = require('../models/orderSchema');
 const User = require('../models/userModel');
 const Address = require('../models/addressModel');
 const Product = require('../models/produntsModel');
-const Wallet = require('../models/walletModel')
+const Wallet = require('../models/walletModel');
+const mongoose = require('mongoose');
 
 
 const loadorders = async (req, res) => {
@@ -72,6 +73,11 @@ const loadorders = async (req, res) => {
 const LoadOrderView = async (req, res) => {
     try {
         const orderId = req.query.orderId;
+
+        if (!mongoose.Types.ObjectId.isValid(orderId)) {
+            return res.status(404).render('404', { message: 'Invalid Order ID' });
+        }
+
         const order = await Order.findById(orderId).lean();
 
         if (!order) {
@@ -112,7 +118,7 @@ const LoadOrderView = async (req, res) => {
         res.render('adminOrderView', { order: detailedOrder });
     } catch (error) {
         console.log(error.message);
-        res.render('500');
+        res.status(500).render('500');
     }
 };
 

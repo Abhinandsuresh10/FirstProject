@@ -123,7 +123,7 @@
                 </a>
                
                 <div class="text py-3 px-3">
-                  <h3><a href="#" style="text-decoration: none !important;"><%= product[i].name %></a>
+                  <h3><a href="/productDetails?id=<%= product[i]._id %>" style="text-decoration: none !important;"><%= product[i].name %></a>
                     <% if (isLoggedIn) { %> 
                     <p class="bottom-area d-flex px-3">
                       <a href="#" id="wishlist-button-<%= product[i]._id %>" data-product-id="<%= product[i]._id %>" class="buy-now text-center py-2" style="width: 50%; text-decoration: none;">wishlist<span><i class="ion-ios-heart ml-1"></i></span></a>

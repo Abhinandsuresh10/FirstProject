@@ -304,7 +304,7 @@
                     <% orders.forEach(order => { %>
                         <div class="order-container">
                             <div class="order-header">
-                                <h3>Order ID: <%= order._id %></h3>
+                                <h3>Order ID: <%= order.orderRefId %></h3>
                                 <p>Order Date: <%= new Date(order.createdAt).toLocaleDateString() %></p>
                             </div>
 
@@ -594,15 +594,30 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.25/jspdf.plugin.autotable.min.js"></script>
   <script>
-   document.querySelectorAll(".invoice-button").forEach(button => {
+document.querySelectorAll(".invoice-button").forEach(button => {
     button.addEventListener("click", async function () {
-        const orderId = this.dataset.orderId;  
-        const orderContainer = this.closest(".order-container");  
+        const orderId = this.dataset.orderId;
+        const orderContainer = this.closest(".order-container");
 
         const totalDiscount = orderContainer.querySelector("#totalDiscount").innerText.split('\n')[0].trim();
         const a = orderContainer.querySelector("#a").innerText.split('\n')[0].trim();
         const orderTotal = orderContainer.querySelector("#orderTotal").innerText.trim();
         const b = orderContainer.querySelector("#b").innerText.trim();
+
+        const findTextByLabel = (label) => {
+            const paragraphs = orderContainer.querySelectorAll("p");
+            for (let p of paragraphs) {
+                const strong = p.querySelector("strong");
+                if (strong && strong.innerText.includes(label)) {
+                    return p.innerText.trim();
+                }
+            }
+            return null;
+        };
+
+        const shippingAddress = findTextByLabel("Shipping Address");
+        const paymentMethod = findTextByLabel("Payment Method");
+        const paymentStatus = findTextByLabel("Payment Status");
 
         let doc = new window.jspdf.jsPDF();
         let pageCenter = doc.internal.pageSize.getWidth() / 2;
@@ -612,13 +627,13 @@
         doc.setFontSize(18);
         doc.text("Sales Report", pageCenter, 30, { align: 'center' });
 
-        const table = orderContainer.querySelector(".table");  
+        const table = orderContainer.querySelector(".table");
         const tableRows = [];
 
         table.querySelectorAll("tbody tr").forEach(tr => {
             const rowData = [];
             tr.querySelectorAll("td").forEach((td, index) => {
-                if (index !== 1) { 
+                if (index !== 1) {
                     rowData.push(td.innerText);
                 }
             });
@@ -640,20 +655,28 @@
             margin: { top: 40 },
         });
 
+        if (shippingAddress) {
+            doc.setFontSize(10);
+            doc.text(`Shipping Address: ${shippingAddress}`, 10, doc.previousAutoTable.finalY + 20);
+        }
+        if (paymentMethod) {
+            doc.setFontSize(10);
+            doc.text(`Payment Method: ${paymentMethod}`, 10, doc.previousAutoTable.finalY + 30);
+        }
+        if (paymentStatus) {
+            doc.setFontSize(10);
+            doc.text(`Payment Status: ${paymentStatus}`, 10, doc.previousAutoTable.finalY + 40);
+        }
+
+        doc.setTextColor(0, 0, 0); 
         doc.setFontSize(10);
-        doc.text(a + ": " + totalDiscount, pageCenter, doc.previousAutoTable.finalY + 20, { align: 'center' });
-        doc.setTextColor(0, 128, 0);
-        doc.text(" ", pageCenter + doc.getTextWidth(a + ": " + totalDiscount), doc.previousAutoTable.finalY + 20, { align: 'left' });
-
-        doc.setTextColor(0, 0, 0);
-        doc.text(b + ": " + orderTotal, pageCenter, doc.previousAutoTable.finalY + 30, { align: 'center' });
-        doc.setTextColor(0, 128, 0);
-        doc.text(" ", pageCenter + doc.getTextWidth(b + ": " + orderTotal), doc.previousAutoTable.finalY + 30, { align: 'left' });
-
-        doc.setTextColor(0, 0, 0);
-        doc.save(`SalesReport_${orderId}.pdf`);  
+        doc.text(`${a}: ${totalDiscount}`, 10, doc.previousAutoTable.finalY + 50);
+        doc.text(`${b}: ${orderTotal}`, 10, doc.previousAutoTable.finalY + 60);
+        
+        doc.save(`SalesReport_${orderId}.pdf`);
     });
 });
+
 
 </script>
 

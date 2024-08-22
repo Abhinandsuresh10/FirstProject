@@ -6,7 +6,7 @@
         <div class="card-body">
             <h4 class="card-title">Order Details</h4>
             <div class="order-info">
-                <p><strong>Order ID:</strong> <%= order._id %></p>
+                <p><strong>Order ID:</strong> <%= order.orderRefId %></p>
                 <p><strong>User:</strong> <%= order.user ? order.user.name : 'N/A' %></p>
                 <p><strong>Ordered Date:</strong> <%= new Date(order.createdAt).toLocaleDateString() %></p>
                 <p><strong>Shipping Address:</strong> 

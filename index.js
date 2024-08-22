@@ -37,18 +37,16 @@ app.use('/admin',adminRoute);
 
 //404 page
 
-app.use((req,res,next)=> {
-    res.status(404).render('user/404')
+app.get('*',(req,res)=> {
+    res.render('user/404')
 });
 
 
 //500 page
 
-app.use((req,res,next)=> {
-    res.status(500).render('500')
+app.get('*',(req,res)=> {
+    res.render('500')
 })
-
-
 
 
 const PORT = process.env.PORT;

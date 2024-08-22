@@ -69,9 +69,15 @@
 <body>
     <form class="forgot-password-container" action="/sendEmail" method="POST">
         <h2>Forgot Password</h2>
+        <% if(message) {%>
+            <p style="color: rgb(66, 98, 4);"><%= message %></p>
+            <% } %>
+
         <input type="email" name="email" placeholder="Enter your email" required>
-        <button type="submit">Send to Email</button>
+        <button type="submit">Send to Email</button><br>
+        <br><a href="/login"><button type="button" class="back-button" style="background-color: rgb(107, 12, 12);">Back</button></a>
     </form>
+    
 </body>
 </html>
 

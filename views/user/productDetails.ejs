@@ -273,133 +273,47 @@
 
 <section class="ftco-section bg-light">
     <div class="container">
-            <div class="row justify-content-center mb-3 pb-3">
-      <div class="col-md-12 heading-section text-center ftco-animate">
-        <h2 class="mb-4">Ralated Products</h2>
-        <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
-      </div>
-    </div>   		
+        <div class="row justify-content-center mb-3 pb-3">
+            <div class="col-md-12 heading-section text-center ftco-animate">
+                <h2 class="mb-4">Related Products</h2>
+                <p>Far far away, behind the word mountains, far from the countries Vokalia and Consonantia</p>
+            </div>
+        </div>   		
     </div>
     <div class="container">
         <div class="row">
+            <% products.forEach(function(product) { %>
             <div class="col-sm col-md-6 col-lg ftco-animate">
                 <div class="product">
-                    <a href="#" class="img-prod"><img class="img-fluid" src="/static/user/images/BAG-3.png" alt="Colorlib Template">
-                       
+                    <a href="/productDetails?id=<%= product._id %>" class="img-prod">
+                        <img class="img-fluid" src="/static/productImages/<%= product.image[0] %>" alt="<%= product.altText %>">
                         <div class="overlay"></div>
                     </a>
                     <div class="text py-3 px-3">
-                        <h3><a href="#" style="text-decoration: none !important;">Floral Jackquard Pullover</a></h3>
+                        <h3><a href="/productDetails?id=<%= product._id %>" style="text-decoration: none !important;"><%= product.name %></a></h3>
                         <div class="d-flex">
-                            <div class="pricing">
-                                <p class="price"><span class="mr-2 price-dc">$120.00</span><span class="price-sale">$80.00</span></p>
-                            </div>
-                            <div class="rating">
-                                <p class="text-right">
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                </p>
-                            </div>
+
+
                         </div>
-                        <p class="bottom-area d-flex px-3">
-                            <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span >Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-                            <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-                        </p>
+                        <% if (isLoggedIn) { %> 
+                            <p class="bottom-area d-flex px-3">
+                              <a href="#" id="wishlist-button-<%= product._id %>" data-product-id="<%= product._id %>" class="buy-now text-center py-2" style="width: 50%; text-decoration: none;">wishlist<span><i class="ion-ios-heart ml-1"></i></span></a>
+                            </p>
+                            <% } %>
+                            <div class="pricing">
+                                <p class="price"><span class="price-dc"> <%= product.price %></span><span class="price-sale"> &nbsp;<%= product.price - product.discount %></span></p>
+                            </div>
+                            <div class="pricing" style="width: 100%;">
+                                <h6 class="price" style="color: rgb(76, 75, 75);"><span class="price-sale"><%= product.discription %></span></h6>
+                       </div>
                     </div>
                 </div>
             </div>
-            <div class="col-sm col-md-6 col-lg ftco-animate">
-                <div class="product">
-                    <a href="#" class="img-prod"><img class="img-fluid" src="/static/user/images/BAG-5.png" alt="Colorlib Template">
-                        <div class="overlay"></div>
-                    </a>
-                    <div class="text py-3 px-3">
-                        <h3><a href="#" style="text-decoration: none !important;">Floral Jackquard Pullover</a></h3>
-                        <div class="d-flex">
-                            <div class="pricing">
-                                <p class="price"><span>$120.00</span></p>
-                            </div>
-                            <div class="rating">
-                                <p class="text-right">
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                </p>
-                            </div>
-                        </div>
-                        <p class="bottom-area d-flex px-3">
-                            <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-                            <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg ftco-animate">
-                <div class="product">
-                    <a href="#" class="img-prod"><img class="img-fluid" src="/static/user/images/BAG-6.png" alt="Colorlib Template">
-                        <div class="overlay"></div>
-                    </a>
-                    <div class="text py-3 px-3">
-                        <h3><a href="#" style="text-decoration: none !important;">Floral Jackquard Pullover</a></h3>
-                        <div class="d-flex">
-                            <div class="pricing">
-                                <p class="price"><span>$120.00</span></p>
-                            </div>
-                            <div class="rating">
-                                <p class="text-right">
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                </p>
-                            </div>
-                        </div>
-                        <p class="bottom-area d-flex px-3">
-                            <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-                            <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-sm col-md-6 col-lg ftco-animate">
-                <div class="product">
-                    <a href="#" class="img-prod"><img class="img-fluid" src="/static/user/images/PURSE.png" alt="Colorlib Template">
-                        <div class="overlay"></div>
-                    </a>
-                    <div class="text py-3 px-3">
-                        <h3><a href="#" style="text-decoration: none !important;">Floral Jackquard Pullover</a></h3>
-                        <div class="d-flex">
-                            <div class="pricing">
-                                <p class="price"><span>$120.00</span></p>
-                            </div>
-                            
-                            <div class="rating">
-                                <p class="text-right">
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                    <a href="#"><span class="ion-ios-star-outline"></span></a>
-                                </p>
-                            </div>
-  
-                        </div>
-                        <p class="bottom-area d-flex px-3">
-                            <a href="#" class="add-to-cart text-center py-2 mr-1" style="text-decoration: none !important;"><span>Add to cart <i class="ion-ios-add ml-1"></i></span></a>
-                            <a href="#" class="buy-now text-center py-2" style="text-decoration: none !important;">Buy now<span><i class="ion-ios-cart ml-1"></i></span></a>
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <% }) %>
         </div>
     </div>
 </section>
+
 
 <footer class="ftco-footer bg-light ftco-section">
   <div class="container">
@@ -566,6 +480,47 @@
 
 
 <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/toastify-js/1.11.0/toastify.min.js"></script>
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/toastify-js"></script>
+<script>
+   function showSnackbar(message, type) {
+  Toastify({
+    text: message,
+    duration: 3000, 
+    gravity: "bottom", 
+    position: "right", 
+    backgroundColor: type === 'success' ? "green" : "red",
+    stopOnFocus: true 
+  }).showToast();
+}
+  document.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('[id^="wishlist-button-"]').forEach(button => {
+      button.addEventListener('click', function(event) {
+        event.preventDefault();
+
+        const productId = this.getAttribute('data-product-id');
+        fetch('/insertWishlist', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ productId })
+        })
+        .then(response => response.json())
+        .then(data => {
+          if (data.success) {
+            showSnackbar(data.message, 'success');
+          } else {
+            showSnackbar(data.message, 'error');
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          alert('An error occurred while adding to wishlist');
+        });
+      });
+    });
+  });
+</script>
 
 
 <script src="/static/user/js/jquery.min.js"></script>

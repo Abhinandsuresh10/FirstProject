@@ -6,8 +6,19 @@ const User = require('../models/userModel');
 
 const userLoad = async(req,res)=>{
     try {
-        const userList = await User.find();
-        res.render('users',{users:userList});
+        const perPage = 6;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalBrands = await User.countDocuments();
+
+        const totalPages = Math.ceil(totalBrands / perPage);
+
+        const userList = await User.find()
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+        .exec();
+        
+        res.render('users',{users:userList,currentPage,totalPages});
     } catch (error) {
         console.log(error.message);
     }

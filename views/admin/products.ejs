@@ -1,4 +1,32 @@
 <%- include('./adminHeader.ejs') %>
+<style>
+
+    .pagination {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-top: 20px;
+        margin-left: -20%;
+    }
+    .pagination-link {
+        margin: 0 5px;
+        padding: 8px 16px;
+        text-decoration: none;
+        color: #ffffff;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .pagination-link:hover {
+        background-color: #000000;
+        color: #ffffff;
+    }
+    .pagination-link.active {
+        font-weight: bold;
+        background-color: #000000;
+        color: #fff;
+    }
+</style>
+
 
 <div class="col-lg-12 grid-margin stretch-card">
     <div class="card">
@@ -8,7 +36,7 @@
             <div class="table-responsive">
                 <div style="margin-left: 60%;">
 
-                    <button type="button" class="btn btn-dark " style="background-color:crimson ;"> <a href="/admin/addProducts" style="text-decoration: none;color: rgb(255, 255, 255);">Add products</a></button>
+                    <button type="button" class="btn btn-dark " style="background-color:crimson ;"><a href="/admin/addProducts" style="text-decoration: none;color: rgb(255, 255, 255);">Add products</a></button>
 
                 </div>
         </p>
@@ -43,10 +71,27 @@
             </tbody>
           </table>
         </div>
+        <div class="pagination">
+          <% if (pages > 1) { %>
+              <% if (current > 1) { %>
+                  <a href="?page=<%= current - 1 %>" class="pagination-link"> < </a>
+              <% } %>
+              
+              <% for (let i = 1; i <= pages; i++) { %>
+                  <a href="?page=<%= i %>" class="pagination-link <%= current === i ? 'active' : '' %>"><%= i %></a>
+              <% } %>
+      
+              <% if (current < pages) { %>
+                  <a href="?page=<%= current + 1 %>" class="pagination-link"> > </a>
+              <% } %>
+          <% } else { %>
+              <p>No pages available.</p>
+          <% } %>
+      </div>
       </div>
     </div>
   </div>
-
+   
   <script>
    
     document.querySelectorAll('.delete-btn').forEach(button => {

@@ -286,12 +286,17 @@
     const price = document.getElementById('exampleInputPrice').value.trim();
     const stock = document.getElementById('exampleInputStock').value.trim();
     const description = document.getElementById('exampleInputDescription').value.trim();
+    
+    const nameRegex = /^[A-Za-z]+$/;
 
     if (!name) {
-      document.getElementById('errorName').innerText = 'Name is required';
-      isValid = false;
+        document.getElementById('errorName').innerText = 'Name is required';
+        isValid = false;
+    } else if (!nameRegex.test(name)) {
+        document.getElementById('errorName').innerText = 'Name must contain only letters and no spaces, numbers, or symbols';
+        isValid = false;
     } else {
-      document.getElementById('errorName').innerText = '';
+        document.getElementById('errorName').innerText = '';
     }
 
     if (!category) {

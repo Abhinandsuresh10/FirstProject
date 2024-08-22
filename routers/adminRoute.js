@@ -42,6 +42,7 @@ adminRoute.use(bodyParser.urlencoded({ extended: true }));
 adminRoute.set('view engine', 'ejs');
 adminRoute.set('views', './views/admin');
 
+
 // Public routes
 adminRoute.get('/', adminAuth.isAdminLogout, adminController.adminLogin);
 adminRoute.post('/login', adminAuth.isAdminLogout, adminController.adminVerifyLogin);
@@ -122,8 +123,7 @@ adminRoute.get('/DashboardDaily',adminController.LoadDashboardDaily)
 
 adminRoute.get('/logout',adminController.adminLogout);
 
-adminRoute.use((req,res,next)=> {
-    res.status(500).render('500')
-})
+
+
 
 module.exports = adminRoute;

@@ -123,28 +123,30 @@
                     <% } %>
                   </tbody>
                   
-                <% if (sales.length > 0) { %>
+      
                     <br> <td></td><td></td><td></td><td></td><td></td>
-                       <td class="grand-total-label">Grand Total:
-                        &nbsp;<%= grandTotalAmount.toFixed(2) %> 
+                       <td class="grand-total-label" style="color: #fff;">
+                        &nbsp;
                        </td>
                     
-                   <% } %>
+                   
                 </table>
              
               </div>
               <div class="table-responsive">
               <table class="table">
-                <thead >
+                <thead >  
                   <tr>
                     <th>All Total Sales count</th>
                     <th>All Total DIscount</th>
+                    <th>All Grand Total</th>
                   </tr>
                 </thead>
                 <tbody>
                   <tr>
                     <td>&nbsp;&nbsp;&nbsp; <%= totalOrders %></td>
                     <td>&nbsp;&nbsp;&nbsp;<%= totalDiscount %></td>
+                    <td>&nbsp;&nbsp;&nbsp;<%= feelTotals %></td>
                   </tr>
                 </tbody>
               </table>

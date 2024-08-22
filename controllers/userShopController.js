@@ -32,7 +32,8 @@ const loadProductDetails = async(req,res)=>{
     try {
         const {id} = req.query;
         const products = await prducts.findOne({_id:id})
-        res.render('productDetails',{product:products,isLoggedIn : req.session.userData})  
+        const items = await prducts.find({}).sort({orderCount: -1}).limit(4)
+        res.render('productDetails',{product:products,products: items,isLoggedIn : req.session.userData})  
     } catch (error) {
         console.log(error.message);
     }

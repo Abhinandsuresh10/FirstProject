@@ -9,6 +9,10 @@ const orderSchema = new mongoose.Schema({
       razorpayOrderId: {
       type: String
     },
+    orderRefId: {
+        type: Number,
+        default: 0,
+    },
     orderItems: [
         {
             product: {

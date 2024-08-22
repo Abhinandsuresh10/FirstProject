@@ -150,8 +150,18 @@ const adminLogout = async(req,res)=>{
 
 const LoadCoupons = async(req,res)=>{
     try {
-        const coupons = await Coupon.find({})
-        res.render('coupons',{coupons})
+      const perPage = 6;
+      const currentPage = parseInt(req.query.page) || 1;
+
+      const totalUsers = await Coupon.countDocuments();
+      const totalPages = Math.ceil(totalUsers / perPage);
+
+      const coupons = await Coupon.find()
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage)
+          .exec();
+
+        res.render('coupons',{coupons, currentPage, totalPages})
     } catch (error) {
        console.log(error.message) 
     }
@@ -299,14 +309,29 @@ const EditCoupon = async (req, res) => {
             }
           }
         ]);
+        const feelTotal = await Order.aggregate([
+          {
+            $match: {
+              orderStatus: { $nin: ['pending', 'shipped', 'Canceled' ,'order returned'] } 
+            }
+          },
+          {
+            $group: {
+              _id: null,
+              total: { $sum: '$amount' }
+            }
+          }
+        ]);
+  
+        const feelTotals = feelTotal[0] ? feelTotal[0].total : 0;
         const totalDiscount = discounts[0] ? discounts[0].total : 0;
 
         const totalOrders = await Order.countDocuments({orderStatus: 'delivered'});
         const totalPages = Math.ceil(totalSales / limit);
-        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount,totalDiscount,totalOrders});
+        res.render('salesReport', { sales: salesWithDetails , currentPage: page,totalPages: totalPages,limit: limit,grandTotalAmount,totalDiscount,totalOrders,feelTotals});
     } catch (error) {
         console.error(error.message);
-        res.render('500')
+        res.render('/500')
     }
 };
 
@@ -435,6 +460,23 @@ const FilterSalesReport = async (req, res) => {
               }
           }
       ]);
+      const feelTotal = await Order.aggregate([
+        {
+        $match: {
+          ...filterCriteria,
+          orderStatus: {$nin: ['pending', 'shipped', 'Canceled' ,'order returned']}
+        }
+        },
+        {
+          $group: {
+            _id:null,
+            total: {$sum: '$amount'}
+          }
+        }
+      
+    ]);
+
+      const feelTotals = feelTotal[0] ? feelTotal[0].total : 0;
       const totalDiscount = discounts[0] ? discounts[0].total : 0;
 
       const totalOrders = await Order.countDocuments({
@@ -449,7 +491,8 @@ const FilterSalesReport = async (req, res) => {
           limit,
           grandTotalAmount,
           totalDiscount,
-          totalOrders
+          totalOrders,
+          feelTotals
       });
   } catch (error) {
       console.error(error.message);

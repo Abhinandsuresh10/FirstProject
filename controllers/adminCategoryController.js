@@ -11,9 +11,19 @@ const productOffer = require('../models/ProductOfferModel');
 
 const categoryLoad = async(req,res)=>{
     try {
-        
-        const userList = await Category.find({is_delete:false});
-        res.render('category',{categories:userList,message:''});
+        const perPage = 6;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalBrands = await Category.countDocuments({is_delete:false});
+
+        const totalPages = Math.ceil(totalBrands / perPage);
+
+        const userList = await Category.find({is_delete:false})
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+        .exec();
+
+        res.render('category',{categories:userList,message:'',currentPage,totalPages});
     } catch (error) {
         console.log(error.message);
     }
@@ -25,10 +35,22 @@ const addCategory = async(req,res)=>{
     try {
 
         const same = await Category.findOne({name:categoryName},{is_delete:true});
-        const userList = await Category.find({is_delete:false});
 
         if(same){
-            res.render('category',{categories:userList,message:'already existed category'})
+            const perPage = 6;
+            const currentPage = parseInt(req.query.page) || 1;
+    
+            const totalBrands = await Category.countDocuments({is_delete:false});
+    
+            const totalPages = Math.ceil(totalBrands / perPage);
+    
+            const userList = await Category.find({is_delete:false})
+            .skip((currentPage - 1) * perPage)
+            .limit(perPage)
+            .exec();
+    
+            res.render('category',{categories:userList,message:'already existed category',currentPage,totalPages});
+      
         }else{
             const newCategory = new Category({
                 name:categoryName,
@@ -102,9 +124,19 @@ const recoverCategory = async(req,res)=>{
 
 const brandsLoad = async(req,res)=>{
     try {
-        
-        const userList = await Brands.find({is_delete:false});
-        res.render('brands',{brands:userList,message:''});
+        const perPage = 6;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalBrands = await Brands.countDocuments({is_delete:false});
+
+        const totalPages = Math.ceil(totalBrands / perPage);
+
+        const userList = await Brands.find({is_delete:false})
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage)
+          .exec();
+
+        res.render('brands',{brands:userList,message:'',currentPage,totalPages});
     } catch (error) {
         console.log(error.message);
     }
@@ -114,10 +146,25 @@ const addBrand = async(req,res)=>{
     const {name} = req.body;
     try {
         const same = await Brands.findOne({name:name},{is_delete:true});
-        const userList = await Brands.find({is_delete:false});
+
         if(same){
-            res.render('brands',{brands:userList,message:'already existed brand'})
+
+        const perPage = 6;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalBrands = await Brands.countDocuments({is_delete:false});
+
+        const totalPages = Math.ceil(totalBrands / perPage);
+
+        const userList = await Brands.find({is_delete:false})
+          .skip((currentPage - 1) * perPage)
+          .limit(perPage)
+          .exec();
+
+        res.render('brands',{brands:userList,message:'already existed brand',currentPage,totalPages});
+
         }else{
+            
         const newBrands = new Brands({
             name:name,
             is_delete:false
@@ -186,9 +233,20 @@ const recoverBrands = async(req,res)=>{
 
 const LoadCategoryOffers = async(req,res)=>{
     try {
-        const categoryOffer = await CategoryOffer.find({}).populate('categoryId');
+
+        const perPage = 6;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalOffers = await CategoryOffer.countDocuments({});
+        const totalPages = Math.ceil(totalOffers / perPage);
+
+        const categoryOffer = await CategoryOffer.find({})
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+        .populate('categoryId');
+
         const category = await Category.find({is_delete:false})
-        res.render('CategoryOffer',{category,categoryOffer})
+        res.render('CategoryOffer',{category,categoryOffer,currentPage,totalPages})
         
     } catch (error) {
         console.log(error.message)
@@ -312,9 +370,21 @@ const DeleteCategoryOffer = async (req, res) => {
 
 const LoadProductOffers = async(req,res)=>{
     try {
-        const productOffers = await productOffer.find({}).populate('productId');
-        const products = await Product.find({is_delete:false})
-        res.render('productOffers',{products,productOffers})
+        const perPage = 1;
+        const currentPage = parseInt(req.query.page) || 1;
+
+        const totalOffers = await productOffer.countDocuments({});
+        const totalPages = Math.ceil(totalOffers / perPage);
+
+        const productOffers = await productOffer.find({})
+        .skip((currentPage - 1) * perPage)
+        .limit(perPage)
+        .populate('productId');
+
+        const products = await Product.find({ is_delete: false });
+
+        res.render('productOffers',{products,productOffers,currentPage,totalPages})
+
     } catch (error) {
         console.log(error.message)
     }

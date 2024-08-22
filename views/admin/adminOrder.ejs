@@ -47,7 +47,7 @@
                         <% ordersess.forEach((order, index) => { %>
                         <tr>
                             <td style="color: aliceblue;"><%= index + 1 %></td>
-                            <td style="color: aliceblue;"><%= order._id %></td>
+                            <td style="color: aliceblue;"><%= order.orderRefId %></td>
                             <td style="color: aliceblue;"><%= order.user ? order.user.name : 'N/A' %></td>
                             <td style="color: aliceblue;"><%= new Date(order.createdAt).toLocaleDateString() %></td>
                             <td style="color: aliceblue;">

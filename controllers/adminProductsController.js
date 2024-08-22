@@ -6,9 +6,28 @@ const CategoryOffer = require('../models/CategoryOffer');
 
 const productsLoad = async(req,res)=>{
     try {
-       
-        const isProducts = await prducts.find({is_delete:false});
-        res.render('products',{product:isProducts});
+        const perPage = 6;
+        let page = parseInt(req.query.page) || 1;
+
+        const count = await prducts.countDocuments({ is_delete: false });
+        const totalPages = Math.ceil(count / perPage);
+
+        if (page < 1) {
+            page = 1;
+        } else if (page > totalPages) {
+            page = totalPages;
+        }
+
+        const isProducts = await prducts.find({ is_delete: false })
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .exec();
+
+        res.render('products', {
+            product: isProducts,
+            current: page,
+            pages: totalPages
+        });
     } catch (error) {
         console.log(error.message);
     }
@@ -154,9 +173,18 @@ const editProduct = async (req, res) => {
 
         
         await prducts.updateOne({ _id: id }, { $set: updateData });
+        const perPage = 6;
+        const page = req.query.page || 1;
+        const isProducts = await prducts.find({ is_delete: false })
+            .skip((perPage * page) - perPage)
+            .limit(perPage)
+            .exec();
 
-        const isProducts = await prducts.find({ is_delete: false });
-        res.render('products', { product: isProducts });
+        const count = await prducts.countDocuments({ is_delete: false });
+        res.render('products', { 
+            product: isProducts,
+            current: page,
+            pages: Math.ceil(count / perPage) });
     } catch (error) {
         console.log(error.message);
     }

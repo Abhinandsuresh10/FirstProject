@@ -274,7 +274,7 @@ try {
 
 const ForgotPage = async(req,res)=>{
     try {
-        res.render('forgotEmail')
+        res.render('forgotEmail',{message:''})
     } catch (error) {
        console.log(error.message) 
     }
@@ -287,7 +287,8 @@ const ForgotEmailSent = async (req, res) => {
     try {
         const user = await User.findOne({ email });
         if (!user) {
-            return res.status(404).json({ success: false, message: 'No user found with this email address.' });
+            res.render('forgotEmail',{message:'No user found with this email address. please check email'})
+           
         }
 
         const token = crypto.randomBytes(20).toString('hex');
@@ -317,8 +318,7 @@ const ForgotEmailSent = async (req, res) => {
         };
 
         await transporter.sendMail(mailOptions);
-
-        res.status(200).json({ success: true, message: 'Password reset email sent.' });
+        res.render('forgotEmail',{message:'Password reset email sent.'});
     } catch (error) {
         console.error(error.message);
         res.render('500');

@@ -2,7 +2,32 @@
 
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/toastify-js/src/toastify.min.css">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
-
+<style>
+  .pagination {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-top: 20px;
+      margin-left: -45%;
+  }
+  .pagination-link {
+      margin: 0 5px;
+      padding: 8px 16px;
+      text-decoration: none;
+      color: #ffffff;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+  }
+  .pagination-link:hover {
+      background-color: #000000;
+      color: #ffffff;
+  }
+  .pagination-link.active {
+      font-weight: bold;
+      background-color: #000000;
+      color: #fff;
+  }
+</style>
 
 <div class="col-lg-6 grid-margin stretch-card" style="width: 100%; table-layout: fixed; ">
     <div class="card">
@@ -99,6 +124,17 @@
                 </tbody>
           </table>
         </div>
+        <div class="pagination">
+          <% if (currentPage > 1) { %>
+          <a href="?page=<%= currentPage - 1 %>" class="pagination-link"> < </a>
+          <% } %>
+          <% for (let i = 1; i <= totalPages; i++) { %>
+          <a href="?page=<%= i %>" class="pagination-link <%= currentPage === i ? 'active' : '' %>"><%= i %></a>
+          <% } %>
+          <% if (currentPage < totalPages) { %>
+          <a href="?page=<%= currentPage + 1 %>" class="pagination-link"> > </a>
+          <% } %>
+      </div>
       </div>
     </div>
   </div>

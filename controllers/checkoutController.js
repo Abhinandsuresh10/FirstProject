@@ -227,7 +227,7 @@ const insertPlaceOrder = async(req,res)=>{
 
         const amounts =  Math.ceil(amount);
         const AllDiscounts = Math.ceil(AllDiscount)
-
+        const orderRefId =  Math.floor(10000000 + Math.random() * 90000000) || 0;
         if(amounts > 1000){
             res.status(200).json({ message: 'not deliverable COD maximum amount 1000'});
 
@@ -235,6 +235,7 @@ const insertPlaceOrder = async(req,res)=>{
 
         const newOrder = new order({
             user: userId,
+            orderRefId:orderRefId,
             shippingAddress: addressId,
             paymentMethod: paymentMethod,
             orderItems: orderItems.map(item => ({
@@ -334,9 +335,10 @@ const VerifyRazorpay = async (req, res) => {
         if (generatedSignature === signature) {
             paymentStatus = 'paid'; 
         }
-
+        const orderRefId =  Math.floor(10000000 + Math.random() * 90000000) || 0;
         const newOrder = new order({
             user: userId,
+            orderRefId: orderRefId,
             shippingAddress: addressId,
             paymentMethod: paymentMethod,
             orderItems: orderItems.map(item => ({
@@ -398,9 +400,11 @@ const PlaceOrderOnFailure = async (req, res) => {
 
         const amounts = Math.ceil(amount);
         const AllDiscounts = Math.ceil(AllDiscount);
+        const orderRefId =  Math.floor(10000000 + Math.random() * 90000000) || 0;
 
         const newOrder = new order({
             user: userId,
+            orderRefId: orderRefId,
             shippingAddress: addressId,
             paymentMethod: paymentMethod,
             orderItems: orderItems.map(item => ({
