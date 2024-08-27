@@ -3,7 +3,9 @@ const config = require('./config/config');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const mongoURI = process.env.MONGO_URI;
-mongoose.connect(mongoURI);
+mongoose.connect(mongoURI)
+.then(() => console.log('okconect'))
+.catch(()=> console.log('notokcon'));
 
 const path = require('path');
 

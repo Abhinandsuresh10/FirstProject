@@ -657,21 +657,21 @@ document.querySelectorAll(".invoice-button").forEach(button => {
 
         if (shippingAddress) {
             doc.setFontSize(10);
-            doc.text(`Shipping Address: ${shippingAddress}`, 10, doc.previousAutoTable.finalY + 20);
+            doc.text(` ${shippingAddress}`, 10, doc.previousAutoTable.finalY + 20);
         }
         if (paymentMethod) {
             doc.setFontSize(10);
-            doc.text(`Payment Method: ${paymentMethod}`, 10, doc.previousAutoTable.finalY + 30);
+            doc.text(` ${paymentMethod}`, 10, doc.previousAutoTable.finalY + 30);
         }
         if (paymentStatus) {
             doc.setFontSize(10);
-            doc.text(`Payment Status: ${paymentStatus}`, 10, doc.previousAutoTable.finalY + 40);
+            doc.text(` ${paymentStatus}`, 10, doc.previousAutoTable.finalY + 40);
         }
 
         doc.setTextColor(0, 0, 0); 
         doc.setFontSize(10);
-        doc.text(`${a}: ${totalDiscount}`, 10, doc.previousAutoTable.finalY + 50);
-        doc.text(`${b}: ${orderTotal}`, 10, doc.previousAutoTable.finalY + 60);
+        doc.text(`${a}: ${totalDiscount} INR`, 10, doc.previousAutoTable.finalY + 50);
+        doc.text(`${b}: ${orderTotal} INR`, 10, doc.previousAutoTable.finalY + 60);
         
         doc.save(`SalesReport_${orderId}.pdf`);
     });
