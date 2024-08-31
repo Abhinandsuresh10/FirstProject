@@ -101,7 +101,9 @@
         <option value="default">Default</option>
         <option value="az">Name: A to Z</option>
         <option value="za">Name: Z to A</option>
-      </select>
+        <option value="low-to-high">Price: Low to High</option>
+        <option value="high-to-low">Price: High to Low</option>
+    </select>    
     </div>
   </div>
 </div>
@@ -436,41 +438,54 @@
 
   </script>
 
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        const sortOptions = document.getElementById('sortOptions');
-        const productContainer = document.getElementById('productContainer');
-        const productItems = Array.from(document.querySelectorAll('.product-item'));
-    
-        sortOptions.addEventListener('change', function() {
-            const sortValue = sortOptions.value;
-            sortProducts(sortValue);
-        });
-    
-        function sortProducts(sortValue) {
-            let sortedItems;
-    
-            if (sortValue === 'az') {
-                sortedItems = productItems.sort((a, b) => {
-                    const nameA = a.querySelector('h3 a').innerText.toUpperCase();
-                    const nameB = b.querySelector('h3 a').innerText.toUpperCase();
-                    return nameA.localeCompare(nameB);
-                });
-            } else if (sortValue === 'za') {
-                sortedItems = productItems.sort((a, b) => {
-                    const nameA = a.querySelector('h3 a').innerText.toUpperCase();
-                    const nameB = b.querySelector('h3 a').innerText.toUpperCase();
-                    return nameB.localeCompare(nameA);
-                });
-            } else {
-                sortedItems = productItems;
-            }
-    
-            productContainer.innerHTML = '';
-            sortedItems.forEach(item => productContainer.appendChild(item));
-        }
-    });
-    </script>
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+      const sortOptions = document.getElementById('sortOptions');
+      const productContainer = document.getElementById('productContainer');
+      const productItems = Array.from(document.querySelectorAll('.product-item'));
+      const originalOrder = [...productItems];
+      sortOptions.addEventListener('change', function() {
+          const sortValue = sortOptions.value;
+          sortProducts(sortValue);
+      });
+  
+      function sortProducts(sortValue) {
+          let sortedItems;
+  
+          if (sortValue === 'az') {
+              sortedItems = productItems.sort((a, b) => {
+                  const nameA = a.querySelector('h3 a').innerText.toUpperCase();
+                  const nameB = b.querySelector('h3 a').innerText.toUpperCase();
+                  return nameA.localeCompare(nameB);
+              });
+          } else if (sortValue === 'za') {
+              sortedItems = productItems.sort((a, b) => {
+                  const nameA = a.querySelector('h3 a').innerText.toUpperCase();
+                  const nameB = b.querySelector('h3 a').innerText.toUpperCase();
+                  return nameB.localeCompare(nameA);
+              });
+          } else if (sortValue === 'low-to-high') {
+              sortedItems = productItems.sort((a, b) => {
+                  const priceA = parseFloat(a.dataset.price);
+                  const priceB = parseFloat(b.dataset.price);
+                  return priceA - priceB;
+              });
+          } else if (sortValue === 'high-to-low') {
+              sortedItems = productItems.sort((a, b) => {
+                  const priceA = parseFloat(a.dataset.price);
+                  const priceB = parseFloat(b.dataset.price);
+                  return priceB - priceA;
+              });
+          } else {
+              sortedItems = originalOrder; 
+          }
+  
+          productContainer.innerHTML = '';
+          sortedItems.forEach(item => productContainer.appendChild(item));
+      }
+  });
+  </script>
+  
     
 
   <script src="/static/user/js/jquery.min.js"></script>

@@ -63,7 +63,30 @@ const sendOtpEmail = (email, otp) => {
 
 const insertUser = async (req, res) => {
     try {
-        const { name, email, mobile, password, confirmPassword } = req.body;
+        const { name, email, mobile, password, confirmPassword , Refferel} = req.body;
+        
+        function generateReferralCode(length = 8) {
+            const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz1234567890';
+            let referralCode = '';
+            
+            for (let i = 0; i < length; i++) {
+                const randomIndex = Math.floor(Math.random() * characters.length);
+                referralCode += characters[randomIndex];
+            }
+            
+            return referralCode;
+        }
+        
+        const newReferralCode =  generateReferralCode(); 
+
+        const ReffererdUser = await User.findOne({Refferel:Refferel});
+
+        if (ReffererdUser) {
+            const refAmount = 100;
+            let wallet = await Wallet.findOne({ userId: ReffererdUser._id });
+                wallet.balance += refAmount;
+                await wallet.save();
+            }
 
         const existingUser = await User.findOne({ email });
         if (existingUser) {
@@ -85,7 +108,9 @@ const insertUser = async (req, res) => {
             mobile,
             password: sPassword,
             is_blocked:false,
-            image: req.file ? req.file.filename : ''
+            image: req.file ? req.file.filename : '',
+            Refferel:newReferralCode,
+            RefferedBy: Refferel ? Refferel: null
         };
 
         res.json({ success: true, redirectToOtp: true });
@@ -107,8 +132,7 @@ const otpLoad =async(req,res)=>{
 }
 
 
-
-// verify OTP
+// verify OTP....
 
 const verifyOtp = async (req, res) => {
     try {
@@ -116,22 +140,29 @@ const verifyOtp = async (req, res) => {
         if (otp == req.session.otp) {
         
             const userData = new User(req.session.user);
+           
             const savedUser = await userData.save();
 
             if (savedUser) {
                 delete req.session.otp;
                  req.session.userData = userData;
-
+                 const RefferedBy = req.session.userData.RefferedBy;
+                 
                  const userId = req.session.userData._id;
 
                  let userWallet = await Wallet.findOne({ userId: userId });
-                 if (!userWallet) {
+                 if (!userWallet && RefferedBy === null) {
                      userWallet = new Wallet({
                          userId: userId,
                          balance: 0.00
                      });
+                 }else{
+                    userWallet = new Wallet({
+                        userId: userId,
+                        balance: 50.00
+                    });
                  }
-         
+        
                  await userWallet.save();
 
                 res.status(201).json({ message: 'OTP verification successful' }); 

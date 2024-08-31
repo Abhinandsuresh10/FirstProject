@@ -239,6 +239,11 @@
                 <p>Mobile: add number</p>
                 <%}%>
                 <br><br>
+                <% if(users.Refferel) {%>
+                    <div >
+                    <p><b>Refferel : <%= users.Refferel%></b></p>
+                   </div>
+                <% } %>
             </div>
             <div class="loki-actions">
             <% if(users.password) {%>

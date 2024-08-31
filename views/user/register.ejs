@@ -61,6 +61,9 @@
 
         <button type="submit" class="ocs-otp-button">Send OTP</button>
 
+        <label for="ocs-Refferel" class="ocs-registration-label">Refferel code</label>
+        <input type="text" id="ocs-Refferel" name="Refferel" class="ocs-registration-input" style="width: 30%;">
+
         <p class="ocs-login-text" style="color: aliceblue;">Already have an account? <a href="/login" class="ocs-login-link" >Login here</a></p>
 
         <div class="ocs-google-login-container">
@@ -87,6 +90,7 @@
         const mobile = form.elements['mobile'].value.trim();
         const password = form.elements['password'].value.trim();
         const confirmPassword = form.elements['confirmPassword'].value.trim();
+        const Refferel = form.elements['Refferel'].value.trim();
 
         let hasError = false;
 

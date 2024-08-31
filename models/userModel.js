@@ -27,6 +27,16 @@ const userSchema = new mongoose.Schema({
     },
     resetPasswordToken: { type: String },
     resetPasswordExpires: { type: Date },
+    Refferel: {
+        type: String,
+        default: null,
+        required:false
+    },
+    RefferedBy:{
+        type: String,
+        default: null,
+        required: false
+    }
 
 });
 
