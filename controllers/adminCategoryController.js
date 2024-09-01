@@ -246,7 +246,7 @@ const LoadCategoryOffers = async(req,res)=>{
         .populate('categoryId');
 
         const category = await Category.find({is_delete:false})
-        res.render('CategoryOffer',{category,categoryOffer,currentPage,totalPages})
+        res.render('categoryOffer',{category,categoryOffer,currentPage,totalPages})
         
     } catch (error) {
         console.log(error.message)
