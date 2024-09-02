@@ -3,7 +3,10 @@ const config = require('./config/config');
 require('dotenv').config();
 const mongoose = require('mongoose');
 const mongoURI = process.env.MONGO_URI;
-mongoose.connect(mongoURI)
+mongoose.connect(mongoURI,{
+    serverSelectionTimeoutMS: 30000, 
+    connectTimeoutMS: 30000,
+})
 .then(() => console.log('okconect'))
 .catch(()=> console.log('notokcon'));
 

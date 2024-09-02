@@ -530,29 +530,35 @@ const FilterSalesReport = async (req, res) => {
 
 const LoadDashboardMonthly = async (req, res) => {
   try {
-      const startOfMonth = new Date();
-      startOfMonth.setDate(1); 
+    const startOfMonth = new Date('2024-08-01T00:00:00.000Z');
+    const endOfMonth = new Date('2024-08-31T23:59:59.999Z');
 
-      const monthlyOrders = await Order.find({ createdAt: { $gte: startOfMonth } });
+    const monthlyOrders = await Order.find({
+      createdAt: { $gte: startOfMonth, $lte: endOfMonth }
+    });
 
-      const validmonthlyOrders =  monthlyOrders.filter(order => order.orderStatus !== 'Canceled' && order.orderStatus !== 'order returned')    
+    const validMonthlyOrders = monthlyOrders.filter(order => 
+      order.orderStatus !== 'Canceled' && order.orderStatus !== 'order returned'
+    );
 
-      const revenue = validmonthlyOrders.reduce((total, order) => total + order.amount, 0);
+    const revenue = validMonthlyOrders.reduce((total, order) => total + order.amount, 0);
 
-      const orderCounts = {
-          pending: monthlyOrders.filter(order => order.orderStatus === 'pending').length,
-          shipped: monthlyOrders.filter(order => order.orderStatus === 'shipped').length,
-          delivered: monthlyOrders.filter(order => order.orderStatus === 'delivered').length,
-          canceled: monthlyOrders.filter(order => order.orderStatus === 'Canceled').length,
-          returned: monthlyOrders.filter(order => order.orderStatus === 'order returned').length,
-      };
-    
-     
-      res.status(200).json({ revenue, orderCounts });
+    const orderCounts = {
+      pending: monthlyOrders.filter(order => order.orderStatus === 'pending').length,
+      shipped: monthlyOrders.filter(order => order.orderStatus === 'shipped').length,
+      delivered: monthlyOrders.filter(order => order.orderStatus === 'delivered').length,
+      canceled: monthlyOrders.filter(order => order.orderStatus === 'Canceled').length,
+      returned: monthlyOrders.filter(order => order.orderStatus === 'order returned').length,
+    };
+
+    res.status(200).json({ revenue, orderCounts });
   } catch (error) {
+    console.error('Failed to fetch monthly data:', error.message);
     res.render('500');
   }
 };
+
+
 
 
 
