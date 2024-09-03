@@ -117,7 +117,8 @@ userRoute.post('/createOrder',checkoutController.CreateRazorpay);
 userRoute.post('/verifyPayment',checkoutController.VerifyRazorpay);
 userRoute.post('/placeOrderOnFailure',checkoutController.PlaceOrderOnFailure );
 userRoute.post('/pendingRazorpayOrder',checkoutController.PendingRazorpayCreate);
-userRoute.post('/verifyPaymentAndUpdateOrder',checkoutController.verifyRazorPayPayment)
+userRoute.post('/verifyPaymentAndUpdateOrder',checkoutController.verifyRazorPayPayment);
+userRoute.post('/walletOrder',checkoutController.InserWalletPay)
 
 
 //orders..

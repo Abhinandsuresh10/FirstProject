@@ -280,6 +280,79 @@ const insertPlaceOrder = async(req,res)=>{
     }
 }
 
+const InserWalletPay = async (req, res) => {
+    try {
+        const userId = req.session.userData._id;
+        const { addressId, paymentMethod, orderItems, amount, AllDiscount } = req.body;
+
+        const userWallet = await Wallet.findOne({ userId });
+        if (!userWallet) {
+            return res.status(400).json({ message: 'Wallet not found' });
+        }
+
+        const amounts = Math.ceil(amount);
+        const AllDiscounts = Math.ceil(AllDiscount);
+        const orderRefId = Math.floor(10000000 + Math.random() * 90000000) || 0;
+
+
+        if (paymentMethod === 'Walletpay') {
+            if (userWallet.balance < amounts) {
+                return res.status(400).json({ message: 'Insufficient wallet balance' });
+            }
+            userWallet.balance -= amounts;
+            await userWallet.save();
+        }
+
+        const newOrder = new order({
+            user: userId,
+            orderRefId: orderRefId,
+            shippingAddress: addressId,
+            paymentMethod: paymentMethod,
+            orderItems: orderItems.map(item => ({
+                product: item.productId,
+                quantity: item.quantity,
+                price: item.price
+            })),
+            amount: amounts,
+            AllDiscount: AllDiscounts,
+            paymentStatus: 'paid',
+        });
+
+        await newOrder.save();
+
+        for (const item of orderItems) {
+            const product = await Product.findById(item.productId);
+
+            if (product) {
+                product.stock -= item.quantity;
+                product.orderCount = product.orderCount ? product.orderCount + 1 : 1;
+
+                const category = await Category.findOne({ name: product.category });
+                if (category) {
+                    category.orderCount = category.orderCount ? category.orderCount + 1 : 1;
+                    await category.save();
+                }
+
+                const brand = await Brands.findOne({ name: product.brand });
+                if (brand) {
+                    brand.orderCount = brand.orderCount ? brand.orderCount + 1 : 1;
+                    await brand.save();
+                }
+
+                await product.save();
+            }
+        }
+
+        await Cart.findOneAndDelete({ userId });
+
+        res.status(200).json({ message: 'Order placed successfully', redirectUrl: `/userOrderDetails?orderId=${newOrder._id}` });
+
+    } catch (error) {
+        console.error(error.message);
+        res.status(500).json({ message: 'Server error. Please try again later.' });
+    }
+};
+
 
 //razorpay
 
@@ -596,7 +669,7 @@ const CancelOrder = async (req, res) => {
 
         await Promise.all(productPromises);
 
-        if (updatedOrder.paymentMethod === 'RazorPay') {
+        if (updatedOrder.paymentMethod === 'RazorPay' || updatedOrder.paymentMethod === 'Walletpay') {
             const totalPrice = updatedOrder.amount;
 
             const userId = req.session.userData._id;
@@ -682,5 +755,6 @@ module.exports = {
     RemoveCoupon,
     PlaceOrderOnFailure,
     PendingRazorpayCreate,
-    verifyRazorPayPayment
+    verifyRazorPayPayment,
+    InserWalletPay
 }
