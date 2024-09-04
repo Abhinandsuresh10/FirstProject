@@ -50,7 +50,7 @@ const checkoutController = require('../controllers/checkoutController.js')
 const passport = require('../config/googleAuth');
 
 userRoute.get('/auth/google',
-    passport.authenticate('google', { scope: ['profile', 'email'] })
+    passport.authenticate('google', { scope: ['profile', 'email'] ,prompt:'select_account' })
 );
 
 userRoute.get('/auth/google/callback',
