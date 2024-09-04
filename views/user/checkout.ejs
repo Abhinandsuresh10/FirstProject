@@ -1078,7 +1078,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 price: parseFloat(item.querySelector('.product-price').textContent.replace('Price: ₹', ''))
             };
         });
-        console.log(orderItems);
+      
         
 
         const cartTotalElement = document.getElementById('cart-total');
@@ -1206,7 +1206,6 @@ async function handlePaymentFailure(orderId, amount, AllDiscount, formData) {
         event.preventDefault();
 
         const formData = validateForm();
-        console.log('Form Data:', formData);
 
         if (formData) {
             try {

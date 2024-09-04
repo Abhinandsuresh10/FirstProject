@@ -53,7 +53,7 @@ userRoute.get('/auth/google',
     passport.authenticate('google', { scope: ['profile', 'email'] })
 );
 
-userRoute.get(process.env.CALLBACKURL,
+userRoute.get('/auth/google/callback',
     passport.authenticate('google', { failureRedirect: '/login' }),
     userController.googleLoginCallback
 );
