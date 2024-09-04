@@ -8,9 +8,11 @@ const Product = require('../models/produntsModel');
 
 const cartLoad = async (req, res) => {
     try {
-        const userId = req.session.userData._id;
-        const cartData = await cart.findOne({ userId }).populate('products.productId');
-
+        let cartData = null; 
+        if (req.session.userData) {
+         const userId = req.session.userData._id;
+         cartData = await cart.findOne({ userId }).populate('products.productId');
+        }
         let insufficientStock = false;
         let updatedProducts = [];
 
@@ -129,7 +131,8 @@ const deleteCart = async(req,res)=>{
         const wishlist = await Wishlist.findOne({ userId }).populate('products', 'productId name description price discount stock image');
         res.render('wishlist', { wishlist: wishlist || { items: [] }, isLoggedIn: req.session.userData ,product:products});
     } catch (error) {
-        console.log(error.message)
+        console.log(error.message);
+        res.render('500');
     }
  }
 
